@@ -117,34 +117,46 @@ export default function AcademicChatbotPage() {
     knowledgeLevel?: string, 
     subject?: string, 
     book?: string, 
-    showRecommendedResources?: boolean
+    showRecommendedResources?: boolean,
+    markPattern?: string
   ): string => {
     // Handle "none" values as undefined for logic
     const kLevel = knowledgeLevel === "none" ? undefined : knowledgeLevel;
     const subj = subject === "none" ? undefined : subject;
     const bk = book === "none" ? undefined : book;
+    const mPattern = markPattern === "none" ? undefined : markPattern;
+    
+    let baseExplanation = "";
     
     if (kLevel) {
       // Cases with knowledge level selected
       if (subj && bk) {
-        return "Using Internet + Specific book: This allows for comprehensive answers with textbook accuracy.";
+        baseExplanation = "Using Internet + Specific book: This allows for comprehensive answers with textbook accuracy.";
       } else if (subj) {
-        return "Using Internet + All books from selected subject: Providing broad curriculum coverage.";
+        baseExplanation = "Using Internet + All books from selected subject: Providing broad curriculum coverage.";
       } else {
-        return "Using Internet + All available books: Drawing from full knowledge base.";
+        baseExplanation = "Using Internet + All available books: Drawing from full knowledge base.";
       }
     } else {
       // Cases without knowledge level
       if (subj && bk) {
-        return "Using only the selected book (no internet): Ensuring answers follow textbook exactly.";
+        baseExplanation = "Using only the selected book (no internet): Ensuring answers follow textbook exactly.";
       } else if (subj) {
-        return "Using all books under selected subject (no internet): Following curriculum strictly.";
+        baseExplanation = "Using all books under selected subject (no internet): Following curriculum strictly.";
       } else if (bk) {
-        return "Using only the selected book (no internet): Providing textbook-accurate responses.";
+        baseExplanation = "Using only the selected book (no internet): Providing textbook-accurate responses.";
       } else {
-        return "Using books related to the topic's subject: Selecting relevant curriculum materials.";
+        baseExplanation = "Using books related to the topic's subject: Selecting relevant curriculum materials.";
       }
     }
+    
+    // Add mark pattern explanation if selected
+    if (mPattern) {
+      const patternDesc = markPatterns.find(p => p.value === mPattern)?.description;
+      baseExplanation += ` Response formatted as a ${mPattern}-mark exam question (${patternDesc}).`;
+    }
+    
+    return baseExplanation;
   };
   
   // Helper function to explain knowledge levels in detail
@@ -324,6 +336,14 @@ export default function AcademicChatbotPage() {
               This content is taken from{" "}
               {response.metadata?.sources?.usesInternet ? "Internet and Book resources" : "Book resources"}
             </p>
+            {response.metadata?.markPattern && (
+              <p className="mt-1">
+                <strong>Question Format:</strong>{" "}
+                {response.metadata.markPattern}-mark question 
+                {response.metadata.markPattern === "13" ? " (18000-20000 character length)" : 
+                 response.metadata.markPattern === "15" ? " (24000-26000 character length)" : ""}
+              </p>
+            )}
             {response.metadata?.sources?.bookSources?.length > 0 && (
               <p className="mt-1">
                 <strong>Sources:</strong>{" "}
@@ -612,7 +632,7 @@ export default function AcademicChatbotPage() {
                   Source Selection Logic
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {getSourceExplanation(knowledgeLevel, subject, book, showResources)}
+                  {getSourceExplanation(knowledgeLevel, subject, book, showResources, markPattern)}
                 </p>
               </div>
             </CardContent>
