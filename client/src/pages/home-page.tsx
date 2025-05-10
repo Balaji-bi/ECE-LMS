@@ -19,6 +19,29 @@ export default function HomePage() {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
   
+  // Fetch chat messages count
+  const { data: academicChats = [] } = useQuery<any[]>({
+    queryKey: ["/api/chatbot/academic"],
+    enabled: !!user,
+  });
+  
+  const { data: advancedChats = [] } = useQuery<any[]>({
+    queryKey: ["/api/chatbot/advanced"],
+    enabled: !!user,
+  });
+  
+  // Fetch forum posts count
+  const { data: forumPosts = [] } = useQuery<any[]>({
+    queryKey: ["/api/forum/posts"],
+    enabled: !!user,
+  });
+  
+  // Combined chat count
+  const totalChatCount = academicChats.length + advancedChats.length;
+  
+  // For syllabus visits, we'll count it as 0 for now (will implement tracking later)
+  const syllabusVisits = 0;
+  
   const getUserInitials = (name: string) => {
     return name
       .split(" ")
@@ -113,20 +136,20 @@ export default function HomePage() {
               
               <div className="grid grid-cols-2 gap-3 mb-2 md:grid-cols-4">
                 <div className="bg-primary/10 rounded-lg p-3 text-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Courses</p>
-                  <p className="text-lg font-medium text-primary">12</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Academic Chats</p>
+                  <p className="text-lg font-medium text-primary">{academicChats.length}</p>
                 </div>
                 <div className="bg-green-500/10 rounded-lg p-3 text-center">
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Progress</p>
-                  <p className="text-lg font-medium text-green-500">68%</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Advanced Chats</p>
+                  <p className="text-lg font-medium text-green-500">{advancedChats.length}</p>
                 </div>
                 <div className="bg-amber-500/10 rounded-lg p-3 text-center hidden md:block">
                   <p className="text-xs text-gray-600 dark:text-gray-400">Forum Posts</p>
-                  <p className="text-lg font-medium text-amber-500">5</p>
+                  <p className="text-lg font-medium text-amber-500">{forumPosts.length}</p>
                 </div>
                 <div className="bg-blue-500/10 rounded-lg p-3 text-center hidden md:block">
-                  <p className="text-xs text-gray-600 dark:text-gray-400">AI Chats</p>
-                  <p className="text-lg font-medium text-blue-500">23</p>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Syllabus Topics</p>
+                  <p className="text-lg font-medium text-blue-500">{syllabusVisits}</p>
                 </div>
               </div>
             </CardContent>

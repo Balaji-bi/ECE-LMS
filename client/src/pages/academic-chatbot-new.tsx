@@ -66,7 +66,7 @@ export default function AcademicChatbotPage() {
   const [knowledgeLevel, setKnowledgeLevel] = useState<string | undefined>(undefined);
   const [subject, setSubject] = useState<string | undefined>(undefined);
   const [book, setBook] = useState<string | undefined>(undefined);
-  // Removed generateImage option as requested
+  const generateImage = false; // Fixed value, option removed from UI
   const [showResources, setShowResources] = useState(false);
   const [imageData, setImageData] = useState<string | undefined>(undefined);
   
