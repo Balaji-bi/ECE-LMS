@@ -496,55 +496,117 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
     Unit ${unit}: ${unitTitle}
     Topic: ${topicName}
     
-    Structure your response in the following format with exactly this structure and formatting:
+    Structure your response using clean HTML formatting with these sections:
 
-    Detailed Explanation
-    **Simple Terms:** Begin with a simple, accessible explanation of the topic that a beginner could understand. Use clear analogies when possible.
+    <section class="detailed-explanation">
+      <h3>Detailed Explanation</h3>
+      
+      <div class="simple-terms">
+        <h4>Simple Terms</h4>
+        <p>Begin with a simple, accessible explanation of the topic that a beginner could understand. Use clear analogies when possible.</p>
+      </div>
+      
+      <div class="technical-depth">
+        <h4>Technical Depth</h4>
+        <p>Follow with a more rigorous technical explanation with proper terminology and concepts.</p>
+      </div>
+      
+      <div class="methodology">
+        <h4>Methodology & Working Principles</h4>
+        <p>Explain how this concept is applied, any types/classifications, and the underlying principles.</p>
+      </div>
+      
+      <div class="summary">
+        <h4>Concise Summary</h4>
+        <p>Provide a 1-2 sentence summary of the key takeaway.</p>
+      </div>
+    </section>
 
-    **Technical Depth:** Follow with a more rigorous technical explanation with proper terminology and concepts.
+    <section class="key-formulas">
+      <h3>Key Formulas</h3>
+      
+      <div class="formula">
+        <div class="formula-expression">V = I × R</div>
+        <div class="variables">
+          <ul>
+            <li><span class="variable">V</span>: Voltage (Volts)</li>
+            <li><span class="variable">I</span>: Current (Amperes)</li>
+            <li><span class="variable">R</span>: Resistance (Ohms)</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="formula">
+        <div class="formula-expression">I = V / R</div>
+        <div class="variables">
+          <ul>
+            <li><span class="variable">V</span>: Voltage (Volts)</li>
+            <li><span class="variable">I</span>: Current (Amperes)</li>
+            <li><span class="variable">R</span>: Resistance (Ohms)</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="application">
+        <h4>How to Apply:</h4>
+        <ol>
+          <li>Step 1 of application</li>
+          <li>Step 2 of application</li>
+        </ol>
+      </div>
+    </section>
 
-    **Methodology & Working Principles:** Explain how this concept is applied, any types/classifications, and the underlying principles.
+    <section class="visuals">
+      <h3>Visuals & Diagrams</h3>
+      
+      <div class="diagram">
+        <h4>Diagram 1</h4>
+        <p>Detailed description of what the diagram should show - include circuit layouts, graphs, or process flows.</p>
+      </div>
+      
+      <div class="diagram">
+        <h4>Diagram 2</h4>
+        <p>Another diagram description if needed</p>
+      </div>
+    </section>
 
-    **Concise Summary:** Provide a 1-2 sentence summary of the key takeaway.
+    <section class="references">
+      <h3>IEEE Paper References</h3>
+      <ul>
+        <li>Reference 1: Author, Title, Journal/Conference, Year</li>
+        <li>Reference 2: Author, Title, Journal/Conference, Year</li>
+        <li>Reference 3: Author, Title, Journal/Conference, Year (if applicable)</li>
+      </ul>
+    </section>
 
+    <section class="prerequisites">
+      <h3>Prerequisite & Related Topics</h3>
+      
+      <div class="prereq-list">
+        <h4>Prerequisites:</h4>
+        <ul>
+          <li>Prerequisite 1</li>
+          <li>Prerequisite 2</li>
+        </ul>
+      </div>
+      
+      <div class="related-list">
+        <h4>Related Topics within ECE Syllabus:</h4>
+        <ul>
+          <li>Related topic 1</li>
+          <li>Related topic 2</li>
+          <li>Related topic 3</li>
+        </ul>
+      </div>
+    </section>
 
-    **2. 🧮 Key Formulas**
-
-    * **Formula 1: V = I * R** (format exactly like this, with asterisks)
-    * Variable 1 = Description (units)
-    * Variable 2 = Description (units)
-
-    * **Formula 2: I = V / R** (if applicable)
-    * Variable descriptions
-
-    **How to Apply:**
-    1. Step 1
-    2. Step 2
-
-
-    **3. 🖼️ Visuals & Diagrams**
-
-    * **Diagram 1:** Detailed description of what the diagram should show
-    * **Diagram 2:** Another diagram description if needed
-
-    Include specific visual elements that would help in understanding, like circuit layouts, graphs, or process flows.
-
-
-    **4. 🔗 IEEE Paper References**
-
-    Provide 2-3 relevant research papers or standard textbooks for this topic.
-
-
-    **5. 🧩 Prerequisite & Related Topics**
-
-    **Prerequisites:**
-    * Prerequisite 1
-    * Prerequisite 2
-
-    **Related Topics within ECE Syllabus:**
-    * Related topic 1
-    * Related topic 2
-    * Related topic 3
+    IMPORTANT FORMATTING GUIDELINES:
+    1. For ALL mathematical formulas, use the MathJax syntax: $V = I × R$ for inline formulas or $$V = I × R$$ for block formulas
+    2. Use proper mathematical symbols: × for multiplication, π for pi, etc.
+    3. For subscripts use <sub>text</sub>, for superscripts use <sup>text</sup>
+    4. Always use professional HTML formatting with proper spacing and organization
+    5. Ensure all content is technically accurate and at an appropriate level for engineering students
+    6. Never use Markdown formatting (like ** for bold) - use proper HTML tags instead
     
     Be accurate and comprehensive. This will be used for students' exam preparation in electronics and communication engineering.
     `;

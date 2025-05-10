@@ -583,15 +583,18 @@ export default function NavigatorPage() {
           <div className="space-y-6">
             <h2 className="text-xl font-semibold">{selectedTopic}</h2>
             
-            <Tabs defaultValue="explanation" className="w-full">
-              <TabsList className="w-full grid grid-cols-4" 
-                onValueChange={(value) => {
-                  // Re-typeset MathJax when changing tabs
-                  if (window.MathJax) {
-                    setTimeout(() => window.MathJax.typeset(), 100);
-                  }
-                }}
-              >
+            <Tabs 
+              defaultValue="explanation" 
+              className="w-full"
+              onValueChange={(value: string) => {
+                // Re-typeset MathJax when changing tabs
+                if (window.MathJax) {
+                  setTimeout(() => window.MathJax.typeset(), 100);
+                }
+              }}
+            >
+              <TabsList className="w-full grid grid-cols-4">
+                {/* We'll use the Tabs onValueChange instead */}
                 <TabsTrigger value="explanation">Explanation</TabsTrigger>
                 <TabsTrigger value="formulas">🧮 Formulas</TabsTrigger>
                 <TabsTrigger value="visualizations">🖼️ Visuals</TabsTrigger>
