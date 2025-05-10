@@ -4,6 +4,10 @@ import { storage } from "./storage";
 
 // Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Set some default configuration
+const geminiConfig = { 
+  model: "gemini-1.5-pro"
+};
 
 // Create a router
 export const contentToolsRouter = Router();

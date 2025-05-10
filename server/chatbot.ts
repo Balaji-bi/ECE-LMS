@@ -5,6 +5,11 @@ import { insertChatMessageSchema } from "@shared/schema";
 
 // Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Set some default configuration
+const geminiConfig = { 
+  model: "gemini-1.5-pro",
+  // Safety settings are optional and handled internally by the model
+};
 
 // Create a router
 export const chatbotRouter = Router();
@@ -80,7 +85,7 @@ chatbotRouter.post("/academic", async (req: Request, res: Response) => {
     }
     
     // Generate a response using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareAcademicPrompt(message);
     const result = await geminiModel.generateContent(prompt);
     const response = result.response.text();
@@ -122,7 +127,7 @@ chatbotRouter.post("/advanced", async (req: Request, res: Response) => {
     }
     
     // Generate a response using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareAdvancedPrompt(message);
     const result = await geminiModel.generateContent(prompt);
     const response = result.response.text();
