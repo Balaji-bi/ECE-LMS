@@ -182,47 +182,7 @@ export default function HomePage() {
             </div>
           </div>
           
-          {/* Quick Access */}
-          <div>
-            <h2 className="text-lg font-medium mb-3">Quick Access</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              <Link href="/navigator">
-                <Card className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                  <CardContent className="p-4 flex flex-col items-center text-center">
-                    <span className="material-icons text-primary text-2xl mb-2">menu_book</span>
-                    <span className="text-sm font-medium">Syllabus Navigator</span>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              <Link href="/academic-chatbot">
-                <Card className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                  <CardContent className="p-4 flex flex-col items-center text-center">
-                    <span className="material-icons text-accent text-2xl mb-2">school</span>
-                    <span className="text-sm font-medium">Academic Assistant</span>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              <Link href="/content-tools">
-                <Card className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                  <CardContent className="p-4 flex flex-col items-center text-center">
-                    <span className="material-icons text-green-500 text-2xl mb-2">build</span>
-                    <span className="text-sm font-medium">Content Tools</span>
-                  </CardContent>
-                </Card>
-              </Link>
-              
-              <Link href="/forum">
-                <Card className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors cursor-pointer">
-                  <CardContent className="p-4 flex flex-col items-center text-center">
-                    <span className="material-icons text-amber-500 text-2xl mb-2">forum</span>
-                    <span className="text-sm font-medium">Learning Forum</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          </div>
+
         </div>
       </div>
       
