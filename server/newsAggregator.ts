@@ -71,31 +71,31 @@ function getSampleNewsData() {
       title: "Anna University Announces New IoT Lab for ECE Department",
       snippet: "The Electronics and Communication Engineering department at Anna University has inaugurated a state-of-the-art Internet of Things (IoT) laboratory equipped with the latest technologies for student research and projects.",
       displayLink: "annauniv.edu",
-      link: "https://www.annauniv.edu/news/latest"
+      link: "https://www.annauniv.edu"
     },
     {
       title: "Research Breakthrough in Signal Processing Algorithm by ECE Students",
       snippet: "Final year ECE students at Anna University have developed a novel signal processing algorithm that improves noise reduction in communication systems by up to 40% compared to current methods.",
       displayLink: "ieee.org",
-      link: "https://www.ieee.org/research/latest"
+      link: "https://ieeexplore.ieee.org/xpl/RecentIssue.jsp?punumber=78"
     },
     {
       title: "Electronics Industry Leaders to Host Career Fair for ECE Students",
       snippet: "Major electronics and semiconductor companies including Texas Instruments, Intel, and Samsung will be participating in an exclusive career fair for Electronics and Communication Engineering students next month.",
-      displayLink: "tech-careers.com",
-      link: "https://tech-careers.com/events"
+      displayLink: "ti.com",
+      link: "https://www.ti.com/university/teaching-resources/teaching-materials.html"
     },
     {
       title: "New VLSI Design Course Curriculum Announced for ECE Department",
       snippet: "The ECE department has updated its VLSI Design course curriculum to include the latest industry practices and tools, providing students with hands-on experience in chip design and verification.",
-      displayLink: "education-news.com",
-      link: "https://education-news.com/curriculum-updates"
+      displayLink: "nptel.ac.in",
+      link: "https://nptel.ac.in/courses/106105165"
     },
     {
       title: "ECE Department Hosts Workshop on 5G and Beyond Communication Technologies",
       snippet: "A three-day workshop covering advancements in 5G technology, future 6G research directions, and practical applications in smart cities will be conducted by leading experts in the field of wireless communications.",
-      displayLink: "tech-workshops.org",
-      link: "https://tech-workshops.org/5g-beyond"
+      displayLink: "youtube.com",
+      link: "https://www.youtube.com/playlist?list=PLROPcieHQh6SjMTjUBQ6F-Iakp12Kwnx9"
     }
   ];
 }
