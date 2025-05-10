@@ -594,7 +594,7 @@ export default function AcademicChatbotPage() {
         </Card>
       </div>
       
-      <BottomNavigation currentPath="/academic-chatbot" />
+      <BottomNavigation />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
     </div>
   );
