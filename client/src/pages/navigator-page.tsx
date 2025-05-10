@@ -360,6 +360,62 @@ export default function NavigatorPage() {
     return content.slice(startPos + startMarker.length, endPos).trim();
   };
   
+  // Helper function to format content with proper HTML
+  const formatContent = (content: string): string => {
+    if (!content) return "";
+    
+    try {
+      let formattedContent = content;
+      
+      // Process math formulas (both inline and block)
+      // Convert $...$ to inline math
+      formattedContent = formattedContent.replace(
+        /\$([^$]+)\$/g,
+        '<span class="mathjax">\\($1\\)</span>'
+      );
+      
+      // Convert $$...$$ to block math
+      formattedContent = formattedContent.replace(
+        /\$\$([^$]+)\$\$/g,
+        '<div class="mathjax">\\[$1\\]</div>'
+      );
+      
+      // Replace markdown-style bold with proper HTML
+      formattedContent = formattedContent.replace(
+        /\*\*([^*]+)\*\*/g, 
+        '<strong class="text-primary font-medium">$1</strong>'
+      );
+      
+      // Format bulleted lists
+      formattedContent = formattedContent.replace(
+        /\*\s(.*)/g, 
+        '<div class="mb-2 flex items-start"><span class="text-primary mr-2">•</span><span>$1</span></div>'
+      );
+      
+      // Format paragraphs
+      formattedContent = formattedContent.replace(
+        /\n\n/g, 
+        '</p><p class="mb-4">'
+      );
+      
+      // Format line breaks
+      formattedContent = formattedContent.replace(
+        /\n/g, 
+        '<br />'
+      );
+      
+      // Wrap the content in a paragraph tag if not already
+      if (!formattedContent.startsWith('<p')) {
+        formattedContent = `<p class="mb-4">${formattedContent}</p>`;
+      }
+      
+      return formattedContent;
+    } catch (error) {
+      console.error("Error formatting content:", error);
+      return content;
+    }
+  };
+
   // Function to generate an image for a section
   const [generatingImage, setGeneratingImage] = useState(false);
   const [sectionImages, setSectionImages] = useState<{[key: string]: string}>({});
@@ -435,7 +491,7 @@ export default function NavigatorPage() {
                     <p className="text-xs text-gray-500">{semester.subjectCount} Subjects</p>
                   </div>
                 </Button>
-              )}
+              ))}
             </div>
           </div>
         );
