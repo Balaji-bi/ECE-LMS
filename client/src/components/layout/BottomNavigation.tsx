@@ -22,7 +22,7 @@ export function BottomNavigation() {
         className={`${isActive("/navigator")} flex flex-col items-center justify-center w-full`}
       >
         <span className="material-icons text-xl">menu_book</span>
-        <span className="text-xs">Navigator</span>
+        <span className="text-xs">Syllabus</span>
       </Link>
       
       <Link 

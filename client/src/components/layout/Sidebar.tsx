@@ -67,7 +67,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 className={`flex items-center space-x-3 p-2 rounded ${location === '/navigator' ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
               >
                 <span className="material-icons">menu_book</span>
-                <span>Knowledge Navigator</span>
+                <span>Syllabus Navigator</span>
               </Link>
             </li>
             <li>
