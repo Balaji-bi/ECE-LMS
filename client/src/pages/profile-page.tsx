@@ -27,8 +27,6 @@ import { Loader2 } from "lucide-react";
 
 interface SettingsState {
   theme: string;
-  notifications: boolean;
-  fontSize: string;
 }
 
 export default function ProfilePage() {
@@ -37,8 +35,6 @@ export default function ProfilePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [settings, setSettings] = useState<SettingsState>({
     theme: theme,
-    notifications: true,
-    fontSize: "medium",
   });
   
   // Update settings when theme changes
