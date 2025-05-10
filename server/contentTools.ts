@@ -13,30 +13,96 @@ const geminiConfig = {
 export const contentToolsRouter = Router();
 
 // Helper function to prepare assignment generator prompt
-function prepareAssignmentPrompt(subject: string, topic: string, type: string, difficulty: number) {
-  return `Create an ECE (Electronics and Communication Engineering) ${type} assignment for Anna University students on the subject ${subject}, specifically covering ${topic}.
-  
-  The difficulty level is ${difficulty}/5 (where 1 is easiest and 5 is most challenging).
-  
-  Format the assignment with:
-  - A title
-  - Clear instructions
-  - ${type === 'Questions' ? `${5 + difficulty} questions of varying types (multiple choice, short answer, analytical problems)` : ''}
-  ${type === 'Case Study' ? '- A detailed scenario\n- Specific questions about the scenario\n- Requirements for submission' : ''}
-  ${type === 'Project' ? '- Project objectives\n- Required materials/software\n- Step-by-step methodology\n- Expected deliverables\n- Evaluation criteria' : ''}
-  
-  Ensure all content is technically accurate and follows academic standards.`;
+function prepareAssignmentPrompt(topic: string, wordCount: string, subject: string, book: string, difficulty: string, dataSource: string) {
+  return `You are "ASSIGNMENT-GPT," an AI-powered academic assistant designed to generate structured assignments based on a topic, knowledge level, subject, and book selection.
+
+🎯 PURPOSE:
+Generate research-style assignments for students by adapting your content sources according to user input. Focus on clean, academic, and structured writing that reflects book authenticity, academic tone, and knowledge level depth.
+
+🧠 USER INPUTS:
+1. Topic Name: ${topic}
+2. Word Count: ${wordCount}
+${subject ? `3. Subject Selection: ${subject}` : ''}
+${book ? `4. Book Selection: ${book}` : ''}
+5. Difficulty Level: ${difficulty}
+6. Data Source: ${dataSource}
+
+📚 DATA SOURCE LOGIC:
+${dataSource === 'internet' 
+  ? '→ Generate content from internet sources only.' 
+  : '→ Generate content from both internet and book sources.'}
+
+✍️ RESPONSE STRUCTURE:
+- Introduction – Background on the topic.
+- Literature Review – Past studies or book/journal references.
+- How It Started / Origin – Where and how the concept originated.
+- Methodology / Working Principle – How it works, include derivation and models.
+- Result / Conclusion – Outcomes, learnings, and conclusion.
+
+IMPORTANT: 
+- Use LaTeX format for mathematical/scientific notation
+  For example:
+  - Einstein's formula: E = mc^2 
+  - Integration: ∫_a^b f(x)\\dx = F(b) - F(a)
+
+⚠️ RULES:
+- NEVER invent book names or citations.
+- Focus on clean language, academic tone, and real content.
+- Response should be simple, look good and easy to understand, no fancy formatting, don't be messy.`;
 }
 
 // Helper function to prepare research paper assistant prompt
-function prepareResearchPrompt(topic: string, type: string) {
-  return `Generate a ${type} for an ECE (Electronics and Communication Engineering) research paper on "${topic}".
-  
-  ${type === 'Outline' ? 'Structure it with:\n- Proposed title\n- Abstract outline\n- Introduction points\n- Literature review key areas\n- Methodology approach\n- Expected results section\n- Discussion points\n- Conclusion elements\n- Key references to consider' : ''}
-  ${type === 'Literature Review' ? 'Include:\n- Overview of the key research areas\n- Identification of 6-8 seminal papers in the field\n- Summary of major findings\n- Identification of research gaps\n- How these works relate to each other' : ''}
-  ${type === 'Methodology' ? 'Detail:\n- Proposed research approach\n- Data collection methods\n- Analysis techniques\n- Expected challenges and limitations\n- Validation methods\n- Tools and technologies required' : ''}
-  
-  Format your response professionally with appropriate sections and subsections.`;
+function prepareResearchPrompt(title: string, authors: string, institution: string, introduction: string, methodology: string, workingPrinciple: string, implementation: string, resultAndConclusion: string) {
+  return `You are "RESEARCH-GPT," an AI-powered assistant that enhances and expands academic research papers based on user-provided content. Your goal is to convert a structured outline or incomplete draft into a full-length, 2–3 A4-page academic research paper with proper formatting, flow, and citations.
+
+🎯 PURPOSE:
+Generate a well-formatted, formal research paper using provided inputs and intelligently fill in any missing sections. Expand user content with clarity, consistency, and relevance to the core concept.
+
+📝 USER INPUTS:
+1. Title: ${title || "[Title not provided]"}
+2. Author(s): ${authors || "[Authors not provided]"}
+3. Institution: ${institution || "[Institution not provided]"}
+4. Introduction: ${introduction || "[Not provided]"}
+5. Methodology: ${methodology || "[Not provided]"}
+6. Working Principle: ${workingPrinciple || "[Not provided]"}
+7. Implementation: ${implementation || "[Not provided]"}
+8. Result and Conclusion: ${resultAndConclusion || "[Not provided]"}
+
+📐 FORMAT GUIDELINES:
+- Start with:
+  - Title (centered, bold, large font)
+  - Author(s) (centered, comma-separated)
+  - Institution (centered, italic)
+  - Leave one line space, then start content
+
+- Assign Chapter Numbers (1, 2, 3...) and Subtopics (e.g., 1.1, 1.2...) dynamically:
+  - The first user-provided section becomes Chapter 1
+  - Next present section becomes Chapter 2, and so on
+  - Use appropriate subheadings like 1.1, 1.2, 2.1, 2.2, etc.
+  - Skip any sections not provided by the user
+
+- Use LaTeX format for mathematical/scientific notation
+  For example:
+  - Einstein's formula: E = mc^2 
+  - Integration: ∫_a^b f(x)\\dx = F(b) - F(a)
+
+🧠 CONTENT ENHANCEMENT:
+- Expand each section using domain-specific depth
+- Follow an academic tone and ensure smooth transitions between paragraphs
+- Maintain user's meaning, but rewrite in a cleaner, more formal way
+- Minimum output: 2 to 3 A4 pages (approximately 10000 to 15000+ words)
+- Add real-world applications or relevant insights if missing
+
+📚 REFERENCE PAPERS:
+- At the end, add a new section: References (no chapter number)
+- Include 2–4 relevant research paper links or DOIs fetched from verified internet sources based on the core topic
+- Format: [1] Author(s), "Title," Journal/Conference, Year. [Link]
+
+⚠️ RULES:
+- Do not fabricate books or author names
+- Always reflect academic integrity
+- When sections are missing, skip them; don't hallucinate false input
+- Avoid informal tone. Maintain proper paragraph transitions`;
 }
 
 // Helper function to prepare resume builder prompt
@@ -74,17 +140,17 @@ contentToolsRouter.post("/assignment", async (req: Request, res: Response) => {
   // }
   
   try {
-    const { subject, topic, type, difficulty } = req.body;
+    const { topic, wordCount, subject, book, difficulty, dataSource } = req.body;
     
-    if (!subject || !topic || !type || difficulty === undefined) {
+    if (!topic || !wordCount || !difficulty || !dataSource) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
     
-    console.log("Generating assignment with Gemini API:", { subject, topic, type, difficulty });
+    console.log("Generating assignment with Gemini API:", { topic, wordCount, subject, book, difficulty, dataSource });
     
     // Generate assignment using Gemini
     const geminiModel = genAI.getGenerativeModel(geminiConfig);
-    const prompt = prepareAssignmentPrompt(subject, topic, type, difficulty);
+    const prompt = prepareAssignmentPrompt(topic, wordCount, subject, book, difficulty, dataSource);
     const result = await geminiModel.generateContent(prompt);
     const assignment = result.response.text();
     
@@ -93,7 +159,7 @@ contentToolsRouter.post("/assignment", async (req: Request, res: Response) => {
     await storage.createUserActivity({
       userId,
       activityType: "CONTENT_TOOL",
-      description: `Generated ${type} assignment on ${subject}: ${topic}`
+      description: `Generated assignment on ${topic} (${difficulty} level)`
     });
     
     res.json({ assignment });
@@ -111,17 +177,35 @@ contentToolsRouter.post("/research", async (req: Request, res: Response) => {
   // }
   
   try {
-    const { topic, type } = req.body;
+    const { 
+      title, 
+      authors, 
+      institution, 
+      introduction, 
+      methodology, 
+      workingPrinciple, 
+      implementation, 
+      resultAndConclusion 
+    } = req.body;
     
-    if (!topic || !type) {
-      return res.status(400).json({ message: "Missing required parameters" });
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
     }
     
-    console.log("Generating research materials with Gemini API:", { topic, type });
+    console.log("Generating research paper with Gemini API for:", title);
     
     // Generate research content using Gemini
     const geminiModel = genAI.getGenerativeModel(geminiConfig);
-    const prompt = prepareResearchPrompt(topic, type);
+    const prompt = prepareResearchPrompt(
+      title, 
+      authors, 
+      institution, 
+      introduction, 
+      methodology, 
+      workingPrinciple,
+      implementation,
+      resultAndConclusion
+    );
     const result = await geminiModel.generateContent(prompt);
     const research = result.response.text();
     
@@ -130,7 +214,7 @@ contentToolsRouter.post("/research", async (req: Request, res: Response) => {
     await storage.createUserActivity({
       userId,
       activityType: "CONTENT_TOOL",
-      description: `Generated ${type} for research on ${topic}`
+      description: `Generated research paper: ${title}`
     });
     
     res.json({ research });

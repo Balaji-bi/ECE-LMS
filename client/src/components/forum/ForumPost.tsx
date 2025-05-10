@@ -138,7 +138,8 @@ export function ForumPost({ post }: ForumPostProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-sm text-gray-500"
+              className={`text-sm ${showReplies ? "text-primary" : "text-gray-500"}`}
+              onClick={fetchReplies}
             >
               <span className="material-icons text-sm mr-1">comment</span>
               {post.replyCount}
@@ -146,7 +147,7 @@ export function ForumPost({ post }: ForumPostProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="text-sm text-primary font-medium"
+              className={`text-sm ${showReplyForm ? "text-primary font-medium" : "text-gray-500"}`}
               onClick={() => {
                 if (!showReplyForm) {
                   setShowReplies(true);
@@ -155,6 +156,7 @@ export function ForumPost({ post }: ForumPostProps) {
                 setShowReplyForm(!showReplyForm);
               }}
             >
+              <span className="material-icons text-sm mr-1">reply</span>
               Reply
             </Button>
           </div>

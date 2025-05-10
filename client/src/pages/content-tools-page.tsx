@@ -24,16 +24,24 @@ export default function ContentToolsPage() {
   
   // Assignment generator state
   const [assignmentData, setAssignmentData] = useState({
-    subject: "",
     topic: "",
-    type: "Questions",
-    difficulty: 3,
+    wordCount: "15000-20000",
+    subject: "",
+    book: "",
+    difficulty: "Intermediate",
+    dataSource: "books"
   });
   
   // Research paper assistant state
   const [researchData, setResearchData] = useState({
-    topic: "",
-    type: "Outline",
+    title: "",
+    authors: "",
+    institution: "",
+    introduction: "",
+    methodology: "",
+    workingPrinciple: "",
+    implementation: "",
+    resultAndConclusion: ""
   });
   
   // Resume builder state
@@ -165,7 +173,34 @@ export default function ContentToolsPage() {
                 
                 <form onSubmit={handleAssignmentSubmit} className="space-y-3">
                   <div>
-                    <Label>Subject</Label>
+                    <Label>Topic Name</Label>
+                    <Input 
+                      placeholder="e.g., Operational Amplifiers" 
+                      value={assignmentData.topic}
+                      onChange={(e) => setAssignmentData({...assignmentData, topic: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Word Count Range</Label>
+                    <Select
+                      value={assignmentData.wordCount}
+                      onValueChange={(value) => setAssignmentData({...assignmentData, wordCount: value})}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select word count range" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="15000-20000">15,000 - 20,000 words</SelectItem>
+                        <SelectItem value="20000-25000">20,000 - 25,000 words</SelectItem>
+                        <SelectItem value="25000-30000">25,000 - 30,000 words</SelectItem>
+                        <SelectItem value="30000-35000">30,000 - 35,000 words</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div>
+                    <Label>Subject (Optional)</Label>
                     <Select
                       value={assignmentData.subject}
                       onValueChange={(value) => setAssignmentData({...assignmentData, subject: value})}
@@ -174,6 +209,7 @@ export default function ContentToolsPage() {
                         <SelectValue placeholder="Select a subject" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value="EC3251 - Linear Integrated Circuits">EC3251 - Linear Integrated Circuits</SelectItem>
                         <SelectItem value="EC8395 - Communication Theory">EC8395 - Communication Theory</SelectItem>
                         <SelectItem value="EC8452 - Electronic Circuits II">EC8452 - Electronic Circuits II</SelectItem>
                         <SelectItem value="EC8491 - Communication Theory">EC8491 - Communication Theory</SelectItem>
@@ -183,69 +219,73 @@ export default function ContentToolsPage() {
                   </div>
                   
                   <div>
-                    <Label>Topic/Unit</Label>
+                    <Label>Reference Book (Optional)</Label>
                     <Input 
-                      placeholder="e.g., Amplitude Modulation" 
-                      value={assignmentData.topic}
-                      onChange={(e) => setAssignmentData({...assignmentData, topic: e.target.value})}
+                      placeholder="e.g., Engineering Circuit Analysis" 
+                      value={assignmentData.book}
+                      onChange={(e) => setAssignmentData({...assignmentData, book: e.target.value})}
                     />
                   </div>
                   
                   <div>
-                    <Label>Assignment Type</Label>
+                    <Label>Difficulty Level</Label>
                     <RadioGroup
-                      value={assignmentData.type}
-                      onValueChange={(value) => setAssignmentData({...assignmentData, type: value})}
+                      value={assignmentData.difficulty}
+                      onValueChange={(value) => setAssignmentData({...assignmentData, difficulty: value})}
                       className="grid grid-cols-3 gap-2 mt-2"
                     >
                       <Label
-                        htmlFor="questions"
+                        htmlFor="basic"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <RadioGroupItem value="Questions" id="questions" className="sr-only" />
-                        <span className="text-sm">Questions</span>
+                        <RadioGroupItem value="Basic" id="basic" className="sr-only" />
+                        <span className="text-sm">Basic</span>
                       </Label>
                       <Label
-                        htmlFor="case-study"
+                        htmlFor="intermediate"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <RadioGroupItem value="Case Study" id="case-study" className="sr-only" />
-                        <span className="text-sm">Case Study</span>
+                        <RadioGroupItem value="Intermediate" id="intermediate" className="sr-only" />
+                        <span className="text-sm">Intermediate</span>
                       </Label>
                       <Label
-                        htmlFor="project"
+                        htmlFor="hard"
                         className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
                       >
-                        <RadioGroupItem value="Project" id="project" className="sr-only" />
-                        <span className="text-sm">Project</span>
+                        <RadioGroupItem value="Hard" id="hard" className="sr-only" />
+                        <span className="text-sm">Hard</span>
                       </Label>
                     </RadioGroup>
                   </div>
                   
                   <div>
-                    <div className="flex justify-between mb-2">
-                      <Label>Difficulty Level</Label>
-                      <span className="text-sm">
-                        {assignmentData.difficulty === 1 && "Easy"}
-                        {assignmentData.difficulty === 2 && "Moderate"}
-                        {assignmentData.difficulty === 3 && "Medium"}
-                        {assignmentData.difficulty === 4 && "Challenging"}
-                        {assignmentData.difficulty === 5 && "Difficult"}
-                      </span>
-                    </div>
-                    <Slider
-                      value={[assignmentData.difficulty]}
-                      min={1}
-                      max={5}
-                      step={1}
-                      onValueChange={(value) => setAssignmentData({...assignmentData, difficulty: value[0]})}
-                    />
+                    <Label>Data Source</Label>
+                    <RadioGroup
+                      value={assignmentData.dataSource}
+                      onValueChange={(value) => setAssignmentData({...assignmentData, dataSource: value})}
+                      className="grid grid-cols-2 gap-2 mt-2"
+                    >
+                      <Label
+                        htmlFor="internet"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
+                      >
+                        <RadioGroupItem value="internet" id="internet" className="sr-only" />
+                        <span className="text-sm">Internet</span>
+                      </Label>
+                      <Label
+                        htmlFor="books"
+                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
+                      >
+                        <RadioGroupItem value="books" id="books" className="sr-only" />
+                        <span className="text-sm">Books & Internet</span>
+                      </Label>
+                    </RadioGroup>
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full"
-                    disabled={!assignmentData.subject || !assignmentData.topic || assignmentMutation.isPending}
+                    disabled={!assignmentData.topic || assignmentMutation.isPending}
                   >
                     {assignmentMutation.isPending ? (
                       <>
@@ -261,6 +301,19 @@ export default function ContentToolsPage() {
                     <h4 className="font-medium mb-2">Generated Assignment</h4>
                     <div className="whitespace-pre-line text-sm">
                       {assignmentMutation.data.assignment}
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(assignmentMutation.data.assignment);
+                          // You could add a toast notification here
+                        }}
+                      >
+                        <span className="material-icons text-sm mr-1">content_copy</span>
+                        Copy
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -279,64 +332,114 @@ export default function ContentToolsPage() {
                 
                 <form onSubmit={handleResearchSubmit} className="space-y-3">
                   <div>
-                    <Label>Research Topic</Label>
+                    <Label>Paper Title</Label>
                     <Input 
-                      placeholder="e.g., Advancements in 5G Technology" 
-                      value={researchData.topic}
-                      onChange={(e) => setResearchData({...researchData, topic: e.target.value})}
+                      placeholder="e.g., Advancements in 5G Technology for Smart City Applications" 
+                      value={researchData.title}
+                      onChange={(e) => setResearchData({...researchData, title: e.target.value})}
                     />
                   </div>
                   
                   <div>
-                    <Label>What do you need help with?</Label>
-                    <RadioGroup
-                      value={researchData.type}
-                      onValueChange={(value) => setResearchData({...researchData, type: value})}
-                      className="grid grid-cols-3 gap-2 mt-2"
-                    >
-                      <Label
-                        htmlFor="outline"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <RadioGroupItem value="Outline" id="outline" className="sr-only" />
-                        <span className="text-sm">Outline</span>
-                      </Label>
-                      <Label
-                        htmlFor="literature"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <RadioGroupItem value="Literature Review" id="literature" className="sr-only" />
-                        <span className="text-sm">Literature Review</span>
-                      </Label>
-                      <Label
-                        htmlFor="methodology"
-                        className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-card p-2 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary cursor-pointer"
-                      >
-                        <RadioGroupItem value="Methodology" id="methodology" className="sr-only" />
-                        <span className="text-sm">Methodology</span>
-                      </Label>
-                    </RadioGroup>
+                    <Label>Author(s)</Label>
+                    <Input 
+                      placeholder="e.g., John Doe, Jane Smith" 
+                      value={researchData.authors}
+                      onChange={(e) => setResearchData({...researchData, authors: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Institution</Label>
+                    <Input 
+                      placeholder="e.g., Anna University, Department of ECE" 
+                      value={researchData.institution}
+                      onChange={(e) => setResearchData({...researchData, institution: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Introduction</Label>
+                    <Textarea 
+                      placeholder="Briefly introduce your research topic and problem statement" 
+                      value={researchData.introduction}
+                      onChange={(e) => setResearchData({...researchData, introduction: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Methodology</Label>
+                    <Textarea 
+                      placeholder="Describe your research methods (optional)" 
+                      value={researchData.methodology}
+                      onChange={(e) => setResearchData({...researchData, methodology: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Working Principle</Label>
+                    <Textarea 
+                      placeholder="Explain the working principles or theoretical framework (optional)" 
+                      value={researchData.workingPrinciple}
+                      onChange={(e) => setResearchData({...researchData, workingPrinciple: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Implementation</Label>
+                    <Textarea 
+                      placeholder="Describe your implementation or experimental setup (optional)" 
+                      value={researchData.implementation}
+                      onChange={(e) => setResearchData({...researchData, implementation: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Result and Conclusion</Label>
+                    <Textarea 
+                      placeholder="Summarize your findings and conclusions (optional)" 
+                      value={researchData.resultAndConclusion}
+                      onChange={(e) => setResearchData({...researchData, resultAndConclusion: e.target.value})}
+                      className="min-h-[80px]"
+                    />
                   </div>
                   
                   <Button 
                     type="submit" 
                     className="w-full" 
-                    disabled={!researchData.topic || researchMutation.isPending}
+                    disabled={!researchData.title || researchMutation.isPending}
                   >
                     {researchMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating...
+                        Generating Research Paper...
                       </>
-                    ) : `Generate ${researchData.type}`}
+                    ) : "Generate Research Paper"}
                   </Button>
                 </form>
                 
                 {researchMutation.isSuccess && (
                   <div className="mt-6 p-4 border rounded-md bg-muted">
-                    <h4 className="font-medium mb-2">Generated Research Content</h4>
+                    <h4 className="font-medium mb-2">Generated Research Paper</h4>
                     <div className="whitespace-pre-line text-sm">
                       {researchMutation.data.research}
+                    </div>
+                    <div className="flex gap-2 mt-4">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(researchMutation.data.research);
+                          // You could add a toast notification here
+                        }}
+                      >
+                        <span className="material-icons text-sm mr-1">content_copy</span>
+                        Copy
+                      </Button>
                     </div>
                   </div>
                 )}
