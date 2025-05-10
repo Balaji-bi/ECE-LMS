@@ -232,88 +232,103 @@ ${specificBookReference}`;
 
   // Different formatting based on knowledge level
   if (hasKnowledgeLevel) {
-    // For responses with knowledge level - use question generation workflow
+    // For responses with knowledge level - use exam question format
     prompt += `
 ${knowledgeLevelExplanation}
 
-IMPORTANT: This is a two-step response. First, generate an appropriate exam question, then provide the answer.
+IMPORTANT: Create an exam question with a clear, concise answer for knowledge level ${query.knowledgeLevel}.
 
 STEP 1: GENERATE QUESTION
-Based on this knowledge level (${query.knowledgeLevel}), create an appropriate exam-style question about "${query.topic}"${query.subject ? ` in the context of ${query.subject}` : ''}.
-For reference, here's a sample question structure: ${generatedQuestion}
+Create one exam-style question about "${query.topic}"${query.subject ? ` related to ${query.subject}` : ''} appropriate for knowledge level ${query.knowledgeLevel}.
+For reference: ${generatedQuestion}
 
-STEP 2: PROVIDE COMPREHENSIVE ANSWER
-After generating the question, provide a comprehensive, academic-style answer to that question with the following structure:
+STEP 2: PROVIDE CLEAR ANSWER
+Provide a clear, straightforward answer with this structure:
 
-<h2>Exam Question</h2>
-[The exam question you generated]
+<div class="exam-content">
+  <h2>Exam Question</h2>
+  <div class="question-box">
+    [Your exam question here]
+  </div>
 
-<h2>Answer</h2>
-<h3>Introduction</h3>
-A concise background of the topic and its significance in the field.
+  <h2>Answer</h2>
+  
+  <h3>Key Points</h3>
+  <p>Start with 2-3 sentences that directly address the question.</p>
+  
+  <h3>Explanation</h3>
+  <p>Provide a clear, simple explanation that's easy to understand. Focus on practical understanding rather than theory.</p>
+  
+  <!-- Format formulas like this -->
+  <div class="formula">
+    <strong>V = I × R</strong>
+  </div>
+  
+  <!-- Explain variables in a grid layout -->
+  <ul class="var-list">
+    <li><strong>V</strong>: Voltage (in volts)</li>
+    <li><strong>I</strong>: Current (in amperes)</li>
+    <li><strong>R</strong>: Resistance (in ohms)</li>
+  </ul>
+  
+  ${query.generateImage ? '<h3>Visual Reference</h3><p>A brief description of the diagram that illustrates this concept.</p>' : ''}
+  
+  <h3>Application</h3>
+  <p>Explain how this concept is applied in real-world engineering or practical situations.</p>
+  
+  <h3>References</h3>
+  <p>Content from: [Book name], [Author], [Publication]</p>
+</div>
 
-<h3>Key Concepts</h3>
-The fundamental principles, definitions, and theoretical underpinnings.
-
-<h3>Mathematical Formulation / Working Principle</h3>
-The mathematical expressions, equations, and formulas, with detailed explanations of each component.
-
-For mathematical expressions:
-- Format each equation on its own line with proper HTML formatting
-- Use <strong> tags for important formulas and variables: <strong>V = I × R</strong>
-- Present each formula first, then explain all variables below it using a clean bullet-point list
-- For complex equations, break down the derivation step by step
-- Use proper spacing and alignment for better readability
-
-${query.generateImage ? '<h3>Visual Representation</h3>Description of diagrams or visual aids that would help explain the concept. (The actual diagram will be generated separately)' : ''}
-
-<h3>Application / Analysis</h3>
-How the concept is applied in practical scenarios or its role in analysis.
-
-<h3>Conclusion</h3>
-Summary of key points and their implications.
-
-<h3>References</h3>
-Relevant textbook citations and academic sources.`;
+STYLING GUIDELINES:
+- Keep everything concise and student-friendly
+- Use simple language and clear explanations
+- Highlight formulas with proper styling
+- Total response should be under 700 words
+- Format for easy scanning and quick understanding`;
   } else {
-    // For responses without knowledge level - use standard format
+    // For responses without knowledge level - use simplified format
     prompt += `
 RESPONSE FORMAT REQUIREMENTS:
-Structure your response like a mini research paper with these HTML-formatted sections:
-<h2>Introduction</h2>
-Background on the topic and its significance in the field.
+Create a clear, concise explanation with these sections:
 
-<h2>How It Started / Origin</h2>
-Origin of the concept or method, with brief historical context.
+<h2>What is ${query.topic}?</h2>
+<p>Provide a simple, straightforward definition that a student can easily understand.</p>
 
-<h2>Methodology / Working Principle</h2>
-<p>How it works or is applied, with detailed derivations.</p>
+<h2>Key Concepts</h2>
+<p>Break down the most important ideas about ${query.topic} in simple language. Keep explanations brief and clear.</p>
 
-<p><strong>Important Guidelines for Mathematical Content:</strong></p>
-<ul>
-  <li>Present each formula on its own line with proper spacing, like:
-    <div class="formula">
-      <strong>V = I × R</strong>
-    </div>
-  </li>
-  <li>After each formula, list all variables with clear explanations:
-    <ul>
-      <li><strong>V</strong>: Voltage (in volts)</li>
-      <li><strong>I</strong>: Current (in amperes)</li>
-      <li><strong>R</strong>: Resistance (in ohms)</li>
-    </ul>
-  </li>
-  <li>For step-by-step derivations, number the steps and show the transformation clearly</li>
-  <li>Use proper HTML formatting for subscripts, superscripts, and fractions when needed</li>
+<h2>How It Works</h2>
+<p>Explain the practical operation or application in a straightforward way.</p>
+
+<h3>Mathematical Representation</h3>
+<p>Present essential formulas clearly:</p>
+
+<!-- Format equations like this -->
+<div class="formula">
+  <strong>V = I × R</strong>
+</div>
+
+<!-- After each formula, explain variables in a grid layout -->
+<ul class="var-list">
+  <li><strong>V</strong>: Voltage (in volts)</li>
+  <li><strong>I</strong>: Current (in amperes)</li>
+  <li><strong>R</strong>: Resistance (in ohms)</li>
 </ul>
 
-${query.generateImage ? '<h2>Image / Diagram</h2>Description of the relevant diagram for this topic. (The actual diagram will be generated separately)' : ''}
+${query.generateImage ? '<h2>Visual Explanation</h2><p>A simple description of how this concept would be visualized.</p>' : ''}
 
-<h2>Result / Conclusion</h2>
-Final thoughts, outcomes or key takeaways.
+<h2>Why It Matters</h2>
+<p>Explain practical applications and importance to students in 2-3 sentences.</p>
 
 <h2>References</h2>
-Textbook or paper citations. Always mention "Content from: [Book name], [Author], [Publication]" when using specific book references.`;
+<p>Content from: [Book name], [Author], [Publication]</p>
+
+IMPORTANT NOTES FOR YOUR RESPONSE:
+- Keep your explanation under 500 words total
+- Use simple language a first-year student would understand
+- Format mathematical content clearly with proper spacing
+- Focus on helping students understand practical applications`;
   }
   
   // Add recommended resources section if needed
@@ -321,13 +336,41 @@ Textbook or paper citations. Always mention "Content from: [Book name], [Author]
     prompt += `
 
 <h2>Recommended Learning Resources</h2>
-<p>Include only verified, working resources:</p>
+<p>Only include resources from the following verified sources, with direct clickable links.</p>
+
+<h3>Video Tutorials</h3>
 <ul>
-  <li>YouTube lectures - only include links from verified educational channels like MIT OpenCourseWare, Khan Academy, Neso Academy, or similar high-quality educational content creators</li>
-  <li>Research papers - reference papers from IEEE, ACM, or similar reputable academic sources</li>
-  <li>Courses - recommend specific courses from platforms like Coursera, edX, or university websites</li>
+  <li>For circuit analysis topics, use videos from:
+    <ul>
+      <li><a href="https://www.youtube.com/user/nesoacademy">Neso Academy</a></li>
+      <li><a href="https://www.youtube.com/c/khanacademy">Khan Academy</a></li>
+      <li><a href="https://www.youtube.com/c/MITOpenCourseWare">MIT OpenCourseWare</a></li>
+      <li><a href="https://www.youtube.com/c/TheOrganicChemistryTutor">The Organic Chemistry Tutor</a> (electronics section)</li>
+    </ul>
+  </li>
 </ul>
-<p><strong>IMPORTANT:</strong> Do not include any YouTube links unless you are certain they exist. For YouTube, only include links from well-established educational channels.</p>`;
+
+<h3>Online Courses</h3>
+<ul>
+  <li>For circuit analysis, recommend courses from:
+    <ul>
+      <li><a href="https://www.coursera.org/specializations/circuits-electronics">Coursera: Circuits and Electronics MicroMasters</a></li>
+      <li><a href="https://www.edx.org/learn/circuit-design">edX: Circuit Design courses</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Reference Materials</h3> 
+<ul>
+  <li>For research papers, include links to:
+    <ul>
+      <li><a href="https://ieeexplore.ieee.org/Xplore/home.jsp">IEEE Xplore Digital Library</a></li>
+      <li><a href="https://dl.acm.org/">ACM Digital Library</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p><strong>Note:</strong> When selecting resources, prioritize topics specifically related to "${query.topic}" and ensure they are appropriate for the student's knowledge level.</p>`;
   }
   
   // Add formatting guidelines
