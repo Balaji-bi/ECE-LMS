@@ -100,7 +100,7 @@ export default function ForumPage() {
   }) : [];
   
   return (
-    <div className="min-h-screen flex flex-col pb-16">
+    <div className="min-h-screen flex flex-col pb-16 md:pb-0">
       <PageHeader 
         title="Learning Forum" 
         onMenuClick={() => setIsSidebarOpen(true)} 
