@@ -1,0 +1,51 @@
+import { Switch, Route } from "wouter";
+import { queryClient } from "./lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AuthProvider } from "@/hooks/use-auth";
+import { ThemeProvider } from "@/hooks/use-theme";
+import { ProtectedRoute } from "./lib/protected-route";
+
+import NotFound from "@/pages/not-found";
+import AuthPage from "@/pages/auth-page";
+import HomePage from "@/pages/home-page";
+import NavigatorPage from "@/pages/navigator-page";
+import AcademicChatbotPage from "@/pages/academic-chatbot-page";
+import AdvancedChatbotPage from "@/pages/advanced-chatbot-page";
+import ContentToolsPage from "@/pages/content-tools-page";
+import ForumPage from "@/pages/forum-page";
+import ProfilePage from "@/pages/profile-page";
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/auth" component={AuthPage} />
+      <ProtectedRoute path="/" component={HomePage} />
+      <ProtectedRoute path="/navigator" component={NavigatorPage} />
+      <ProtectedRoute path="/academic-chatbot" component={AcademicChatbotPage} />
+      <ProtectedRoute path="/advanced-chatbot" component={AdvancedChatbotPage} />
+      <ProtectedRoute path="/content-tools" component={ContentToolsPage} />
+      <ProtectedRoute path="/forum" component={ForumPage} />
+      <ProtectedRoute path="/profile" component={ProfilePage} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Router />
+          </TooltipProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
