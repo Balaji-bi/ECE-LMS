@@ -1,14 +1,16 @@
 import { cn } from "@/lib/utils";
+import React from "react";
 
 interface ChatMessageProps {
   isUser: boolean;
-  message: string;
+  message?: string;
+  customContent?: React.ReactNode;
   senderIcon: React.ReactNode;
   senderColor: string;
   isLoading?: boolean;
 }
 
-export function ChatMessage({ isUser, message, senderIcon, senderColor, isLoading }: ChatMessageProps) {
+export function ChatMessage({ isUser, message, customContent, senderIcon, senderColor, isLoading }: ChatMessageProps) {
   return (
     <div className={cn("flex", isUser && "flex-row-reverse")}>
       <div 
@@ -23,7 +25,7 @@ export function ChatMessage({ isUser, message, senderIcon, senderColor, isLoadin
       
       <div 
         className={cn(
-          "p-3 max-w-[80%]",
+          "p-3 max-w-[90%] md:max-w-[80%]",
           isUser 
             ? "chat-bubble-user bg-primary text-primary-foreground" 
             : "chat-bubble-ai bg-muted"
@@ -35,6 +37,8 @@ export function ChatMessage({ isUser, message, senderIcon, senderColor, isLoadin
             <div className="h-1.5 w-1.5 bg-current opacity-60 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
             <div className="h-1.5 w-1.5 bg-current opacity-80 rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
           </div>
+        ) : customContent ? (
+          <div className="text-sm">{customContent}</div>
         ) : (
           <p className="text-sm whitespace-pre-line">{message}</p>
         )}
