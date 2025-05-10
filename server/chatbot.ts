@@ -242,7 +242,14 @@ Final thoughts, outcomes or key takeaways.
 <h2>References</h2>
 Textbook or paper citations. Always mention "Content from: [Book name], [Author], [Publication]" when using specific book references.
 
-${query.showRecommendedResources ? '<h2>Recommended Learning Resources</h2><ul><li>Include specific YouTube lecture links</li><li>Link to relevant research papers</li><li>Suggest specific courses with links if available</li></ul>' : ''}
+${query.showRecommendedResources ? `<h2>Recommended Learning Resources</h2>
+<p>Include only verified, working resources:</p>
+<ul>
+  <li>YouTube lectures - only include links from verified educational channels like MIT OpenCourseWare, Khan Academy, Neso Academy, or similar high-quality educational content creators</li>
+  <li>Research papers - reference papers from IEEE, ACM, or similar reputable academic sources</li>
+  <li>Courses - recommend specific courses from platforms like Coursera, edX, or university websites</li>
+</ul>
+<p><strong>IMPORTANT:</strong> Do not include any YouTube links unless you are certain they exist. For YouTube, only include links from well-established educational channels.` : ''}
 
 IMPORTANT FORMATTING GUIDELINES:
 - Format all formulas in bold for better readability: <strong>V = I × R</strong>

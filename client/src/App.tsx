@@ -11,7 +11,7 @@ import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
 import NavigatorPage from "@/pages/navigator-page";
-import AcademicChatbotPage from "@/pages/academic-chatbot-page";
+import AcademicChatbotPage from "@/pages/academic-chatbot-new";
 import AdvancedChatbotPage from "@/pages/advanced-chatbot-page";
 import ContentToolsPage from "@/pages/content-tools-page";
 import ForumPage from "@/pages/forum-page";

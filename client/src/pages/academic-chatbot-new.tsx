@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { ChatMessage } from "@shared/schema";
 import { ChatMessage as ChatMessageComponent } from "@/components/chatbot/ChatMessage";
@@ -70,7 +69,6 @@ export default function AcademicChatbotPage() {
   const [generateImage, setGenerateImage] = useState(false);
   const [showResources, setShowResources] = useState(false);
   const [imageData, setImageData] = useState<string | undefined>(undefined);
-  const [activeTab, setActiveTab] = useState<string>("simple");
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -386,220 +384,218 @@ export default function AcademicChatbotPage() {
           </CardHeader>
           
           <form onSubmit={handleSendMessage}>
-                <CardContent className="pt-4 space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="topic">Topic or Question</Label>
-                    <Input
-                      id="topic"
-                      placeholder="Enter a topic name or specific question..."
-                      value={topic}
-                      onChange={(e) => setTopic(e.target.value)}
-                      disabled={isSending}
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="knowledge-level">Knowledge Level</Label>
-                      <Select 
-                        value={knowledgeLevel} 
-                        onValueChange={setKnowledgeLevel}
-                        disabled={isSending}
-                      >
-                        <SelectTrigger id="knowledge-level">
-                          <SelectValue placeholder="Select level" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem key="none" value="none">None</SelectItem>
-                          {knowledgeLevels.map(level => (
-                            <SelectItem key={level.value} value={level.value}>
-                              {level.label} ({level.value})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        {knowledgeLevel && knowledgeLevel !== "none" ? 
-                          knowledgeLevels.find(k => k.value === knowledgeLevel)?.description :
-                          "Select a level to determine the depth of the response"}
-                      </p>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="subject">Subject</Label>
-                      <Select 
-                        value={subject} 
-                        onValueChange={(val) => {
-                          setSubject(val);
-                          // Reset book selection when subject changes
-                          if (val !== subject) {
-                            setBook(undefined);
-                          }
-                        }}
-                        disabled={isSending}
-                      >
-                        <SelectTrigger id="subject">
-                          <SelectValue placeholder="Select subject" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem key="none" value="none">None</SelectItem>
-                          {eceSubjects.map(subj => (
-                            <SelectItem key={subj.value} value={subj.value}>
-                              {subj.label} ({subj.value})
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-xs text-muted-foreground">
-                        {subject && subject !== "none" ?
-                          `${eceSubjects.find(s => s.value === subject)?.label} curriculum` :
-                          "Leave blank to search across all subjects"}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="book">Textbook Reference</Label>
-                    <Select 
-                      value={book} 
-                      onValueChange={setBook}
-                      disabled={isSending || !subject || subject === "none"}
-                    >
-                      <SelectTrigger id="book">
-                        <SelectValue placeholder={subject && subject !== "none" ? "Select book" : "Select subject first"} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem key="none" value="none">None</SelectItem>
-                        {subject === "EC3251" && (
-                          <SelectItem key="circuit-analysis" value="Engineering Circuit Analysis">
-                            Engineering Circuit Analysis (Hayt, Kemmerly, Durbin)
-                          </SelectItem>
-                        )}
-                        {subject === "PH3151" && (
-                          <SelectItem key="physics" value="Engineering Physics">
-                            Engineering Physics (Standard Textbook)
-                          </SelectItem>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      {book && book !== "none" ? 
-                        "Response will prioritize this specific textbook" : 
-                        "Leave blank to use all available books for the subject"}
-                    </p>
-                  </div>
-                  
-                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3 space-y-3">
-                    <h3 className="text-sm font-medium">Response Options</h3>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="gen-image">Generate Diagram</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Create visual aids for the topic
-                        </p>
-                      </div>
-                      <Switch
-                        id="gen-image"
-                        checked={generateImage}
-                        onCheckedChange={setGenerateImage}
-                        disabled={isSending}
-                      />
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <Label htmlFor="show-resources">Recommended Resources</Label>
-                        <p className="text-xs text-muted-foreground">
-                          Include YouTube, papers, and courses
-                        </p>
-                      </div>
-                      <Switch
-                        id="show-resources"
-                        checked={showResources}
-                        onCheckedChange={setShowResources}
-                        disabled={isSending}
-                      />
-                    </div>
-                    
-                    <div className="pt-2">
-                      <Button variant="outline" type="button" onClick={triggerFileInput} className="w-full">
-                        <ImageIcon className="mr-2 h-4 w-4" />
-                        {imageData ? "Image Uploaded ✓" : "Upload Image (Optional)"}
-                      </Button>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleImageUpload}
-                        accept="image/*"
-                        style={{ display: 'none' }}
-                      />
-                      {imageData && (
-                        <p className="text-xs text-green-600 mt-1">
-                          Image will be analyzed along with your query
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-md p-3">
-                    <h3 className="text-sm font-medium flex items-center mb-2">
-                      <span className="material-icons text-yellow-600 dark:text-yellow-400 mr-1 text-base">info</span>
-                      Source Selection Logic
-                    </h3>
-                    <p className="text-xs text-muted-foreground">
-                      {getSourceExplanation(knowledgeLevel, subject, book, showResources)}
-                    </p>
-                  </div>
-                </CardContent>
-                
-                <CardFooter className="flex justify-between pt-0">
-                  {knowledgeLevel && knowledgeLevel !== "none" && (
-                    <div className="text-xs text-gray-500">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button variant="link" size="sm" className="h-auto p-0">
-                            About {knowledgeLevels.find(k => k.value === knowledgeLevel)?.label} level
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-80 p-4">
-                          <h4 className="font-medium mb-2">
-                            {knowledgeLevels.find(k => k.value === knowledgeLevel)?.label} ({knowledgeLevel})
-                          </h4>
-                          <p className="text-sm mb-2">
-                            {knowledgeLevels.find(k => k.value === knowledgeLevel)?.description}
-                          </p>
-                          <div className="text-xs text-muted-foreground">
-                            {getKnowledgeLevelExplanation(knowledgeLevel)}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  )}
-                  
-                  <Button 
-                    type="submit"
-                    className="ml-auto"
-                    disabled={!topic.trim() || isSending}
+            <CardContent className="pt-4 space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="topic">Topic or Question</Label>
+                <Input
+                  id="topic"
+                  placeholder="Enter a topic name or specific question..."
+                  value={topic}
+                  onChange={(e) => setTopic(e.target.value)}
+                  disabled={isSending}
+                />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="knowledge-level">Knowledge Level</Label>
+                  <Select 
+                    value={knowledgeLevel} 
+                    onValueChange={setKnowledgeLevel}
+                    disabled={isSending}
                   >
-                    {isSending ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>Submit</>
+                    <SelectTrigger id="knowledge-level">
+                      <SelectValue placeholder="Select level" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem key="none" value="none">None</SelectItem>
+                      {knowledgeLevels.map(level => (
+                        <SelectItem key={level.value} value={level.value}>
+                          {level.label} ({level.value})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {knowledgeLevel && knowledgeLevel !== "none" ? 
+                      knowledgeLevels.find(k => k.value === knowledgeLevel)?.description :
+                      "Select a level to determine the depth of the response"}
+                  </p>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="subject">Subject</Label>
+                  <Select 
+                    value={subject} 
+                    onValueChange={(val) => {
+                      setSubject(val);
+                      // Reset book selection when subject changes
+                      if (val !== subject) {
+                        setBook(undefined);
+                      }
+                    }}
+                    disabled={isSending}
+                  >
+                    <SelectTrigger id="subject">
+                      <SelectValue placeholder="Select subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem key="none" value="none">None</SelectItem>
+                      {eceSubjects.map(subj => (
+                        <SelectItem key={subj.value} value={subj.value}>
+                          {subj.label} ({subj.value})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {subject && subject !== "none" ?
+                      `${eceSubjects.find(s => s.value === subject)?.label} curriculum` :
+                      "Leave blank to search across all subjects"}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="book">Textbook Reference</Label>
+                <Select 
+                  value={book} 
+                  onValueChange={setBook}
+                  disabled={isSending || !subject || subject === "none"}
+                >
+                  <SelectTrigger id="book">
+                    <SelectValue placeholder={subject && subject !== "none" ? "Select book" : "Select subject first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem key="none" value="none">None</SelectItem>
+                    {subject === "EC3251" && (
+                      <SelectItem key="circuit-analysis" value="Engineering Circuit Analysis">
+                        Engineering Circuit Analysis (Hayt, Kemmerly, Durbin)
+                      </SelectItem>
                     )}
+                    {subject === "PH3151" && (
+                      <SelectItem key="physics" value="Engineering Physics">
+                        Engineering Physics (Standard Textbook)
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  {book && book !== "none" ? 
+                    "Response will prioritize this specific textbook" : 
+                    "Leave blank to use all available books for the subject"}
+                </p>
+              </div>
+              
+              <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3 space-y-3">
+                <h3 className="text-sm font-medium">Response Options</h3>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="gen-image">Generate Diagram</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Create visual aids for the topic
+                    </p>
+                  </div>
+                  <Switch
+                    id="gen-image"
+                    checked={generateImage}
+                    onCheckedChange={setGenerateImage}
+                    disabled={isSending}
+                  />
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="show-resources">Recommended Resources</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Include YouTube, papers, and courses
+                    </p>
+                  </div>
+                  <Switch
+                    id="show-resources"
+                    checked={showResources}
+                    onCheckedChange={setShowResources}
+                    disabled={isSending}
+                  />
+                </div>
+                
+                <div className="pt-2">
+                  <Button variant="outline" type="button" onClick={triggerFileInput} className="w-full">
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    {imageData ? "Image Uploaded ✓" : "Upload Image (Optional)"}
                   </Button>
-                </CardFooter>
-              </form>
-            </TabsContent>
-          </Tabs>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                  />
+                  {imageData && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Image will be analyzed along with your query
+                    </p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-md p-3">
+                <h3 className="text-sm font-medium flex items-center mb-2">
+                  <span className="material-icons text-yellow-600 dark:text-yellow-400 mr-1 text-base">info</span>
+                  Source Selection Logic
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  {getSourceExplanation(knowledgeLevel, subject, book, showResources)}
+                </p>
+              </div>
+            </CardContent>
+            
+            <CardFooter className="flex justify-between pt-0">
+              {knowledgeLevel && knowledgeLevel !== "none" && (
+                <div className="text-xs text-gray-500">
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="link" size="sm" className="h-auto p-0">
+                        About {knowledgeLevels.find(k => k.value === knowledgeLevel)?.label} level
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-80 p-4">
+                      <h4 className="font-medium mb-2">
+                        {knowledgeLevels.find(k => k.value === knowledgeLevel)?.label} ({knowledgeLevel})
+                      </h4>
+                      <p className="text-sm mb-2">
+                        {knowledgeLevels.find(k => k.value === knowledgeLevel)?.description}
+                      </p>
+                      <div className="text-xs text-muted-foreground">
+                        {getKnowledgeLevelExplanation(knowledgeLevel)}
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              )}
+              
+              <Button 
+                type="submit"
+                className="ml-auto"
+                disabled={!topic.trim() || isSending}
+              >
+                {isSending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>Submit</>
+                )}
+              </Button>
+            </CardFooter>
+          </form>
         </Card>
       </div>
       
+      <BottomNavigation currentPath="/academic-chatbot" />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <BottomNavigation />
     </div>
   );
 }
