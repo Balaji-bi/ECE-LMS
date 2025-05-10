@@ -42,6 +42,7 @@ interface ForumPostWithDetails {
   content: string;
   category: string;
   createdAt: string;
+  likes: number;
   user: {
     id: number;
     username: string;
@@ -106,92 +107,138 @@ export default function ForumPage() {
         onMenuClick={() => setIsSidebarOpen(true)} 
       />
       
-      <div className="flex-1 p-4 space-y-4">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
-                <span className="material-icons">forum</span>
+      <div className="flex flex-col md:grid md:grid-cols-12 md:gap-4 p-4">
+        {/* Desktop sidebar - hidden on mobile */}
+        <div className="hidden md:block md:col-span-3 lg:col-span-2 mb-4">
+          <Card>
+            <CardContent className="p-4">
+              <h3 className="font-medium mb-3">Categories</h3>
+              <div className="space-y-2">
+                <div 
+                  className={`flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${filter === 'all' ? 'bg-primary/10' : ''}`}
+                  onClick={() => setFilter('all')}
+                >
+                  <span className="material-icons mr-3 text-gray-500">forum</span>
+                  <span>All Posts</span>
+                </div>
+                <div 
+                  className={`flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${filter === 'ECE General' ? 'bg-primary/10' : ''}`}
+                  onClick={() => setFilter('ECE General')}
+                >
+                  <span className="material-icons mr-3 text-primary">category</span>
+                  <span>ECE General</span>
+                </div>
+                <div 
+                  className={`flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${filter === 'Academics' ? 'bg-primary/10' : ''}`}
+                  onClick={() => setFilter('Academics')}
+                >
+                  <span className="material-icons mr-3 text-blue-500">school</span>
+                  <span>Academics</span>
+                </div>
+                <div 
+                  className={`flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${filter === 'Project Ideas' ? 'bg-primary/10' : ''}`}
+                  onClick={() => setFilter('Project Ideas')}
+                >
+                  <span className="material-icons mr-3 text-green-500">lightbulb</span>
+                  <span>Project Ideas</span>
+                </div>
+                <div 
+                  className={`flex items-center p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer ${filter === 'Career Advice' ? 'bg-primary/10' : ''}`}
+                  onClick={() => setFilter('Career Advice')}
+                >
+                  <span className="material-icons mr-3 text-amber-500">work</span>
+                  <span>Career Advice</span>
+                </div>
               </div>
-              <div>
-                <h2 className="font-medium">ECE Discussion Forum</h2>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Connect with peers and discuss topics</p>
+              
+              <div className="mt-6">
+                <Button className="w-full" onClick={() => setIsNewPostDialogOpen(true)}>
+                  <span className="material-icons mr-2">add</span>
+                  New Post
+                </Button>
               </div>
-            </div>
-            
-            <div className="flex space-x-2 mb-4 overflow-x-auto pb-1">
-              <Button 
-                variant={filter === "all" ? "default" : "outline"} 
-                size="sm" 
-                className="rounded-full"
-                onClick={() => setFilter("all")}
-              >
-                All Topics
-              </Button>
-              <Button 
-                variant={filter === "question" ? "default" : "outline"} 
-                size="sm" 
-                className="rounded-full"
-                onClick={() => setFilter("question")}
-              >
-                Questions
-              </Button>
-              <Button 
-                variant={filter === "resource" ? "default" : "outline"} 
-                size="sm" 
-                className="rounded-full"
-                onClick={() => setFilter("resource")}
-              >
-                Resources
-              </Button>
-              <Button 
-                variant={filter === "event" ? "default" : "outline"} 
-                size="sm" 
-                className="rounded-full"
-                onClick={() => setFilter("event")}
-              >
-                Events
-              </Button>
-            </div>
-            
-            <div className="relative">
-              <Input
-                placeholder="Search discussions..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-              <span className="material-icons absolute left-3 top-2 text-gray-400">search</span>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
         
-        <div className="space-y-4">
-          {isLoading ? (
-            <div className="flex justify-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : filteredPosts.length > 0 ? (
-            filteredPosts.map((post) => (
-              <ForumPost key={post.id} post={post} />
-            ))
-          ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <span className="material-icons text-4xl text-gray-400 mb-2">forum</span>
-                <h3 className="text-lg font-medium mb-1">No discussions found</h3>
-                <p className="text-sm text-gray-500 mb-4">Be the first to start a discussion</p>
-                <Button onClick={() => setIsNewPostDialogOpen(true)}>Create Post</Button>
-              </CardContent>
-            </Card>
-          )}
+        {/* Main content */}
+        <div className="md:col-span-9 lg:col-span-10 space-y-4">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                  <span className="material-icons">forum</span>
+                </div>
+                <div>
+                  <h2 className="font-medium">ECE Discussion Forum</h2>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Connect with peers and discuss topics</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col md:flex-row items-center gap-3 my-4">
+                <Tabs 
+                  defaultValue="all" 
+                  value={filter}
+                  onValueChange={setFilter}
+                  className="w-full md:w-auto"
+                >
+                  <TabsList className="grid grid-cols-3 h-9">
+                    <TabsTrigger value="all">All</TabsTrigger>
+                    <TabsTrigger value="ECE General">ECE</TabsTrigger>
+                    <TabsTrigger value="Academics">Academics</TabsTrigger>
+                  </TabsList>
+                </Tabs>
+                
+                <div className="flex-1" />
+                
+                <Button
+                  onClick={() => setIsNewPostDialogOpen(true)}
+                  className="md:flex hidden"
+                >
+                  <span className="material-icons mr-2">add</span>
+                  New Post
+                </Button>
+              </div>
+              
+              <div className="relative">
+                <Input
+                  placeholder="Search discussions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+                <span className="material-icons absolute left-3 top-2 text-gray-400">search</span>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <div className="space-y-4">
+            {isLoading ? (
+              <div className="flex justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : filteredPosts.length > 0 ? (
+              filteredPosts.map((post) => (
+                <ForumPost key={post.id} post={post} />
+              ))
+            ) : (
+              <Card>
+                <CardContent className="py-12 text-center">
+                  <span className="material-icons text-4xl text-gray-400 mb-2">forum</span>
+                  <h3 className="text-lg font-medium mb-1">No discussions found</h3>
+                  <p className="text-sm text-gray-500 mb-4">Be the first to start a discussion</p>
+                  <Button onClick={() => setIsNewPostDialogOpen(true)}>Create Post</Button>
+                </CardContent>
+              </Card>
+            )}
+          </div>
         </div>
       </div>
       
       {/* Floating Action Button */}
       <Button
         onClick={() => setIsNewPostDialogOpen(true)}
-        className="fixed right-6 bottom-20 w-14 h-14 rounded-full shadow-lg p-0"
+        className="fixed right-6 bottom-20 w-14 h-14 rounded-full shadow-lg p-0 md:hidden"
       >
         <span className="material-icons">add</span>
       </Button>
@@ -202,10 +249,9 @@ export default function ForumPage() {
           <DialogHeader>
             <DialogTitle>Create New Post</DialogTitle>
             <DialogDescription>
-              Share your questions, insights, or resources with the ECE community
+              Share your thoughts, questions, or insights with the ECE community
             </DialogDescription>
           </DialogHeader>
-          
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -229,9 +275,9 @@ export default function ForumPage() {
                   <FormItem>
                     <FormLabel>Content</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="Share your thoughts, questions, or insights..." 
-                        className="min-h-[150px]"
+                      <Textarea
+                        placeholder="Write your post content here..."
+                        className="min-h-[120px]"
                         {...field}
                       />
                     </FormControl>
