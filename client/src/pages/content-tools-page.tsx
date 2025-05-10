@@ -10,15 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { ToolCard } from "@/components/content-tools/ToolCard";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export default function ContentToolsPage() {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("assignment");
   
@@ -308,7 +309,10 @@ export default function ContentToolsPage() {
                         variant="outline"
                         onClick={() => {
                           navigator.clipboard.writeText(assignmentMutation.data.assignment);
-                          // You could add a toast notification here
+                          toast({
+                            title: "Copied to clipboard",
+                            description: "Assignment has been copied to clipboard"
+                          });
                         }}
                       >
                         <span className="material-icons text-sm mr-1">content_copy</span>
@@ -434,7 +438,10 @@ export default function ContentToolsPage() {
                         variant="outline"
                         onClick={() => {
                           navigator.clipboard.writeText(researchMutation.data.research);
-                          // You could add a toast notification here
+                          toast({
+                            title: "Copied to clipboard",
+                            description: "Research paper has been copied to clipboard"
+                          });
                         }}
                       >
                         <span className="material-icons text-sm mr-1">content_copy</span>
