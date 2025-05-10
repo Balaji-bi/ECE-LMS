@@ -85,35 +85,34 @@ Generate a well-formatted, formal research paper using provided inputs and intel
 13. Conclusion: ${conclusion || "[Not provided]"}
 
 📐 FORMAT GUIDELINES:
-- Start with:
-  - Title (centered, bold, large font)
-  - Author(s) (centered, comma-separated)
-  - Institution (centered, italic)
+- Use simple, clean formatting with NO HTML tags. Instead, use plain text formatting:
+  - Title should appear at the top in ALL CAPS
+  - Author names should appear below the title
+  - Institution name should appear below the authors
   - Leave one line space, then start content
 
-- Assign Chapter Numbers (1, 2, 3...) and Subtopics (e.g., 1.1, 1.2...) dynamically:
-  - The first user-provided section becomes Chapter 1
-  - Next present section becomes Chapter 2, and so on
-  - Use appropriate subheadings like 1.1, 1.2, 2.1, 2.2, etc.
+- Use clear section formatting with numbers and proper spacing:
+  - Format main sections as: "1. INTRODUCTION", "2. METHODOLOGY", etc. in ALL CAPS
+  - Format subsections as: "1.1 Background", "1.2 Problem Statement", etc.
+  - Use proper indentation and spacing between sections
   - Skip any sections not provided by the user
 
-- Use clear HTML formatting for mathematical/scientific notation:
+- For mathematical/scientific notation, use simple text formatting:
   For example:
-  - Einstein's formula: <div class="formula"><strong>E = mc<sup>2</sup></strong></div>
-  - Ohm's Law: <div class="formula"><strong>V = I × R</strong></div>
-  - Integration: <div class="formula"><strong>∫<sub>a</sub><sup>b</sup> f(x) dx = F(b) - F(a)</strong></div>
+  - Einstein's formula: E = mc²
+  - Ohm's Law: V = I × R
+  - Integration: ∫(a to b) f(x) dx = F(b) - F(a)
   
-- After EACH formula, explain all variables in a structured list:
-  <ul>
-    <li><strong>E</strong>: Energy (in joules)</li>
-    <li><strong>m</strong>: Mass (in kilograms)</li>
-    <li><strong>c</strong>: Speed of light (in meters per second)</li>
-  </ul>
+- After each formula, explain all variables in a clear, structured list:
+  * E: Energy (in joules)
+  * m: Mass (in kilograms)
+  * c: Speed of light (in meters per second)
 
 🧠 CONTENT ENHANCEMENT:
 - Expand each section using domain-specific depth
 - Follow an academic tone and ensure smooth transitions between paragraphs
 - Maintain user's meaning, but rewrite in a cleaner, more formal way
+- For ECE topics, include appropriate equations and technical details in plain text format only
 - Minimum output: 2 to 3 A4 pages (approximately 10000 to 15000+ words)
 - Add real-world applications or relevant insights if missing
 
@@ -123,6 +122,9 @@ Generate a well-formatted, formal research paper using provided inputs and intel
 - Format: [1] Author(s), "Title," Journal/Conference, Year. [Link]
 
 ⚠️ RULES:
+- DO NOT use ANY HTML formatting tags in your response (no <h1>, <h2>, <div>, <p>, etc.)
+- Use plain text formatting with proper spacing for readability
+- Use simple formatting like asterisks for emphasis (*important*)
 - Do not fabricate books or author names
 - Always reflect academic integrity
 - When sections are missing, skip them; don't hallucinate false input
