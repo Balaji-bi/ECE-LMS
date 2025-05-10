@@ -133,16 +133,42 @@ Generate a well-formatted, formal research paper using provided inputs and intel
 
 // Helper function to prepare resume builder prompt
 function prepareResumePrompt(details: any) {
-  return `Create a professional resume for an ECE (Electronics and Communication Engineering) student with the following details:
-  
-  Name: ${details.name}
-  Education: ${details.education}
-  Technical Skills: ${details.skills}
-  Projects: ${details.projects}
-  Work Experience: ${details.experience || 'None'}
-  Certifications: ${details.certifications || 'None'}
-  
-  Format the resume professionally with appropriate sections for an engineering student. Include a professional summary at the beginning. Organize technical skills by category (programming languages, tools, hardware, etc.). For each project, include technologies used and outcomes.`;
+  return `Create a modern, ATS-friendly resume in a clean and formal style based on the following user input:
+
+Name: ${details.name}
+Email: ${details.email || 'Not provided'}
+Phone: ${details.phone || 'Not provided'}
+LinkedIn: ${details.linkedin || 'Not provided'}
+
+Education:
+${details.educationDetails || 'Not provided'}
+
+Technical Skills:
+${details.technicalDetails || 'Not provided'}
+
+Projects:
+${details.projectDetails || 'Not provided'}
+
+${details.achievementDetails ? `Achievements:
+${details.achievementDetails}
+
+` : ''}${details.experienceDetails ? `Experience:
+${details.experienceDetails}
+
+` : ''}${details.languageDetails ? `Languages:
+${details.languageDetails}
+
+` : ''}Instructions:
+- Format the resume like a professional document
+- Group content under proper sections
+- Write in a formal tone, no repetition
+- Ensure grammar and punctuation are clean
+- Only generate sections where data is available
+- Don't use ** for formatting; use a clean, professional structure instead
+- Start with a concise professional summary highlighting relevant skills and education
+- Organize technical skills by category (programming languages, tools, hardware, etc.)
+- Present education, projects, achievements, experience and languages in a structured, easy-to-scan format
+- Output should have clean, professional formatting with proper headings, bullet points for lists, and appropriate spacing`;
 }
 
 // Helper function to prepare content rewriter prompt
@@ -273,7 +299,7 @@ contentToolsRouter.post("/resume", async (req: Request, res: Response) => {
   try {
     const details = req.body;
     
-    if (!details.name || !details.education || !details.skills || !details.projects) {
+    if (!details.name || !details.email || !details.phone || !details.educationDetails || !details.technicalDetails || !details.projectDetails) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
     

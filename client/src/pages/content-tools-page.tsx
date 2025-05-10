@@ -664,61 +664,124 @@ export default function ContentToolsPage() {
                   Resume Builder
                 </h3>
                 
-                <form onSubmit={handleResumeSubmit} className="space-y-3">
-                  <div>
-                    <Label>Full Name</Label>
-                    <Input 
-                      value={resumeData.name}
-                      onChange={(e) => setResumeData({...resumeData, name: e.target.value})}
+                <form onSubmit={handleResumeSubmit} className="space-y-4">
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3 mb-4">
+                    <h4 className="text-sm font-medium mb-3">Personal Information</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div>
+                        <Label>Full Name</Label>
+                        <Input 
+                          value={resumeData.name}
+                          onChange={(e) => setResumeData({...resumeData, name: e.target.value})}
+                          placeholder="e.g., John Doe"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Email</Label>
+                        <Input 
+                          value={resumeData.email}
+                          onChange={(e) => setResumeData({...resumeData, email: e.target.value})}
+                          placeholder="e.g., john.doe@example.com"
+                          type="email"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>Phone Number</Label>
+                        <Input 
+                          value={resumeData.phone}
+                          onChange={(e) => setResumeData({...resumeData, phone: e.target.value})}
+                          placeholder="e.g., +91 9876543210"
+                        />
+                      </div>
+                      
+                      <div>
+                        <Label>LinkedIn (Optional)</Label>
+                        <Input 
+                          value={resumeData.linkedin}
+                          onChange={(e) => setResumeData({...resumeData, linkedin: e.target.value})}
+                          placeholder="e.g., linkedin.com/in/johndoe"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Education</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter each education item on a new line (Institution, Degree, Year, CGPA)</p>
+                    
+                    <Textarea 
+                      placeholder="e.g., Anna University, B.E. in ECE, 2020-2024, 8.5 CGPA
+MIT, M.Tech in Electronics, 2024-2026, 9.0 CGPA" 
+                      value={resumeData.educationDetails}
+                      onChange={(e) => setResumeData({...resumeData, educationDetails: e.target.value})}
+                      className="min-h-[100px]"
                     />
                   </div>
                   
-                  <div>
-                    <Label>Education</Label>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Technical Skills</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter all your technical skills separated by commas</p>
+                    
                     <Textarea 
-                      placeholder="e.g., B.Tech in ECE, Anna University (2020-2024)" 
-                      value={resumeData.education}
-                      onChange={(e) => setResumeData({...resumeData, education: e.target.value})}
+                      placeholder="e.g., Python, MATLAB, PCB Design, C++, VHDL, Embedded Systems, Circuit Design, Microcontrollers" 
+                      value={resumeData.technicalDetails}
+                      onChange={(e) => setResumeData({...resumeData, technicalDetails: e.target.value})}
                       className="min-h-[80px]"
                     />
                   </div>
                   
-                  <div>
-                    <Label>Technical Skills</Label>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Projects</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter each project on a new line (Title, Technologies, Description)</p>
+                    
                     <Textarea 
-                      placeholder="e.g., MATLAB, Python, Verilog, PCB Design" 
-                      value={resumeData.skills}
-                      onChange={(e) => setResumeData({...resumeData, skills: e.target.value})}
+                      placeholder="e.g., IoT-based Home Automation System, Arduino & ESP8266, Designed and implemented a system to control home appliances via mobile app
+Smart Energy Meter, Raspberry Pi & Python, Created a digital energy monitoring system for real-time consumption tracking" 
+                      value={resumeData.projectDetails}
+                      onChange={(e) => setResumeData({...resumeData, projectDetails: e.target.value})}
+                      className="min-h-[120px]"
+                    />
+                  </div>
+                  
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Achievements (Optional)</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter each achievement on a new line (Title, Description)</p>
+                    
+                    <Textarea 
+                      placeholder="e.g., Best Project Award, First prize in college technical symposium for IoT project
+IEEE Paper Publication, Published research on advanced circuit design in IEEE journal" 
+                      value={resumeData.achievementDetails}
+                      onChange={(e) => setResumeData({...resumeData, achievementDetails: e.target.value})}
                       className="min-h-[80px]"
                     />
                   </div>
                   
-                  <div>
-                    <Label>Projects</Label>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Experience (Optional)</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter each experience on a new line (Company, Position, Duration, Responsibilities)</p>
+                    
                     <Textarea 
-                      placeholder="e.g., IoT-based Home Automation System, RF Signal Analyzer" 
-                      value={resumeData.projects}
-                      onChange={(e) => setResumeData({...resumeData, projects: e.target.value})}
-                      className="min-h-[80px]"
+                      placeholder="e.g., ABC Electronics, Summer Intern, May-Jul 2023, Developed embedded systems firmware and assisted in PCB design
+XYZ Technologies, Project Trainee, Jan-Apr 2023, Worked on IoT device integration and sensor calibration" 
+                      value={resumeData.experienceDetails}
+                      onChange={(e) => setResumeData({...resumeData, experienceDetails: e.target.value})}
+                      className="min-h-[100px]"
                     />
                   </div>
                   
-                  <div>
-                    <Label>Work Experience (Optional)</Label>
+                  <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3">
+                    <h4 className="text-sm font-medium mb-2">Languages (Optional)</h4>
+                    <p className="text-xs text-muted-foreground mb-3">Enter each language on a new line (Language, Skills: read/write/speak)</p>
+                    
                     <Textarea 
-                      placeholder="e.g., Internship at XYZ Electronics (Summer 2023)" 
-                      value={resumeData.experience}
-                      onChange={(e) => setResumeData({...resumeData, experience: e.target.value})}
-                      className="min-h-[80px]"
-                    />
-                  </div>
-                  
-                  <div>
-                    <Label>Certifications (Optional)</Label>
-                    <Textarea 
-                      placeholder="e.g., CCNA, Embedded Systems Certification" 
-                      value={resumeData.certifications}
-                      onChange={(e) => setResumeData({...resumeData, certifications: e.target.value})}
+                      placeholder="e.g., English, Skills: read, write, speak
+Tamil, Skills: read, write, speak
+Hindi, Skills: read, speak" 
+                      value={resumeData.languageDetails}
+                      onChange={(e) => setResumeData({...resumeData, languageDetails: e.target.value})}
                       className="min-h-[80px]"
                     />
                   </div>
@@ -726,20 +789,51 @@ export default function ContentToolsPage() {
                   <Button 
                     type="submit" 
                     className="w-full" 
-                    disabled={!resumeData.name || !resumeData.education || !resumeData.skills || !resumeData.projects || resumeMutation.isPending}
+                    disabled={!resumeData.name || !resumeData.email || !resumeData.phone || !resumeData.educationDetails || !resumeData.technicalDetails || !resumeData.projectDetails || resumeMutation.isPending}
                   >
                     {resumeMutation.isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         Generating...
                       </>
-                    ) : "Generate Resume"}
+                    ) : "Generate Professional Resume"}
                   </Button>
                 </form>
                 
                 {resumeMutation.isSuccess && (
                   <div className="mt-6 p-4 border rounded-md bg-muted">
-                    <h4 className="font-medium mb-2">Generated Resume</h4>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">Generated Professional Resume</h4>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          // Create plain text content for download
+                          const plainText = resumeMutation.data.resume;
+                          const blob = new Blob([plainText], {type: "text/plain"});
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `${resumeData.name.trim() || "resume"}.txt`;
+                          document.body.appendChild(a);
+                          a.click();
+                          
+                          // Cleanup
+                          setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          }, 100);
+                          
+                          toast({
+                            title: "Download started",
+                            description: "Your resume is being downloaded as a text file"
+                          });
+                        }}
+                      >
+                        <span className="material-icons text-sm mr-1">download</span>
+                        Download
+                      </Button>
+                    </div>
                     <div className="whitespace-pre-line text-sm">
                       {resumeMutation.data.resume}
                     </div>
