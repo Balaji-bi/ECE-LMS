@@ -256,7 +256,14 @@ A concise background of the topic and its significance in the field.
 The fundamental principles, definitions, and theoretical underpinnings.
 
 <h3>Mathematical Formulation / Working Principle</h3>
-The mathematical expressions, equations, and formulas, with detailed explanations of each component. Format mathematical expressions clearly with bold syntax (**V = I × R**).
+The mathematical expressions, equations, and formulas, with detailed explanations of each component.
+
+For mathematical expressions:
+- Format each equation on its own line with proper HTML formatting
+- Use <strong> tags for important formulas and variables: <strong>V = I × R</strong>
+- Present each formula first, then explain all variables below it using a clean bullet-point list
+- For complex equations, break down the derivation step by step
+- Use proper spacing and alignment for better readability
 
 ${query.generateImage ? '<h3>Visual Representation</h3>Description of diagrams or visual aids that would help explain the concept. (The actual diagram will be generated separately)' : ''}
 
@@ -280,7 +287,25 @@ Background on the topic and its significance in the field.
 Origin of the concept or method, with brief historical context.
 
 <h2>Methodology / Working Principle</h2>
-How it works or is applied, with detailed derivations. Carefully explain all formulas with their components. Format mathematical expressions clearly with bold syntax (**V = I × R**).
+<p>How it works or is applied, with detailed derivations.</p>
+
+<p><strong>Important Guidelines for Mathematical Content:</strong></p>
+<ul>
+  <li>Present each formula on its own line with proper spacing, like:
+    <div class="formula">
+      <strong>V = I × R</strong>
+    </div>
+  </li>
+  <li>After each formula, list all variables with clear explanations:
+    <ul>
+      <li><strong>V</strong>: Voltage (in volts)</li>
+      <li><strong>I</strong>: Current (in amperes)</li>
+      <li><strong>R</strong>: Resistance (in ohms)</li>
+    </ul>
+  </li>
+  <li>For step-by-step derivations, number the steps and show the transformation clearly</li>
+  <li>Use proper HTML formatting for subscripts, superscripts, and fractions when needed</li>
+</ul>
 
 ${query.generateImage ? '<h2>Image / Diagram</h2>Description of the relevant diagram for this topic. (The actual diagram will be generated separately)' : ''}
 
@@ -309,13 +334,33 @@ Textbook or paper citations. Always mention "Content from: [Book name], [Author]
   prompt += `
 
 IMPORTANT FORMATTING GUIDELINES:
-- Format all formulas in bold for better readability: <strong>V = I × R</strong> or use **V = I × R** markdown syntax
-- For each formula, explain all variables immediately after
+- Format all mathematics with clear, consistent HTML for optimal readability:
+  <div class="formula">
+    <strong>V = I × R</strong>
+  </div>
+
+- After EACH formula, explain all variables in a structured list:
+  <ul>
+    <li><strong>V</strong>: Voltage (in volts)</li>
+    <li><strong>I</strong>: Current (in amperes)</li>
+    <li><strong>R</strong>: Resistance (in ohms)</li>
+  </ul>
+
+- For derivations and mathematical processes, use numbered steps with clear progression:
+  <ol>
+    <li>Start with the basic equation: <strong>V = I × R</strong></li>
+    <li>Rearrange to solve for current: <strong>I = V/R</strong></li>
+  </ol>
+
+- For complex mathematical expressions, use proper HTML for:
+  * Fractions: Use formatting that preserves the numerator/denominator relationship
+  * Subscripts: Use <sub> tags for indices (R<sub>1</sub>)
+  * Superscripts: Use <sup> tags for exponents (10<sup>3</sup>)
+  * Greek letters: Spell out in context (omega, alpha) or use HTML entities
+
+- Use paragraph tags <p> for text blocks and proper section spacing
+- Present all content in a visually organized, easy-to-follow structure
 - Always maintain mathematical integrity exactly as presented in the textbook
-- Use bullet points with <ul><li>...</li></ul> for listing key concepts
-- Use proper paragraph breaks (<p>...</p>) for readability
-- If including complex mathematical expressions, use clear HTML formatting
-- Keep your response comprehensive but concise and well-structured
 - Always conclude with the source: "<p><em>This content is taken from [Book resources / Internet and Book resources]</em></p>"
 - If using a specific book, include exact book citation at the end
 
@@ -339,6 +384,25 @@ function prepareAdvancedPrompt(userMessage: string) {
   Feel free to discuss cutting-edge research, industry applications, and interdisciplinary connections related to the field.
   
   Make your responses detailed and insightful, aimed at advanced understanding of concepts.
+  
+  IMPORTANT FORMATTING GUIDELINES:
+  - Structure your response with clear sections using HTML headings (<h2>, <h3>, etc.)
+  - Format all mathematical formulas and equations with proper HTML, for example:
+    <div class="formula">
+      <strong>F = m × a</strong>
+    </div>
+    
+  - After each formula, explain all variables with a bulleted list:
+    <ul>
+      <li><strong>F</strong>: Force (in newtons)</li>
+      <li><strong>m</strong>: Mass (in kilograms)</li>
+      <li><strong>a</strong>: Acceleration (in m/s²)</li>
+    </ul>
+    
+  - For step-by-step derivations, number each step and show the transformation clearly
+  - Use proper HTML formatting for subscripts (<sub>), superscripts (<sup>), and fractions
+  - Use bullet points with <ul><li> tags for listing key concepts
+  - Use paragraph tags <p> for better readability
   
   User question: ${userMessage}`;
 }
