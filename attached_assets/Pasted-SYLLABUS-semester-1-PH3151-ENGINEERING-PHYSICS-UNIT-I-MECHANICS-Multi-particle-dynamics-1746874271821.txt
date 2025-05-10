@@ -1,0 +1,79 @@
+SYLLABUS
+
+semester 1:
+
+PH3151 ENGINEERING PHYSICS 
+
+UNIT I MECHANICS:
+Multi-particle dynamics: Center of mass (CM) – CM of continuous bodies – motion of the CM – kinetic energy of the system of particles. Rotation of rigid bodies: Rotational kinematics – rotational kinetic energy and moment of inertia - theorems of M .I –moment of inertia of continuous bodies – M.I of a diatomic molecule - torque – rotational dynamics of rigid bodies – conservation of angular momentum – rotational energy state of a rigid diatomic molecule - gyroscope - torsional pendulum – double pendulum –Introduction to nonlinear oscillations. 
+
+UNIT II ELECTROMAGNETIC WAVES:
+The Maxwell’s equations - wave equation; Plane electromagnetic waves in vacuum, Conditions on the wave field - properties of electromagnetic waves: speed, amplitude, phase, orientation and waves in matter - polarization - Producing electromagnetic waves - Energy and momentum in EM waves: Intensity, waves from localized sources, momentum and radiation pressure - Cell-phone reception. Reflection and transmission of electromagnetic waves from a non-conducting medium-vacuum interface for normal incidence. 
+
+UNIT III OSCILLATIONS, OPTICS AND LASERS:
+Simple harmonic motion - resonance –analogy between electrical and mechanical oscillating systems - waves on a string - standing waves - traveling waves - Energy transfer of a wave - sound waves - Doppler effect. Reflection and refraction of light waves - total internal reflection - interference –Michelson interferometer –Theory of air wedge and experiment. Theory of laser - characteristics - Spontaneous and stimulated emission - Einstein’s coefficients - population inversion - Nd-YAG laser, CO2 laser, semiconductor laser –Basic applications of lasers in industry. 
+
+UNIT IV BASIC QUANTUM MECHANICS:
+Photons and light waves - Electrons and matter waves –Compton effect - The Schrodinger equation (Time dependent and time independent forms) - meaning of wave function - Normalization –Free particle - particle in a infinite potential well: 1D,2D and 3D Boxes- Normalization, probabilities and the correspondence principle. 
+
+UNIT V APPLIED QUANTUM MECHANICS:
+The harmonic oscillator(qualitative)- Barrier penetration and quantum tunneling(qualitative)- Tunneling microscope - Resonant diode - Finite potential wells (qualitative)- Bloch’s theorem for particles in a periodic potential –Basics of Kronig-Penney model and origin of energy bands.
+
+
+GE3151 PROBLEM SOLVING AND PYTHON PROGRAMMING 
+
+UNIT I COMPUTATIONAL THINKING AND PROBLEM SOLVING:
+Fundamentals of Computing – Identification of Computational Problems -Algorithms, building blocks of algorithms (statements, state, control flow, functions), notation (pseudo code, flow chart, programming language), algorithmic problem solving, simple strategies for developing algorithms (iteration, recursion). Illustrative problems: find minimum in a list, insert a card in a list of sorted cards, guess an integer number in a range, Towers of Hanoi. 
+
+UNIT II DATA TYPES, EXPRESSIONS, STATEMENTS:
+Python interpreter and interactive mode,debugging; values and types: int, float, boolean, string, and list; variables, expressions, statements, tuple assignment, precedence of operators, comments; Illustrative programs: exchange the values of two variables, circulate the values of n variables, distance between two points. 
+
+UNIT III CONTROL FLOW, FUNCTIONS, STRINGS:
+Conditionals:Boolean values and operators, conditional (if), alternative (if-else),chained conditional (if-elif-else);Iteration: state, while, for, break, continue, pass; Fruitful functions: return values,parameters, local and global scope, function composition, recursion; Strings: string slices,immutability, string functions and methods, string module; Lists as arrays. Illustrative programs: square root, gcd, exponentiation, sum an array of numbers, linear search, binary search. 
+
+UNIT IV LISTS, TUPLES, DICTIONARIES:
+Lists: list operations, list slices, list methods, list loop, mutability, aliasing, cloning lists, list parameters; Tuples: tuple assignment, tuple as return value; Dictionaries: operations and methods; advanced list processing - list comprehension; Illustrative programs: simple sorting, histogram, Students marks statement, Retail bill preparation.
+
+UNIT V FILES, MODULES, PACKAGES:
+Files and exceptions: text files, reading and writing files, format operator; command line arguments, errors and exceptions, handling exceptions, modules, packages; Illustrative programs: word count, copy file, Voter’s age validation, Marks range validation (0-100).
+
+
+semester 2:
+
+EC3251 CIRCUIT ANALYSIS 
+
+UNIT I DC CIRCUIT ANALYSIS:
+Basic Components of electric Circuits, Charge, current, Voltage and Power, Voltage and Current Sources, Ohms Law, Kirchoff‘s Current Law, Kirchoff‘s voltage law, The single Node – Pair Circuit, series and Parallel Connected Independent Sources, Resistors in Series and Parallel, voltage and current division, Nodal analysis, Mesh analysis. 
+
+UNIT II NETWORK THEOREM AND DUALITY:
+Useful Circuit Analysis techniques - Linearity and superposition, Thevenin and Norton Equivalent Circuits, Maximum Power Transfer, Delta-Wye Conversion. Duals, Dual circuits. Analysis using dependent current sources and voltage sources.
+
+UNIT III SINUSOIDAL STEADY STATE ANALYSIS:
+Sinusoidal Steady – State analysis , Characteristics of Sinusoids, The Complex Forcing Function, The Phasor, Phasor relationship for R, L, and C, impedance and Admittance, Nodal and Mesh Analysis, Phasor Diagrams, AC Circuit Power Analysis, Instantaneous Power, Average Power, apparent Power and Power Factor, Complex Power. 
+
+UNIT IV TRANSIENTS AND RESONANCE IN RLC CIRCUITS:
+Basic RL and RC Circuits, The Source- Free RL Circuit, The Source-Free RC Circuit, The Unit-Step Function, Driven RL Circuits, Driven RC Circuits, RLC Circuits, Frequency Response, Parallel Resonance, Series Resonance, Quality Factor. 
+
+UNIT V COUPLED CIRCUITS AND TOPOLOGY:
+Magnetically Coupled Circuits, mutual Inductance, the Linear Transformer, the Ideal Transformer, An introduction to Network Topology, Trees and General Nodal analysis, Links and Loop analysis. 
+
+
+
+PH3254 PHYSICS FOR ELECTRONICS ENGINEERING
+
+UNIT I CRYSTALLOGRAPHY:
+Crystal structures: Crystal lattice – basis - unit cell and lattice parameters – crystal systems and Bravais lattices – Structure and packing fractions of SC, BCC, FCC, diamond cubic, NaCL, ZnS structures – crystal planes, directions and Miller indices – distance between successive planes – linear and planar densities – crystalline and noncrystalline materials –Example use of Miller indices: wafer surface orientation – wafer flats and notches – pattern alignment - imperfections in crystals.
+
+UNIT II ELECTRICAL AND MAGNETIC PROPERTIES OF MATERIALS:
+Classical free electron theory - Expression for electrical conductivity – Thermal conductivity, expression - Quantum free electron theory :Tunneling – degenerate states – Fermi- Dirac statistics – Density of energy states – Electron in periodic potential – Energy bands in solids – tight binding approximation - Electron effective mass – concept of hole. Magnetic materials: Dia, para and ferromagnetic effects – paramagnetism in the conduction electrons in metals – exchange interaction and ferromagnetism – quantum interference devices – GMR devices.
+
+UNIT III SEMICONDUCTORS AND TRANSPORT PHYSICS:
+Intrinsic Semiconductors – Energy band diagram – direct and indirect band gap semiconductors – Carrier concentration in intrinsic semiconductors – extrinsic semiconductors - Carrier concentration in N-type & P-type semiconductors – Variation of carrier concentration with temperature – Carrier transport in Semiconductors: Drift, mobility and diffusion – Hall effect and devices – Ohmic contacts – Schottky diode.
+
+UNIT IV OPTICAL PROPERTIES OF MATERIALS:
+Classification of optical materials – Optical processes in semiconductors: optical absorption and emission, charge injection and recombination, optical absorption, loss and gain. Optical processes in quantum wells – Optoelectronic devices: light detectors and solar cells – light emitting diode – laser diode - optical processes in organic semiconductor devices –excitonic state – Electro-optics and nonlinear optics: Modulators and switching devices – plasmonics.
+
+UNIT V NANO DEVICES:
+Density of states for solids - Significance between Fermi energy and volume of the material – Quantum confinement – Quantum structures – Density of states for quantum wells, wires and dots – Band gap of nanomaterials –Tunneling – Single electron phenomena – Single electron Transistor. Conductivity of metallic nanowires – Ballistic transport – Quantum resistance and conductance – Carbon nanotubes: Properties and applications - Spintronic devices and applications – Optics in quantum structures – quantum well laser.
+
+
