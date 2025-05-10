@@ -19,8 +19,14 @@ import { Copy, ImageIcon, Loader2, Upload } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 // Enhanced types for the academic chatbot
-interface EnhancedChatMessage extends ChatMessage {
-  response: {
+// We don't extend ChatMessage since we're overriding the response type
+interface EnhancedChatMessage {
+  id: number;
+  userId: number;
+  message: string;
+  isAdvanced: boolean;
+  createdAt: Date | null;
+  response: string | {
     content: string;
     metadata: {
       topic: string;
@@ -154,17 +160,39 @@ export default function AcademicChatbotPage() {
   };
   
   // Render enhanced chatbot response
-  const renderChatbotResponse = (response: EnhancedChatMessage['response']) => {
+  const renderChatbotResponse = (response: any) => {
+    // Check if this is the new enhanced format (with metadata) or old string format
+    if (typeof response === 'string') {
+      // Legacy format - just display the string
+      return (
+        <div className="relative">
+          <div className="prose dark:prose-invert max-w-none">
+            <p className="whitespace-pre-line">{response}</p>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="absolute top-0 right-0"
+            onClick={() => copyToClipboard(response)}
+          >
+            <Copy className="h-4 w-4" />
+          </Button>
+        </div>
+      );
+    }
+    
+    // New enhanced format with metadata
     return (
       <div className="relative">
         <div className="prose dark:prose-invert max-w-none">
           <div dangerouslySetInnerHTML={{ __html: response.content }} />
           
-          {response.metadata.imageUrl && (
+          {response.metadata?.imageUrl && (
             <div className="my-4 flex justify-center">
               <img 
                 src={response.metadata.imageUrl} 
-                alt={`Diagram for ${response.metadata.topic}`} 
+                alt={`Diagram for ${response.metadata.topic || 'topic'}`} 
                 className="max-w-full rounded-lg border shadow-sm"
               />
             </div>
@@ -173,9 +201,9 @@ export default function AcademicChatbotPage() {
           <div className="text-xs text-gray-500 mt-4 border-t pt-2">
             <p>
               This content is taken from{" "}
-              {response.metadata.sources.usesInternet ? "Internet and Book resources" : "Book resources"}
+              {response.metadata?.sources?.usesInternet ? "Internet and Book resources" : "Book resources"}
             </p>
-            {response.metadata.sources.bookSources.length > 0 && (
+            {response.metadata?.sources?.bookSources?.length > 0 && (
               <p className="mt-1">
                 <strong>Sources:</strong>{" "}
                 {response.metadata.sources.bookSources.join(", ")}
