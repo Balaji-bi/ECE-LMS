@@ -7,7 +7,7 @@ import { insertChatMessageSchema } from "@shared/schema";
 const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
 // Set some default configuration 
 const geminiConfig = { 
-  model: "gemini-pro" // Gemini model name
+  model: "gemini-1.0-pro" // Gemini model name - using correct version
 };
 
 // Create a router
