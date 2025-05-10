@@ -80,7 +80,7 @@ contentToolsRouter.post("/assignment", async (req: Request, res: Response) => {
     }
     
     // Generate assignment using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareAssignmentPrompt(subject, topic, type, difficulty);
     const result = await geminiModel.generateContent(prompt);
     const assignment = result.response.text();
@@ -113,7 +113,7 @@ contentToolsRouter.post("/research", async (req: Request, res: Response) => {
     }
     
     // Generate research paper assistance using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareResearchPrompt(topic, type);
     const result = await geminiModel.generateContent(prompt);
     const research = result.response.text();
@@ -146,7 +146,7 @@ contentToolsRouter.post("/resume", async (req: Request, res: Response) => {
     }
     
     // Generate resume using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareResumePrompt(details);
     const result = await geminiModel.generateContent(prompt);
     const resume = result.response.text();
@@ -179,7 +179,7 @@ contentToolsRouter.post("/rewrite", async (req: Request, res: Response) => {
     }
     
     // Generate rewritten content using Gemini
-    const geminiModel = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const geminiModel = genAI.getGenerativeModel(geminiConfig);
     const prompt = prepareRewritePrompt(content, style);
     const result = await geminiModel.generateContent(prompt);
     const rewritten = result.response.text();
