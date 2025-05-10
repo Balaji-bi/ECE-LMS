@@ -8,10 +8,11 @@ import {
 } from "@shared/schema";
 import createMemoryStore from "memorystore";
 import session from "express-session";
-import { db } from "./db";
-import { pool } from "./db";
+import { db, pool } from "./db";
 import connectPg from "connect-pg-simple";
 import { eq, desc, and } from "drizzle-orm";
+
+const PostgresSessionStore = connectPg(session);
 
 // Interface for storage operations
 export interface IStorage {
@@ -41,10 +42,10 @@ export interface IStorage {
   createUserActivity(userActivity: InsertUserActivity): Promise<UserActivity>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
-// In-memory implementation
+// In-memory implementation for development
 export class MemStorage implements IStorage {
   private users: Map<number, User>;
   private chatMessages: Map<number, ChatMessage>;
@@ -52,7 +53,7 @@ export class MemStorage implements IStorage {
   private forumPosts: Map<number, ForumPost>;
   private forumReplies: Map<number, ForumReply>;
   private userActivities: Map<number, UserActivity>;
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   private currentIds: {
     users: number;
@@ -62,7 +63,7 @@ export class MemStorage implements IStorage {
     forumReplies: number;
     userActivities: number;
   };
-
+  
   constructor() {
     this.users = new Map();
     this.chatMessages = new Map();
@@ -72,54 +73,72 @@ export class MemStorage implements IStorage {
     this.userActivities = new Map();
     
     this.currentIds = {
-      users: 1,
-      chatMessages: 1,
-      news: 1,
-      forumPosts: 1,
-      forumReplies: 1,
-      userActivities: 1
+      users: 0,
+      chatMessages: 0,
+      news: 0,
+      forumPosts: 0,
+      forumReplies: 0,
+      userActivities: 0
     };
     
-    // Initialize session store
+    // Initialize with sample news
+    this.initializeNews();
+    
     const MemoryStore = createMemoryStore(session);
     this.sessionStore = new MemoryStore({
-      checkPeriod: 86400000, // Prune expired entries every 24h
+      checkPeriod: 86400000
     });
-    
-    // Initialize sample news
-    this.initializeNews();
   }
-
+  
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     return this.users.get(id);
   }
-
+  
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    for (const user of this.users.values()) {
+      if (user.username === username) {
+        return user;
+      }
+    }
+    return undefined;
   }
-
+  
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = this.currentIds.users++;
+    const id = ++this.currentIds.users;
     const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
+    
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt,
+      department: insertUser.department || ""
+    };
+    
     this.users.set(id, user);
     return user;
   }
   
   // Chat operations
   async getChatMessages(userId: number, isAdvanced: boolean): Promise<ChatMessage[]> {
-    return Array.from(this.chatMessages.values())
+    const messages = Array.from(this.chatMessages.values())
       .filter(message => message.userId === userId && message.isAdvanced === isAdvanced)
       .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    
+    return messages;
   }
   
   async createChatMessage(insertChatMessage: InsertChatMessage): Promise<ChatMessage> {
-    const id = this.currentIds.chatMessages++;
+    const id = ++this.currentIds.chatMessages;
     const createdAt = new Date();
-    const chatMessage: ChatMessage = { ...insertChatMessage, id, createdAt };
+    
+    const chatMessage: ChatMessage = { 
+      ...insertChatMessage, 
+      id, 
+      createdAt,
+      isAdvanced: insertChatMessage.isAdvanced ?? false
+    };
+    
     this.chatMessages.set(id, chatMessage);
     return chatMessage;
   }
@@ -131,9 +150,11 @@ export class MemStorage implements IStorage {
   }
   
   async createNews(insertNews: InsertNews): Promise<News> {
-    const id = this.currentIds.news++;
+    const id = ++this.currentIds.news;
     const publishedAt = new Date();
+    
     const newsItem: News = { ...insertNews, id, publishedAt };
+    
     this.newsItems.set(id, newsItem);
     return newsItem;
   }
@@ -149,11 +170,29 @@ export class MemStorage implements IStorage {
   }
   
   async createForumPost(insertForumPost: InsertForumPost): Promise<ForumPost> {
-    const id = this.currentIds.forumPosts++;
+    const id = ++this.currentIds.forumPosts;
     const createdAt = new Date();
-    const forumPost: ForumPost = { ...insertForumPost, id, createdAt };
+    
+    const forumPost: ForumPost = { 
+      ...insertForumPost, 
+      id, 
+      createdAt,
+      likes: 0
+    };
+    
     this.forumPosts.set(id, forumPost);
     return forumPost;
+  }
+  
+  async likeForumPost(postId: number): Promise<ForumPost> {
+    const post = this.forumPosts.get(postId);
+    if (!post) {
+      throw new Error('Post not found');
+    }
+    
+    post.likes = (post.likes || 0) + 1;
+    this.forumPosts.set(postId, post);
+    return post;
   }
   
   async getForumReplies(postId: number): Promise<ForumReply[]> {
@@ -163,9 +202,11 @@ export class MemStorage implements IStorage {
   }
   
   async createForumReply(insertForumReply: InsertForumReply): Promise<ForumReply> {
-    const id = this.currentIds.forumReplies++;
+    const id = ++this.currentIds.forumReplies;
     const createdAt = new Date();
+    
     const forumReply: ForumReply = { ...insertForumReply, id, createdAt };
+    
     this.forumReplies.set(id, forumReply);
     return forumReply;
   }
@@ -178,51 +219,47 @@ export class MemStorage implements IStorage {
   }
   
   async createUserActivity(insertUserActivity: InsertUserActivity): Promise<UserActivity> {
-    const id = this.currentIds.userActivities++;
+    const id = ++this.currentIds.userActivities;
     const createdAt = new Date();
+    
     const userActivity: UserActivity = { ...insertUserActivity, id, createdAt };
+    
     this.userActivities.set(id, userActivity);
     return userActivity;
   }
   
-  // Initialize sample news
   private initializeNews(): void {
+    // Sample news data
     const sampleNews = [
       {
         title: "Anna University Announces New IoT Lab for ECE Department",
         description: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
-        category: "Department News",
-        publishedAt: new Date(Date.now() - 3 * 60 * 60 * 1000) // 3 hours ago
+        category: "Department News"
       },
       {
         title: "IEEE Conference Paper Submissions Due Next Week",
         description: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
-        category: "Academic Alert",
-        publishedAt: new Date(Date.now() - 24 * 60 * 60 * 1000) // 1 day ago
+        category: "Academic Alert"
       },
       {
         title: "Latest Advances in 5G Technology - ECE Seminar",
         description: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
-        category: "Event",
-        publishedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+        category: "Event"
       }
     ];
     
-    sampleNews.forEach(newsItem => {
-      const id = this.currentIds.news++;
-      this.newsItems.set(id, { id, ...newsItem });
-    });
+    // Add sample news if none exist
+    if (this.newsItems.size === 0) {
+      sampleNews.forEach(item => {
+        this.createNews(item);
+      });
+    }
   }
 }
 
-import { db } from "./db";
-import connectPg from "connect-pg-simple";
-import { eq, desc, and } from "drizzle-orm";
-
-const PostgresSessionStore = connectPg(session);
-
+// PostgreSQL implementation for production
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
   
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 
@@ -349,34 +386,39 @@ export class DatabaseStorage implements IStorage {
 
 // Initialize with sample news if needed
 const initializeNews = async (storage: DatabaseStorage) => {
-  const existingNews = await db.select().from(news);
-  
-  if (existingNews.length === 0) {
-    const sampleNews = [
-      {
-        title: "Anna University Announces New IoT Lab for ECE Department",
-        description: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
-        category: "Department News"
-      },
-      {
-        title: "IEEE Conference Paper Submissions Due Next Week",
-        description: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
-        category: "Academic Alert"
-      },
-      {
-        title: "Latest Advances in 5G Technology - ECE Seminar",
-        description: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
-        category: "Event"
-      }
-    ];
+  try {
+    const existingNews = await db.select().from(news);
     
-    for (const item of sampleNews) {
-      await storage.createNews(item);
+    if (existingNews.length === 0) {
+      const sampleNews = [
+        {
+          title: "Anna University Announces New IoT Lab for ECE Department",
+          description: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
+          category: "Department News"
+        },
+        {
+          title: "IEEE Conference Paper Submissions Due Next Week",
+          description: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
+          category: "Academic Alert"
+        },
+        {
+          title: "Latest Advances in 5G Technology - ECE Seminar",
+          description: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
+          category: "Event"
+        }
+      ];
+      
+      for (const item of sampleNews) {
+        await storage.createNews(item);
+      }
     }
+  } catch (error) {
+    console.error("Error initializing news:", error);
   }
 };
 
+// Export the database storage implementation
 export const storage = new DatabaseStorage();
 
-// Initialize sample data
+// Initialize sample data (wrapped in try/catch to handle initial schema issues)
 initializeNews(storage).catch(console.error);

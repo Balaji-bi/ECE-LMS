@@ -65,6 +65,18 @@ export function ForumPost({ post }: ForumPostProps) {
     },
   });
   
+  // Like post mutation
+  const { mutate: likePost, isPending: isLiking } = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/forum/posts/${post.id}/like`);
+      return res.json();
+    },
+    onSuccess: () => {
+      // Invalidate posts to refresh likes count
+      queryClient.invalidateQueries({ queryKey: ["/api/forum/posts"] });
+    },
+  });
+  
   const handleReply = () => {
     if (replyContent.trim()) {
       addReply(replyContent);
@@ -113,6 +125,16 @@ export function ForumPost({ post }: ForumPostProps) {
             </Badge>
           </div>
           <div className="flex space-x-2">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-sm text-gray-500"
+              onClick={() => likePost()}
+              disabled={isLiking || !user}
+            >
+              <span className="material-icons text-sm mr-1">favorite</span>
+              {post.likes}
+            </Button>
             <Button 
               variant="ghost" 
               size="sm" 
