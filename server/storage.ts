@@ -20,6 +20,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  deleteUser(id: number): Promise<void>;
   
   // Chat operations
   getChatMessages(userId: number, isAdvanced: boolean): Promise<ChatMessage[]>;
@@ -117,6 +118,44 @@ export class MemStorage implements IStorage {
     
     this.users.set(id, user);
     return user;
+  }
+  
+  async deleteUser(id: number): Promise<void> {
+    // Delete the user
+    this.users.delete(id);
+    
+    // Delete associated data
+    const chatMessagesToDelete = Array.from(this.chatMessages.entries())
+      .filter(([_, message]) => message.userId === id)
+      .map(([messageId]) => messageId);
+      
+    chatMessagesToDelete.forEach(messageId => {
+      this.chatMessages.delete(messageId);
+    });
+    
+    const forumPostsToDelete = Array.from(this.forumPosts.entries())
+      .filter(([_, post]) => post.userId === id)
+      .map(([postId]) => postId);
+      
+    forumPostsToDelete.forEach(postId => {
+      this.forumPosts.delete(postId);
+    });
+    
+    const forumRepliesToDelete = Array.from(this.forumReplies.entries())
+      .filter(([_, reply]) => reply.userId === id)
+      .map(([replyId]) => replyId);
+      
+    forumRepliesToDelete.forEach(replyId => {
+      this.forumReplies.delete(replyId);
+    });
+    
+    const userActivitiesToDelete = Array.from(this.userActivities.entries())
+      .filter(([_, activity]) => activity.userId === id)
+      .map(([activityId]) => activityId);
+      
+    userActivitiesToDelete.forEach(activityId => {
+      this.userActivities.delete(activityId);
+    });
   }
   
   // Chat operations
@@ -282,6 +321,26 @@ export class DatabaseStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+  
+  async deleteUser(id: number): Promise<void> {
+    // Start a transaction to ensure all deletions are atomic
+    await db.transaction(async (tx) => {
+      // Delete user activities first (foreign key constraint)
+      await tx.delete(userActivities).where(eq(userActivities.userId, id));
+      
+      // Delete chat messages
+      await tx.delete(chatMessages).where(eq(chatMessages.userId, id));
+      
+      // Delete forum replies
+      await tx.delete(forumReplies).where(eq(forumReplies.userId, id));
+      
+      // Delete forum posts (note: this will cascade delete associated replies if your DB has foreign key constraints)
+      await tx.delete(forumPosts).where(eq(forumPosts.userId, id));
+      
+      // Finally, delete the user
+      await tx.delete(users).where(eq(users.id, id));
+    });
   }
   
   // Chat operations

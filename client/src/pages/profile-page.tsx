@@ -47,32 +47,33 @@ export default function ProfilePage() {
     queryKey: ["/api/activities"],
   });
   
-  // Save settings mutation
-  const { mutate: saveSettings, isPending: isSavingSettings } = useMutation({
-    mutationFn: async (settings: SettingsState) => {
-      const res = await apiRequest("POST", "/api/settings", settings);
-      return res.json();
-    },
-  });
+  // We're now only using theme toggle directly without saving settings
   
   const handleThemeToggle = () => {
     toggleTheme();
   };
   
-  const handleNotificationsToggle = () => {
-    setSettings(prev => ({...prev, notifications: !prev.notifications}));
-  };
-  
-  const handleFontSizeChange = (value: string) => {
-    setSettings(prev => ({...prev, fontSize: value}));
-  };
-  
-  const handleSaveSettings = () => {
-    saveSettings(settings);
-  };
+  // We've removed the notifications and font size settings
   
   const handleLogout = () => {
     logoutMutation.mutate();
+  };
+  
+  // Delete account mutation
+  const { mutate: deleteAccount, isPending: isDeletingAccount } = useMutation({
+    mutationFn: async () => {
+      if (!user) return;
+      const res = await apiRequest("DELETE", `/api/user/${user.id}`);
+      return res.json();
+    },
+    onSuccess: () => {
+      // Redirect to login page after account deletion
+      logoutMutation.mutate();
+    },
+  });
+
+  const handleDeleteAccount = () => {
+    deleteAccount();
   };
   
   const getUserInitials = (name: string) => {
@@ -191,12 +192,14 @@ export default function ProfilePage() {
                     <div>
                       <p className="text-sm">{activity.description}</p>
                       <p className="text-xs text-gray-500">
-                        {new Date(activity.createdAt).toLocaleString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {activity.createdAt 
+                          ? new Date(activity.createdAt).toLocaleString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }) 
+                          : 'Date unavailable'}
                       </p>
                     </div>
                   </div>
@@ -224,50 +227,6 @@ export default function ProfilePage() {
                   onCheckedChange={handleThemeToggle}
                 />
               </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <span className="material-icons text-gray-500 mr-3">notifications</span>
-                  <span className="text-sm">Notifications</span>
-                </div>
-                <Switch 
-                  checked={settings.notifications} 
-                  onCheckedChange={handleNotificationsToggle}
-                />
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <span className="material-icons text-gray-500 mr-3">font_download</span>
-                  <span className="text-sm">Font Size</span>
-                </div>
-                <Select
-                  value={settings.fontSize}
-                  onValueChange={handleFontSizeChange}
-                >
-                  <SelectTrigger className="w-[100px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="small">Small</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="large">Large</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button 
-                className="w-full mt-2"
-                onClick={handleSaveSettings}
-                disabled={isSavingSettings}
-              >
-                {isSavingSettings ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Saving...
-                  </>
-                ) : "Save Settings"}
-              </Button>
               
               <Button 
                 variant="outline"
@@ -299,7 +258,12 @@ export default function ProfilePage() {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction className="bg-accent hover:bg-accent/90">Delete Account</AlertDialogAction>
+                    <AlertDialogAction 
+                      className="bg-accent hover:bg-accent/90"
+                      onClick={handleDeleteAccount}
+                    >
+                      Delete Account
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

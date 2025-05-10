@@ -152,4 +152,30 @@ export function setupAuth(app: Express) {
     const { password, ...userWithoutPassword } = req.user;
     res.json(userWithoutPassword);
   });
+  
+  // Add endpoint to delete a user account
+  app.delete("/api/user/:id", async (req, res) => {
+    if (!req.isAuthenticated()) return res.sendStatus(401);
+    
+    const userId = parseInt(req.params.id);
+    
+    // Ensure user can only delete their own account
+    if (req.user.id !== userId) {
+      return res.status(403).json({ message: "You can only delete your own account" });
+    }
+    
+    try {
+      await storage.deleteUser(userId);
+      
+      // Log the user out
+      req.logout((err) => {
+        if (err) return res.status(500).json({ message: "Error logging out" });
+        
+        res.json({ message: "Account successfully deleted" });
+      });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Error deleting account" });
+    }
+  });
 }
