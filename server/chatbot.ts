@@ -96,46 +96,59 @@ export const chatbotRouter = Router();
 // Helper function to prepare academic chat model prompt
 function prepareAcademicPrompt(query: AcademicQuery) {
   // Determine the source based on the logic in the prompt
-  let dataSource = "Internet + All books";
+  let dataSource = "";
   let useInternet = false;
   let bookSpecifics = "";
   
+  // Follow the exact data source selection logic from the requirements
   if (query.knowledgeLevel) {
-    // If knowledge level is selected, we can use internet
+    // Logic point 1, 2, and 3 from requirements: If knowledge level is selected
     useInternet = true;
     
     if (query.subject && query.book) {
+      // Case 3: Knowledge Level + Subject + Book = Internet + That specific book
       dataSource = `Internet + Specific book (${query.book})`;
-      bookSpecifics = `Focus specifically on the book: ${query.book}`;
+      bookSpecifics = `Use that specific book: ${query.book} with internet sources`;
     } else if (query.subject) {
+      // Case 2: Knowledge Level + Subject (no book) = Internet + All books from subject
       dataSource = `Internet + All books from ${query.subject}`;
-      bookSpecifics = `Focus on all books related to ${query.subject}`;
+      bookSpecifics = `Use all available books under ${query.subject} with internet sources`;
     } else {
+      // Case 1: Knowledge Level only = Internet + All books
       dataSource = "Internet + All available books";
-      bookSpecifics = "Use all relevant books as references";
+      bookSpecifics = "Use internet and all available books as references";
     }
   } else {
-    // No knowledge level, so no internet unless resources are requested
-    useInternet = query.showRecommendedResources || false;
+    // No knowledge level selected
     
     if (query.subject && query.book) {
+      // Case 5: Subject + Book (no Knowledge Level) = Only the selected book (NO internet)
       dataSource = `Only the selected book (${query.book})`;
-      bookSpecifics = `Use ONLY the book: ${query.book}. DO NOT use internet sources.`;
+      bookSpecifics = `Use ONLY the book: ${query.book}. DO NOT use internet sources for answers.`;
+      useInternet = false;
     } else if (query.subject) {
+      // Case 4: Subject only (no Knowledge Level or book) = All books under subject (NO internet)
       dataSource = `All books under ${query.subject} subject`;
-      bookSpecifics = `Use ONLY books related to ${query.subject}. DO NOT use internet sources.`;
+      bookSpecifics = `Use ONLY books related to ${query.subject}. DO NOT use internet sources for answers.`;
+      useInternet = false;
     } else if (query.book) {
+      // Case 6: Book only (no Knowledge Level or subject) = Only that book (NO internet)
       dataSource = `Only the selected book (${query.book})`;
-      bookSpecifics = `Use ONLY the book: ${query.book}. DO NOT use internet sources.`;
+      bookSpecifics = `Use ONLY the book: ${query.book}. DO NOT use internet sources for answers.`;
+      useInternet = false;
     } else {
-      // Default case - use subject books where topic belongs
+      // Case 7: No knowledge level + subject + Book = All books where topic belongs
       dataSource = "All books where the topic belongs";
-      bookSpecifics = "Use ONLY books related to the subject where this topic belongs. DO NOT use internet sources.";
+      bookSpecifics = "Use ONLY books related to the subject where this topic belongs. DO NOT use internet sources for answers.";
+      useInternet = false;
     }
-    
-    // If resources are requested, we can use internet just for that purpose
-    if (query.showRecommendedResources) {
-      dataSource += " + Internet for learning resources only";
+  }
+  
+  // If resources are requested, we can use internet just for resources regardless of other settings
+  if (query.showRecommendedResources) {
+    useInternet = true;
+    if (!dataSource.includes("Internet")) {
+      dataSource += " + Internet for recommended learning resources only";
     }
   }
   
@@ -153,31 +166,44 @@ function prepareAcademicPrompt(query: AcademicQuery) {
   
   // Generate the question based on knowledge level
   let generatedQuestion = "";
+  let knowledgeLevelExplanation = "";
   if (query.knowledgeLevel) {
     switch(query.knowledgeLevel) {
       case "R": // Remember
+        knowledgeLevelExplanation = "Generate a question like recalling some definition, statement, or description of the concept.";
         generatedQuestion = `Recall the definition, statement, or description of "${query.topic}".`;
         break;
       case "U": // Understand
+        knowledgeLevelExplanation = "Generate a question like 'Write briefly what you understand about the topic' or 'Explain about this topic based on your understanding.'";
         generatedQuestion = `Write briefly what you understand about "${query.topic}" and explain its importance.`;
         break;
       case "AP": // Apply
+        knowledgeLevelExplanation = "Generate a question like 'Apply a value or formula to solve a problem', 'Use this theorem in a concept and prove it', or 'Where can this concept be applied and why?'";
         generatedQuestion = `Apply "${query.topic}" to solve a problem or explain where this concept can be applied and why.`;
         break;
       case "AN": // Analyze
+        knowledgeLevelExplanation = "Generate a question like 'Analyze the topic and write down the parts', 'Compare with other related topics', or 'Analyze and elaborate the topic in detail.'";
         generatedQuestion = `Analyze "${query.topic}" in detail, breaking it down into components or comparing it with related concepts.`;
         break;
       case "E": // Evaluate
+        knowledgeLevelExplanation = "Generate a question like 'Write a statement for the topic and prove it', 'Evaluate if a statement is correct or not', 'Make a judgment and justify it.'";
         generatedQuestion = `Evaluate "${query.topic}" critically, making judgments based on facts and logic.`;
         break;
       case "C": // Create
+        knowledgeLevelExplanation = "Generate a question like 'Create a new idea based on the topic and explain it' or 'Develop a new technique or design from the concept.'";
         generatedQuestion = `Create a new idea or approach based on "${query.topic}" and explain it.`;
         break;
     }
   }
   
   // Build the final prompt
-  return `You are an intelligent Academic Assistant Chatbot trained to help college students with syllabus-based and exam concept-oriented learning. Your purpose is to provide structured, academic-quality responses based on digitized textbooks, foreign author references, and research papers.
+  return `You are an intelligent Academic Assistant Chatbot trained to help college students with syllabus-based and exam concept-oriented learning. Your purpose is to provide structured, academic-quality responses based on digitized textbooks, foreign author references, research papers, and Recommended Learning Resources (YouTube lectures, resource papers and valid courses).
+
+PURPOSE:
+- Prioritize textbook-based learning with clear, structured, and exam-focused answers.
+- Maintain the original integrity of book content without altering or paraphrasing core definitions or formulae.
+- Formulae are must - Also explain the formula, how it's derived and explain the terms as it is in the book.
+- Act as a reliable assistant for revision, concept understanding, and answer preparation.
 
 TOPIC: ${query.topic}
 ${query.knowledgeLevel ? `KNOWLEDGE LEVEL: ${query.knowledgeLevel}` : ''}
@@ -186,31 +212,50 @@ ${query.book ? `BOOK: ${query.book}` : ''}
 GENERATE IMAGE: ${query.generateImage ? 'YES' : 'NO'}
 SHOW RECOMMENDED RESOURCES: ${query.showRecommendedResources ? 'YES' : 'NO'}
 
-DATA SOURCE: ${dataSource}
+DATA SOURCE SELECTION:
+${dataSource}
 ${bookSpecifics}
 ${specificBookReference}
 
+${knowledgeLevelExplanation ? `KNOWLEDGE LEVEL GUIDANCE: ${knowledgeLevelExplanation}` : ''}
 ${generatedQuestion ? `GENERATED QUESTION: ${generatedQuestion}` : ''}
 
 RESPONSE FORMAT REQUIREMENTS:
-Structure your response like a mini research paper with these sections:
-1. Introduction – Background on the topic
-2. Literature Review – Historical or related research context
-3. How It Started / Origin – Origin of the concept or method
-4. Methodology / Working Principle - How it works or is applied, with detailed derivations
-5. Result / Conclusion – Final thoughts or key takeaways
-6. References – Textbook or paper citations
-${query.showRecommendedResources ? '7. Recommended Learning Resources - Include relevant YouTube links, research papers, and valid courses' : ''}
+Structure your response like a mini research paper with these HTML-formatted sections:
+<h2>Introduction</h2>
+Background on the topic
 
-IMPORTANT GUIDELINES:
-- Use LaTeX format for mathematical/scientific notation (e.g., E = mc^2, ∫_a^b f(x)dx = F(b) - F(a))
-- Prioritize textbook-based learning with clear, structured, and exam-focused answers
-- Maintain the original integrity of book content without altering core definitions or formulae
-- Show all formulas clearly with proper explanation of terms and derivations as they appear in the book
-- End your response by mentioning: "This content is taken from [Book resources / Internet and Book resources]"
-- Keep answers concise but informative
+<h2>Literature Review</h2>
+Historical or related research context
 
-${query.imageData ? "ADDITIONAL CONTEXT: The user has uploaded an image with their query. Analyze this image along with the topic to provide a comprehensive response." : ""}`;
+<h2>How It Started / Origin</h2>
+Origin of the concept or method
+
+<h2>Methodology / Working Principle</h2>
+How it works or is applied, with detailed derivation. Make sure to explain all formulas and their components clearly.
+
+${query.generateImage ? '<h2>Image / Diagram</h2>Image will be generated separately - provide a description of what diagram would be useful here' : ''}
+
+<h2>Result / Conclusion</h2>
+Final thoughts, outcomes or key takeaways
+
+<h2>References</h2>
+Textbook or paper citations
+
+${query.showRecommendedResources ? '<h2>Recommended Learning Resources</h2>Include specific YouTube lectures, research papers, and valid courses' : ''}
+
+IMPORTANT FORMATTING GUIDELINES:
+- Format formulas clearly with bold text for better visibility, e.g., <strong>V = I × R</strong>
+- For complex mathematical notation, use clear HTML formatting to ensure readability
+- Explain each term in formulas right after presenting them
+- Use bullet points (<ul><li>item</li></ul>) for lists of concepts or steps
+- Use proper paragraph breaks for readability
+- Make section headings (h2) stand out clearly
+- Keep answers comprehensive yet concise
+- End your response by stating the source: "This content is taken from [Book resources / Internet and Book resources]"
+
+${query.imageData ? 
+"ADDITIONAL CONTEXT: The user has uploaded an image. Analyze this image along with the topic to provide a comprehensive response that directly addresses what's in the image." : ""}`;
 }
 
 // Helper function to prepare advanced chat model prompt
