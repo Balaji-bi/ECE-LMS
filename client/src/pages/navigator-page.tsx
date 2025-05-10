@@ -107,9 +107,22 @@ export default function NavigatorPage() {
     enabled: !!selectedSubject && !!selectedUnit && selectedTopicIndex >= 0 && view === "content"
   });
   
+  // Effect to handle content loading and typeset MathJax formulas
   useEffect(() => {
     if (topicContent) {
       console.log("Topic content loaded:", topicContent);
+      
+      // Typeset MathJax content after a small delay to ensure DOM is updated
+      if (window.MathJax) {
+        setTimeout(() => {
+          try {
+            window.MathJax.typeset();
+            console.log("MathJax typeset completed");
+          } catch (error) {
+            console.error("MathJax typesetting error:", error);
+          }
+        }, 200);
+      }
     }
   }, [topicContent]);
   
@@ -571,7 +584,14 @@ export default function NavigatorPage() {
             <h2 className="text-xl font-semibold">{selectedTopic}</h2>
             
             <Tabs defaultValue="explanation" className="w-full">
-              <TabsList className="w-full grid grid-cols-4">
+              <TabsList className="w-full grid grid-cols-4" 
+                onValueChange={(value) => {
+                  // Re-typeset MathJax when changing tabs
+                  if (window.MathJax) {
+                    setTimeout(() => window.MathJax.typeset(), 100);
+                  }
+                }}
+              >
                 <TabsTrigger value="explanation">Explanation</TabsTrigger>
                 <TabsTrigger value="formulas">🧮 Formulas</TabsTrigger>
                 <TabsTrigger value="visualizations">🖼️ Visuals</TabsTrigger>
