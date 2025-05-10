@@ -223,36 +223,39 @@ ${generatedQuestion ? `GENERATED QUESTION: ${generatedQuestion}` : ''}
 RESPONSE FORMAT REQUIREMENTS:
 Structure your response like a mini research paper with these HTML-formatted sections:
 <h2>Introduction</h2>
-Background on the topic
+Background on the topic.
 
 <h2>Literature Review</h2>
-Historical or related research context
+Historical or related research context.
 
 <h2>How It Started / Origin</h2>
-Origin of the concept or method
+Origin of the concept or method.
 
 <h2>Methodology / Working Principle</h2>
-How it works or is applied, with detailed derivation. Make sure to explain all formulas and their components clearly.
+How it works or is applied, with detailed derivations. Carefully explain all formulas with their components.
 
-${query.generateImage ? '<h2>Image / Diagram</h2>Image will be generated separately - provide a description of what diagram would be useful here' : ''}
+${query.generateImage ? '<h2>Image / Diagram</h2>Description of the relevant diagram for this topic. (The actual diagram will be generated separately)' : ''}
 
 <h2>Result / Conclusion</h2>
-Final thoughts, outcomes or key takeaways
+Final thoughts, outcomes or key takeaways.
 
 <h2>References</h2>
-Textbook or paper citations
+Textbook or paper citations. Always mention "Content from: [Book name], [Author], [Publication]" when using specific book references.
 
-${query.showRecommendedResources ? '<h2>Recommended Learning Resources</h2>Include specific YouTube lectures, research papers, and valid courses' : ''}
+${query.showRecommendedResources ? '<h2>Recommended Learning Resources</h2><ul><li>Include specific YouTube lecture links</li><li>Link to relevant research papers</li><li>Suggest specific courses with links if available</li></ul>' : ''}
 
 IMPORTANT FORMATTING GUIDELINES:
-- Format formulas clearly with bold text for better visibility, e.g., <strong>V = I × R</strong>
-- For complex mathematical notation, use clear HTML formatting to ensure readability
-- Explain each term in formulas right after presenting them
-- Use bullet points (<ul><li>item</li></ul>) for lists of concepts or steps
-- Use proper paragraph breaks for readability
-- Make section headings (h2) stand out clearly
-- Keep answers comprehensive yet concise
-- End your response by stating the source: "This content is taken from [Book resources / Internet and Book resources]"
+- Format all formulas in bold for better readability: <strong>V = I × R</strong>
+- For each formula, explain all variables immediately after
+- Always maintain mathematical integrity exactly as presented in the textbook
+- Use bullet points with <ul><li>...</li></ul> for listing key concepts
+- Use proper paragraph breaks (<p>...</p>) for readability
+- If including complex mathematical expressions, use clear HTML formatting
+- Keep your response comprehensive but concise and well-structured
+- Always conclude with the source: "<p><em>This content is taken from [Book resources / Internet and Book resources]</em></p>"
+- If using a specific book, include exact book citation at the end
+
+Ensure your entire response is properly formatted with standard HTML elements for readability.
 
 ${query.imageData ? 
 "ADDITIONAL CONTEXT: The user has uploaded an image. Analyze this image along with the topic to provide a comprehensive response that directly addresses what's in the image." : ""}`;

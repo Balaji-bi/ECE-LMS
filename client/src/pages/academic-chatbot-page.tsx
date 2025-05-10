@@ -165,19 +165,26 @@ export default function AcademicChatbotPage() {
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (topic.trim() && !isSending) {
-      // Normalize "none" values to undefined
-      const normalizedKnowledgeLevel = knowledgeLevel === "none" ? undefined : knowledgeLevel;
-      const normalizedSubject = subject === "none" ? undefined : subject;
-      const normalizedBook = book === "none" ? undefined : book;
-      
+      // Ensure we're sending properly formatted data to the backend
       sendMessage({
         topic,
-        knowledgeLevel: normalizedKnowledgeLevel,
-        subject: normalizedSubject,
-        book: normalizedBook,
+        // Send undefined if none or missing - don't send empty string
+        knowledgeLevel: knowledgeLevel && knowledgeLevel !== "none" ? knowledgeLevel : undefined,
+        subject: subject && subject !== "none" ? subject : undefined,
+        book: book && book !== "none" ? book : undefined,
         generateImage,
         showRecommendedResources: showResources,
         imageData
+      });
+      
+      console.log("Sending query:", {
+        topic,
+        knowledgeLevel: knowledgeLevel && knowledgeLevel !== "none" ? knowledgeLevel : undefined,
+        subject: subject && subject !== "none" ? subject : undefined,
+        book: book && book !== "none" ? book : undefined,
+        generateImage,
+        showRecommendedResources: showResources,
+        hasImage: !!imageData
       });
     }
   };
