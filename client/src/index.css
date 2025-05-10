@@ -4,32 +4,24 @@
 
 /* Custom styles for formulas and mathematical expressions */
 @layer components {
-  /* Formula display */
+  /* Formula display - simplified */
   .formula {
-    background-color: rgba(240, 245, 255, 0.5);
-    padding: 0.5rem 1rem;
-    margin: 0.75rem 0;
-    border-left: 3px solid #4c8bf5;
     font-family: 'Courier New', monospace;
-    display: flex;
-    justify-content: center;
-    border-radius: 0.25rem;
+    padding: 0.25rem 0;
+    margin: 0.5rem 0;
     font-size: 1.05rem;
     line-height: 1.5;
   }
 
   .dark .formula {
-    background-color: rgba(30, 41, 59, 0.5);
-    border-left: 3px solid #60a5fa;
+    color: #e0e0e0;
   }
   
-  /* Variable explanations */
+  /* Variable explanations - simplified */
   .var-list {
-    margin: 0.5rem 0 1rem 0;
+    margin: 0.25rem 0 0.75rem 0;
     padding-left: 1.25rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 0.25rem 1rem;
+    list-style-type: disc;
   }
   
   .var-list li {
@@ -52,17 +44,17 @@
   
   /* Clean up section headings */
   .prose h2, .prose h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 0.75rem;
-    font-size: 1.25rem;
-    color: #4c8bf5;
-    border-bottom: 1px solid #e5e7eb;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
     padding-bottom: 0.25rem;
+    text-align: left;
   }
   
   .dark .prose h2, .dark .prose h3 {
-    color: #60a5fa;
-    border-bottom: 1px solid #374151;
+    color: #e0e0e0;
   }
   
   /* Exam content styling */

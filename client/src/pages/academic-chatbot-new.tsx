@@ -66,7 +66,7 @@ export default function AcademicChatbotPage() {
   const [knowledgeLevel, setKnowledgeLevel] = useState<string | undefined>(undefined);
   const [subject, setSubject] = useState<string | undefined>(undefined);
   const [book, setBook] = useState<string | undefined>(undefined);
-  const [generateImage, setGenerateImage] = useState(false);
+  // Removed generateImage option as requested
   const [showResources, setShowResources] = useState(false);
   const [imageData, setImageData] = useState<string | undefined>(undefined);
   
@@ -536,21 +536,7 @@ export default function AcademicChatbotPage() {
               <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3 space-y-3">
                 <h3 className="text-sm font-medium">Response Options</h3>
                 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="gen-image">Generate Diagram</Label>
-                    <p className="text-xs text-muted-foreground">
-                      Create visual aids for the topic
-                    </p>
-                  </div>
-                  <Switch
-                    id="gen-image"
-                    checked={generateImage}
-                    onCheckedChange={setGenerateImage}
-                    disabled={isSending}
-                  />
-                </div>
-                
+
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
                     <Label htmlFor="show-resources">Recommended Resources</Label>
