@@ -4,15 +4,12 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { BottomNavigation } from "@/components/layout/BottomNavigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList } from "@/components/ui/breadcrumb";
 import { Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/queryClient";
 
 // Type definitions
 type Semester = {
@@ -51,7 +48,7 @@ type CompletedTopic = {
 
 export default function NavigatorPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedSemester, setSelectedSemester] = useState<string>("1"); // Default to 1st semester
+  const [selectedSemester, setSelectedSemester] = useState<string>("1");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
@@ -168,26 +165,15 @@ export default function NavigatorPage() {
         topic: selectedTopicIndex
       };
       
-      console.log("Marking topic as completed:", newCompletedTopic);
-      
       // Add to completed topics if not already present
       if (!isTopicCompleted(newCompletedTopic)) {
         setCompletedTopics([...completedTopics, newCompletedTopic]);
         
-        // Call the API to mark it as completed (using try/catch for error handling)
         try {
           fetch("/api/syllabus/progress", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(newCompletedTopic)
-          })
-          .then(response => {
-            if (!response.ok) {
-              console.error("Failed to save progress:", response.statusText);
-            }
-          })
-          .catch(error => {
-            console.error("Error saving progress:", error);
           });
         } catch (error) {
           console.error("Error marking topic as completed:", error);
@@ -288,6 +274,63 @@ export default function NavigatorPage() {
         </BreadcrumbList>
       </Breadcrumb>
     );
+  };
+  
+  // Process the content for display
+  const formatContent = (content: string, section: string): string => {
+    if (!content) return "";
+    
+    // First try to find section by exact match
+    const sectionRegex = new RegExp(`\\d+\\.\\s*${section}\\s*\\n([\\s\\S]*?)(?=\\d+\\.|$)`, "i");
+    const match = content.match(sectionRegex);
+    
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+    
+    // If not found, try to detect section by keywords
+    if (section === "Detailed Explanation") {
+      // Return the first part up to the first section marker
+      const parts = content.split(/\d+\.\s+/);
+      if (parts.length > 1) {
+        return parts[1].trim();
+      }
+    }
+    
+    // For other sections, search by keywords
+    const keywords = {
+      "Key Formulas": ["formula", "equation", "=", "calculation"],
+      "Visuals & Diagrams": ["diagram", "figure", "image", "visual", "illustration"],
+      "IEEE Paper References": ["paper", "reference", "journal", "research", "ieee"],
+      "Prerequisite & Related Topics": ["prerequisite", "related", "prior", "connection"]
+    };
+    
+    const relevantKeywords = keywords[section as keyof typeof keywords];
+    if (relevantKeywords) {
+      // Split into paragraphs
+      const paragraphs = content.split(/\n\s*\n/);
+      for (const paragraph of paragraphs) {
+        if (relevantKeywords.some(kw => paragraph.toLowerCase().includes(kw.toLowerCase()))) {
+          return paragraph.trim();
+        }
+      }
+    }
+    
+    return `No specific ${section} information found.`;
+  };
+  
+  // Format the entire content for display
+  const processContentForDisplay = (content: string): string => {
+    if (!content) return "";
+    
+    // Basic HTML formatting
+    return content
+      .replace(/\n\n/g, '</p><p>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g, '<em>$1</em>')
+      .replace(/- (.*?)(\n|$)/g, '<li>$1</li>')
+      .replace(/<li>/g, '<ul><li>')
+      .replace(/<\/li>(\s*)(?!<li>)/g, '</li></ul>');
   };
   
   // Render content based on current view
@@ -421,8 +464,13 @@ export default function NavigatorPage() {
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
                       <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
-                      {/* Render HTML content from AI response */}
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Detailed Explanation") }} />
+                      {topicContent?.content ? (
+                        <div className="whitespace-pre-wrap">
+                          {formatContent(topicContent.content, "Detailed Explanation")}
+                        </div>
+                      ) : (
+                        <p>Loading detailed explanation...</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -436,7 +484,13 @@ export default function NavigatorPage() {
                         <span className="mr-2">🧮</span>
                         Key Formulas
                       </h2>
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Key Formulas") }} />
+                      {topicContent?.content ? (
+                        <div className="whitespace-pre-wrap font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded">
+                          {formatContent(topicContent.content, "Key Formulas")}
+                        </div>
+                      ) : (
+                        <p>Loading formulas...</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -450,7 +504,13 @@ export default function NavigatorPage() {
                         <span className="mr-2">🖼️</span>
                         Visuals & Diagrams
                       </h2>
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Visuals & Diagrams") }} />
+                      {topicContent?.content ? (
+                        <div className="whitespace-pre-wrap">
+                          {formatContent(topicContent.content, "Visuals & Diagrams")}
+                        </div>
+                      ) : (
+                        <p>Loading visual diagrams...</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -464,13 +524,25 @@ export default function NavigatorPage() {
                         <span className="mr-2">🔗</span>
                         IEEE Paper References
                       </h2>
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "IEEE Paper References") }} />
+                      {topicContent?.content ? (
+                        <div className="whitespace-pre-wrap">
+                          {formatContent(topicContent.content, "IEEE Paper References")}
+                        </div>
+                      ) : (
+                        <p>Loading references...</p>
+                      )}
                       
                       <h2 className="text-xl font-semibold mt-8 mb-4 flex items-center">
                         <span className="mr-2">🧩</span>
                         Prerequisite & Related Topics
                       </h2>
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Prerequisite & Related Topics") }} />
+                      {topicContent?.content ? (
+                        <div className="whitespace-pre-wrap">
+                          {formatContent(topicContent.content, "Prerequisite & Related Topics")}
+                        </div>
+                      ) : (
+                        <p>Loading related topics...</p>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -514,85 +586,6 @@ export default function NavigatorPage() {
       default:
         return null;
     }
-  };
-  
-  // Helper function to extract content sections
-  const formatContentSection = (content: string, sectionTitle: string) => {
-    if (!content) return "";
-    
-    console.log(`Formatting ${sectionTitle} section, content length: ${content.length}`);
-    
-    // Find the section based on the new format
-    // First look for section headers with emoji
-    const emojiMap: Record<string, string> = {
-      "Key Formulas": "🧮",
-      "Visuals & Diagrams": "🖼️", 
-      "IEEE Paper References": "🔗",
-      "Prerequisite & Related Topics": "🧩"
-    };
-    
-    // Try to find the section using number format first (1., 2., etc.)
-    const numberSectionRegex = new RegExp(`\\d+\\.\\s*${sectionTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s|:|\\n)([\\s\\S]*?)(?=\\d+\\.\\s*|$)`, "i");
-    
-    // Try to find section using emoji format (if applicable)
-    const emoji = emojiMap[sectionTitle];
-    const emojiSectionRegex = emoji ? 
-      new RegExp(`${emoji}\\s*${sectionTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([\\s\\S]*?)(?=(🧮|🖼️|🔗|🧩)|$)`, "i") :
-      null;
-    
-    // Try all regex patterns
-    let match = content.match(numberSectionRegex);
-    
-    if (!match && emojiSectionRegex) {
-      match = content.match(emojiSectionRegex);
-    }
-    
-    if (!match) {
-      console.log(`No match found for section: ${sectionTitle}`);
-      return `<p>No ${sectionTitle} information available.</p>`;
-    }
-    
-    // Extract content - for number format it's in match[2], for emoji it's in match[1]
-    let sectionContent = (match[2] || match[1]).trim();
-    console.log(`Match found for ${sectionTitle}, match length: ${sectionContent.length}`);
-    
-    // Process lists (lines starting with - or •)
-    sectionContent = sectionContent.replace(/^[-•] (.*?)$/gm, '<li>$1</li>');
-    if (sectionContent.includes('<li>')) {
-      sectionContent = '<ul class="my-4 list-disc pl-6 space-y-2">' + sectionContent + '</ul>';
-    } else {
-      // If no lists are found but we have multiple paragraphs, format them nicely
-      sectionContent = sectionContent
-        .split(/\n\s*\n/)
-        .map(para => `<p class="mb-4">${para.replace(/\n/g, ' ')}</p>`)
-        .join('');
-    }
-    
-    // Convert URLs to links
-    sectionContent = sectionContent.replace(
-      /https?:\/\/[^\s)]+/g, 
-      '<a href="$&" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$&</a>'
-    );
-    
-    // Convert LaTeX-like formulas with improved styling
-    sectionContent = sectionContent.replace(
-      /\$\$(.*?)\$\$/g, 
-      '<div class="my-6 px-6 py-4 bg-gray-100 dark:bg-gray-800 font-mono overflow-x-auto rounded-md border-l-4 border-primary">$1</div>'
-    );
-    
-    sectionContent = sectionContent.replace(
-      /\$(.*?)\$/g, 
-      '<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono">$1</code>'
-    );
-    
-    // Highlight formulas that include common symbols
-    const formulaPattern = /([A-Za-z][A-Za-z0-9]*\s*[=><+\-*/^]\s*[A-Za-z0-9+\-*/^(){}[\]]+)/g;
-    sectionContent = sectionContent.replace(
-      formulaPattern,
-      '<span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono">$1</span>'
-    );
-    
-    return sectionContent;
   };
   
   return (
