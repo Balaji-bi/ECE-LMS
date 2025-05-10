@@ -48,7 +48,7 @@ type CompletedTopic = {
 
 export default function NavigatorPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [selectedSemester, setSelectedSemester] = useState<string>("1");
+  const [selectedSemester, setSelectedSemester] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedUnit, setSelectedUnit] = useState<Unit | null>(null);
@@ -215,69 +215,84 @@ export default function NavigatorPage() {
   // Breadcrumb navigation
   const renderBreadcrumbs = () => {
     return (
-      <Breadcrumb className="mb-4">
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => {
-              setSelectedSemester("all");
-              setSelectedSubject(null);
-              setSelectedUnit(null);
-              setSelectedTopic(null);
-              setSelectedTopicIndex(-1);
-              setView("semesters");
-            }}>
-              Syllabus
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          
-          {selectedSemester && selectedSemester !== "all" && (
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => {
+      <div className="mb-4">
+        <Breadcrumb>
+          <BreadcrumbList className="overflow-auto py-1">
+            <BreadcrumbItem className="font-medium">
+              <BreadcrumbLink 
+                className="bg-blue-50 dark:bg-blue-950 px-3 py-1 rounded-md hover:bg-blue-100 dark:hover:bg-blue-900 transition-colors flex items-center"
+                onClick={() => {
+                setSelectedSemester("all");
                 setSelectedSubject(null);
                 setSelectedUnit(null);
                 setSelectedTopic(null);
                 setSelectedTopicIndex(-1);
-                setView("subjects");
+                setView("semesters");
               }}>
-                Semester {selectedSemester}
+                <span className="material-icons text-primary text-sm mr-1">school</span>
+                Syllabus
               </BreadcrumbLink>
             </BreadcrumbItem>
-          )}
-          
-          {selectedSubject && (
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => {
-                setSelectedUnit(null);
-                setSelectedTopic(null);
-                setSelectedTopicIndex(-1);
-                setView("units");
-              }}>
-                {selectedSubject.code}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          )}
-          
-          {selectedUnit && (
-            <BreadcrumbItem>
-              <BreadcrumbLink onClick={() => {
-                setSelectedTopic(null);
-                setSelectedTopicIndex(-1);
-                setView("topics");
-              }}>
-                UNIT {selectedUnit.number}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          )}
-          
-          {selectedTopic && (
-            <BreadcrumbItem>
-              <BreadcrumbLink>
-                {selectedTopic}
-              </BreadcrumbLink>
-            </BreadcrumbItem>
-          )}
-        </BreadcrumbList>
-      </Breadcrumb>
+            
+            {selectedSemester && selectedSemester !== "all" && (
+              <BreadcrumbItem className="font-medium">
+                <BreadcrumbLink 
+                  className="bg-indigo-50 dark:bg-indigo-950 px-3 py-1 rounded-md hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors flex items-center"
+                  onClick={() => {
+                  setSelectedSubject(null);
+                  setSelectedUnit(null);
+                  setSelectedTopic(null);
+                  setSelectedTopicIndex(-1);
+                  setView("subjects");
+                }}>
+                  <span className="material-icons text-indigo-500 text-sm mr-1">collections_bookmark</span>
+                  Semester {selectedSemester}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            )}
+            
+            {selectedSubject && (
+              <BreadcrumbItem className="font-medium">
+                <BreadcrumbLink 
+                  className="bg-purple-50 dark:bg-purple-950 px-3 py-1 rounded-md hover:bg-purple-100 dark:hover:bg-purple-900 transition-colors flex items-center"
+                  onClick={() => {
+                  setSelectedUnit(null);
+                  setSelectedTopic(null);
+                  setSelectedTopicIndex(-1);
+                  setView("units");
+                }}>
+                  <span className="material-icons text-purple-500 text-sm mr-1">menu_book</span>
+                  {selectedSubject.code}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            )}
+            
+            {selectedUnit && (
+              <BreadcrumbItem className="font-medium">
+                <BreadcrumbLink 
+                  className="bg-teal-50 dark:bg-teal-950 px-3 py-1 rounded-md hover:bg-teal-100 dark:hover:bg-teal-900 transition-colors flex items-center"
+                  onClick={() => {
+                  setSelectedTopic(null);
+                  setSelectedTopicIndex(-1);
+                  setView("topics");
+                }}>
+                  <span className="material-icons text-teal-500 text-sm mr-1">bookmark</span>
+                  UNIT {selectedUnit.number}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            )}
+            
+            {selectedTopic && (
+              <BreadcrumbItem className="font-medium">
+                <BreadcrumbLink className="bg-amber-50 dark:bg-amber-950 px-3 py-1 rounded-md flex items-center">
+                  <span className="material-icons text-amber-500 text-sm mr-1">article</span>
+                  {selectedTopic}
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+            )}
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     );
   };
   
