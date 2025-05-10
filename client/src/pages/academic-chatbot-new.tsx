@@ -248,11 +248,57 @@ export default function AcademicChatbotPage() {
       );
     }
     
+    // Helper function to enhance formula formatting 
+    const enhanceFormulaFormatting = (content: string) => {
+      if (!content) return content;
+      
+      // Handle responses that might be just plain text
+      try {
+        // Process strong tags for formula highlighting
+        let enhancedContent = content;
+        
+        // Replace markdown-style bold mathematical expressions with styled formulas
+        enhancedContent = enhancedContent.replace(
+          /\*\*(.*?)\*\*/g, 
+          '<div class="formula"><strong>$1</strong></div>'
+        );
+        
+        // Replace HTML-style bold with formula style when they contain common math symbols
+        enhancedContent = enhancedContent.replace(
+          /<strong>([^<]*?[+\-*/=×÷∑∫√∂∆∇≈≠≤≥][^<]*?)<\/strong>/g,
+          '<div class="formula"><strong>$1</strong></div>'
+        );
+        
+        // Improve variable lists after formulas
+        enhancedContent = enhancedContent.replace(
+          /<ul>\s*<li><strong>([A-Za-z0-9]+)<\/strong>: (.*?)<\/li>/g,
+          '<ul class="var-list"><li><strong>$1</strong>: $2</li>'
+        );
+        
+        // Format step-by-step derivations
+        enhancedContent = enhancedContent.replace(
+          /<ol>\s*<li>(.*?)<strong>(.*?)<\/strong>(.*?)<\/li>/g,
+          '<div class="derivation-steps"><div class="derivation-step">$1<div class="formula"><strong>$2</strong></div>$3</div>'
+        );
+        
+        // Create nicer spacing around equations with proper line breaks
+        enhancedContent = enhancedContent.replace(
+          /(<\/p>)\s*(<div class="formula">)/g,
+          '$1<br />$2'
+        );
+        
+        return enhancedContent;
+      } catch (e) {
+        // If any error occurs during processing, return original content
+        return content;
+      }
+    };
+    
     // New enhanced format with metadata
     return (
       <div className="relative">
         <div className="prose dark:prose-invert max-w-none">
-          <div dangerouslySetInnerHTML={{ __html: response.content }} />
+          <div dangerouslySetInnerHTML={{ __html: enhanceFormulaFormatting(response.content) }} />
           
           {response.metadata?.imageUrl && (
             <div className="my-4 flex justify-center">

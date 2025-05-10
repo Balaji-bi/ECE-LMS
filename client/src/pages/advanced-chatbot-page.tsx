@@ -17,6 +17,46 @@ export default function AdvancedChatbotPage() {
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [message, setMessage] = useState("");
+  
+  // Helper function to enhance formula formatting in AI responses
+  const enhanceFormulaFormatting = (content: string) => {
+    if (!content) return content;
+    
+    // Handle responses that might be just plain text
+    try {
+      // Process strong tags for formula highlighting
+      let enhancedContent = content;
+      
+      // Replace markdown-style bold mathematical expressions with styled formulas
+      enhancedContent = enhancedContent.replace(
+        /\*\*(.*?)\*\*/g, 
+        '<div class="formula"><strong>$1</strong></div>'
+      );
+      
+      // Replace HTML-style bold with formula style when they contain common math symbols
+      enhancedContent = enhancedContent.replace(
+        /<strong>([^<]*?[+\-*/=×÷∑∫√∂∆∇≈≠≤≥][^<]*?)<\/strong>/g,
+        '<div class="formula"><strong>$1</strong></div>'
+      );
+      
+      // Improve variable lists after formulas
+      enhancedContent = enhancedContent.replace(
+        /<ul>\s*<li><strong>([A-Za-z0-9]+)<\/strong>: (.*?)<\/li>/g,
+        '<ul class="var-list"><li><strong>$1</strong>: $2</li>'
+      );
+      
+      // Format step-by-step derivations
+      enhancedContent = enhancedContent.replace(
+        /<ol>\s*<li>(.*?)<strong>(.*?)<\/strong>(.*?)<\/li>/g,
+        '<div class="derivation-steps"><div class="derivation-step">$1<div class="formula"><strong>$2</strong></div>$3</div>'
+      );
+      
+      return enhancedContent;
+    } catch (e) {
+      // If any error occurs during processing, return original content
+      return content;
+    }
+  };
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // Fetch chat history
@@ -114,7 +154,14 @@ export default function AdvancedChatbotPage() {
                   />
                   <ChatMessageComponent
                     isUser={false}
-                    message={chat.response}
+                    customContent={
+                      <div 
+                        className="prose dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: enhanceFormulaFormatting(chat.response)
+                        }} 
+                      />
+                    }
                     senderIcon={<span className="material-icons text-sm">psychology</span>}
                     senderColor="bg-green-500"
                   />
