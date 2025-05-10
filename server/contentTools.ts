@@ -40,10 +40,18 @@ ${dataSource === 'internet'
 - Result / Conclusion – Outcomes, learnings, and conclusion.
 
 IMPORTANT: 
-- Use LaTeX format for mathematical/scientific notation
+- Use clear HTML formatting for mathematical/scientific notation:
   For example:
-  - Einstein's formula: E = mc^2 
-  - Integration: ∫_a^b f(x)\\dx = F(b) - F(a)
+  - Einstein's formula: <div class="formula"><strong>E = mc<sup>2</sup></strong></div>
+  - Ohm's Law: <div class="formula"><strong>V = I × R</strong></div>
+  - Integration: <div class="formula"><strong>∫<sub>a</sub><sup>b</sup> f(x) dx = F(b) - F(a)</strong></div>
+  
+- After EACH formula, explain all variables in a structured list:
+  <ul>
+    <li><strong>E</strong>: Energy (in joules)</li>
+    <li><strong>m</strong>: Mass (in kilograms)</li>
+    <li><strong>c</strong>: Speed of light (in meters per second)</li>
+  </ul>
 
 ⚠️ RULES:
 - NEVER invent book names or citations.
