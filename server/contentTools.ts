@@ -63,7 +63,7 @@ IMPORTANT:
 }
 
 // Helper function to prepare research paper assistant prompt
-function prepareResearchPrompt(title: string, authors: string, institution: string, introduction: string, methodology: string, workingPrinciple: string, implementation: string, resultAndConclusion: string) {
+function prepareResearchPrompt(title: string, authors: string, institution: string, abstract: string, introduction: string, literatureSurvey: string, methodology: string, workingPrinciple: string, implementation: string, tabulation: string, challenges: string, results: string, conclusion: string) {
   return `You are "RESEARCH-GPT," an AI-powered assistant that enhances and expands academic research papers based on user-provided content. Your goal is to convert a structured outline or incomplete draft into a full-length, 2–3 A4-page academic research paper with proper formatting, flow, and citations.
 
 🎯 PURPOSE:
@@ -73,11 +73,16 @@ Generate a well-formatted, formal research paper using provided inputs and intel
 1. Title: ${title || "[Title not provided]"}
 2. Author(s): ${authors || "[Authors not provided]"}
 3. Institution: ${institution || "[Institution not provided]"}
-4. Introduction: ${introduction || "[Not provided]"}
-5. Methodology: ${methodology || "[Not provided]"}
-6. Working Principle: ${workingPrinciple || "[Not provided]"}
-7. Implementation: ${implementation || "[Not provided]"}
-8. Result and Conclusion: ${resultAndConclusion || "[Not provided]"}
+4. Abstract: ${abstract || "[Not provided]"}
+5. Introduction: ${introduction || "[Not provided]"}
+6. Literature Survey: ${literatureSurvey || "[Not provided]"}
+7. Methodology: ${methodology || "[Not provided]"}
+8. Working Principle: ${workingPrinciple || "[Not provided]"}
+9. Implementation: ${implementation || "[Not provided]"}
+10. Tabulation: ${tabulation || "[Not provided]"}
+11. Challenges: ${challenges || "[Not provided]"}
+12. Results: ${results || "[Not provided]"}
+13. Conclusion: ${conclusion || "[Not provided]"}
 
 📐 FORMAT GUIDELINES:
 - Start with:
@@ -203,11 +208,16 @@ contentToolsRouter.post("/research", async (req: Request, res: Response) => {
       title, 
       authors, 
       institution, 
-      introduction, 
+      abstract,
+      introduction,
+      literatureSurvey, 
       methodology, 
       workingPrinciple, 
-      implementation, 
-      resultAndConclusion 
+      implementation,
+      tabulation,
+      challenges,
+      results,
+      conclusion 
     } = req.body;
     
     if (!title) {
@@ -221,12 +231,17 @@ contentToolsRouter.post("/research", async (req: Request, res: Response) => {
     const prompt = prepareResearchPrompt(
       title, 
       authors, 
-      institution, 
-      introduction, 
+      institution,
+      abstract,
+      introduction,
+      literatureSurvey, 
       methodology, 
       workingPrinciple,
       implementation,
-      resultAndConclusion
+      tabulation,
+      challenges,
+      results,
+      conclusion
     );
     const result = await geminiModel.generateContent(prompt);
     const research = result.response.text();

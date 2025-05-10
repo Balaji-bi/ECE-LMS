@@ -615,6 +615,56 @@ export default function ContentToolsPage() {
                         <span className="material-icons text-sm mr-1">content_copy</span>
                         Copy
                       </Button>
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          // Create HTML content with proper formatting
+                          const htmlContent = `
+                          <!DOCTYPE html>
+                          <html>
+                          <head>
+                            <title>${researchData.title || "Research Paper"}</title>
+                            <style>
+                              body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+                              h1 { text-align: center; }
+                              .author { text-align: center; margin-bottom: 5px; }
+                              .institution { text-align: center; font-style: italic; margin-bottom: 20px; }
+                              .formula { margin: 10px 0; padding: 5px; background-color: #f5f5f5; }
+                              section { margin-bottom: 20px; }
+                              .section-title { font-weight: bold; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+                            </style>
+                          </head>
+                          <body>
+                            ${researchMutation.data.research}
+                          </body>
+                          </html>
+                          `;
+                          
+                          // Create a blob and download link
+                          const blob = new Blob([htmlContent], {type: "text/html"});
+                          const url = URL.createObjectURL(blob);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = `${researchData.title || "research-paper"}.html`;
+                          document.body.appendChild(a);
+                          a.click();
+                          
+                          // Cleanup
+                          setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          }, 100);
+                          
+                          toast({
+                            title: "Download started",
+                            description: "Your research paper is being downloaded"
+                          });
+                        }}
+                      >
+                        <span className="material-icons text-sm mr-1">download</span>
+                        Download
+                      </Button>
                     </div>
                   </div>
                 )}
