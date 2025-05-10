@@ -19,17 +19,19 @@ import ProfilePage from "@/pages/profile-page";
 
 function Router() {
   return (
-    <Switch>
-      <Route path="/auth" component={AuthPage} />
-      <ProtectedRoute path="/" component={HomePage} />
-      <ProtectedRoute path="/navigator" component={NavigatorPage} />
-      <ProtectedRoute path="/academic-chatbot" component={AcademicChatbotPage} />
-      <ProtectedRoute path="/advanced-chatbot" component={AdvancedChatbotPage} />
-      <ProtectedRoute path="/content-tools" component={ContentToolsPage} />
-      <ProtectedRoute path="/forum" component={ForumPage} />
-      <ProtectedRoute path="/profile" component={ProfilePage} />
-      <Route component={NotFound} />
-    </Switch>
+    <div className="container-app">
+      <Switch>
+        <Route path="/auth" component={AuthPage} />
+        <ProtectedRoute path="/" component={HomePage} />
+        <ProtectedRoute path="/navigator" component={NavigatorPage} />
+        <ProtectedRoute path="/academic-chatbot" component={AcademicChatbotPage} />
+        <ProtectedRoute path="/advanced-chatbot" component={AdvancedChatbotPage} />
+        <ProtectedRoute path="/content-tools" component={ContentToolsPage} />
+        <ProtectedRoute path="/forum" component={ForumPage} />
+        <ProtectedRoute path="/profile" component={ProfilePage} />
+        <Route component={NotFound} />
+      </Switch>
+    </div>
   );
 }
 
