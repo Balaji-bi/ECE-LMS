@@ -576,6 +576,13 @@ chatbotRouter.post("/academic", async (req: Request, res: Response) => {
       response: enhancedResponse
     });
     
+    // Create activity record
+    await storage.createUserActivity({
+      userId,
+      activityType: "ACADEMIC_CHAT",
+      description: `Queried about "${query.topic}" ${query.knowledgeLevel ? `(${query.knowledgeLevel} level)` : ""}`
+    });
+    
     // Return the response
     res.json(savedMessage);
   } catch (error: any) {
@@ -611,6 +618,13 @@ chatbotRouter.post("/advanced", async (req: Request, res: Response) => {
       userId,
       isAdvanced: true,
       response: responseText
+    });
+    
+    // Create activity record
+    await storage.createUserActivity({
+      userId,
+      activityType: "ADVANCED_CHAT",
+      description: `Used advanced chatbot: "${userMessage.substring(0, 40)}${userMessage.length > 40 ? '...' : ''}"`
     });
     
     // Return the response
