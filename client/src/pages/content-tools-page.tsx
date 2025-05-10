@@ -34,7 +34,7 @@ export default function ContentToolsPage() {
   });
   
   // Available books per subject mapping
-  const subjectBooks = {
+  const subjectBooks: Record<string, string[]> = {
     "EC3251 - Circuit Analysis": ["Hayt Jack Kemmerly, Engineering Circuit Analysis", "Boylestad, Electronic Devices and Circuit Theory"],
     "EC8452 - Electronic Circuits II": ["Rashid, Microelectronic Circuits", "Sedra & Smith, Microelectronic Circuits"],
     "EC8451 - Electromagnetic Fields": ["Hayt & Buck, Engineering Electromagnetics", "David K. Cheng, Field and Wave Electromagnetics"]
@@ -241,9 +241,13 @@ export default function ContentToolsPage() {
                         <SelectValue placeholder={!assignmentData.subject ? "Select a subject first" : "Select book reference"} />
                       </SelectTrigger>
                       <SelectContent>
-                        {assignmentData.subject && subjectBooks[assignmentData.subject]?.map((book, index) => (
-                          <SelectItem key={index} value={book}>{book}</SelectItem>
-                        ))}
+                        {assignmentData.subject && 
+                          subjectBooks[assignmentData.subject] ? 
+                            subjectBooks[assignmentData.subject].map((book: string, index: number) => (
+                              <SelectItem key={index} value={book}>{book}</SelectItem>
+                            )) : 
+                            <SelectItem value="">No books available</SelectItem>
+                        }
                       </SelectContent>
                     </Select>
                   </div>
@@ -320,9 +324,22 @@ export default function ContentToolsPage() {
                 {assignmentMutation.isSuccess && (
                   <div className="mt-6 p-4 border rounded-md bg-muted">
                     <h4 className="font-medium mb-2">Generated Assignment</h4>
-                    <div className="whitespace-pre-line text-sm">
-                      {assignmentMutation.data.assignment}
-                    </div>
+                    <div 
+                      className="text-sm overflow-auto max-h-[600px] p-4 bg-white dark:bg-gray-800 rounded-md" 
+                      dangerouslySetInnerHTML={{ 
+                        __html: assignmentMutation.data.assignment
+                          // Clean up any script tags for security
+                          .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                          // Remove code backticks that might be in the response
+                          .replace(/```html|```/g, '')
+                          // Add custom styling to formula containers
+                          .replace(/<div class="formula">/g, '<div class="formula" style="background-color: #f5f5f5; padding: 10px; border-radius: 5px; margin: 15px 0; font-family: \'Times New Roman\', Times, serif;">')
+                          // Add styling to variable lists
+                          .replace(/<ul class="var-list">/g, '<ul class="var-list" style="margin-left: 20px; margin-bottom: 20px; list-style-type: disc;">')
+                          // Add styling to list items in variable lists
+                          .replace(/<li><strong>/g, '<li style="margin-bottom: 5px;"><strong>')
+                      }}
+                    />
                     <div className="flex gap-2 mt-4">
                       <Button 
                         size="sm" 
@@ -337,6 +354,82 @@ export default function ContentToolsPage() {
                       >
                         <span className="material-icons text-sm mr-1">content_copy</span>
                         Copy
+                      </Button>
+                      
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          // Create a blob with the assignment content and styling
+                          const styleCSS = `
+                          <style>
+                            body {
+                              font-family: Arial, sans-serif;
+                              line-height: 1.6;
+                              margin: 40px;
+                              color: #333;
+                            }
+                            h1, h2, h3 {
+                              color: #1a5fb4;
+                              margin-top: 25px;
+                            }
+                            .formula {
+                              background-color: #f9f9f9;
+                              padding: 10px;
+                              border-radius: 5px;
+                              margin: 15px 0;
+                              font-family: "Times New Roman", Times, serif;
+                            }
+                            .var-list {
+                              margin-left: 20px;
+                              margin-bottom: 20px;
+                            }
+                            .var-list li {
+                              margin-bottom: 5px;
+                            }
+                            p {
+                              text-align: justify;
+                            }
+                          </style>`;
+                          
+                          // Format the HTML content
+                          const htmlContent = `
+                          <!DOCTYPE html>
+                          <html>
+                          <head>
+                            <title>Assignment: ${assignmentData.topic}</title>
+                            ${styleCSS}
+                          </head>
+                          <body>
+                            <h1 style="text-align: center;">Assignment: ${assignmentData.topic}</h1>
+                            <div>${assignmentMutation.data.assignment}</div>
+                          </body>
+                          </html>`;
+                          
+                          const blob = new Blob([htmlContent], { type: 'text/html' });
+                          const url = URL.createObjectURL(blob);
+                          
+                          // Create a temporary link and trigger download
+                          const a = document.createElement('a');
+                          a.href = url;
+                          a.download = `Assignment_${assignmentData.topic.replace(/\s+/g, '_')}.html`;
+                          document.body.appendChild(a);
+                          a.click();
+                          
+                          // Cleanup
+                          setTimeout(() => {
+                            document.body.removeChild(a);
+                            URL.revokeObjectURL(url);
+                          }, 100);
+                          
+                          toast({
+                            title: "Download started",
+                            description: "Your assignment is being downloaded"
+                          });
+                        }}
+                      >
+                        <span className="material-icons text-sm mr-1">download</span>
+                        Download
                       </Button>
                     </div>
                   </div>
