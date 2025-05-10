@@ -10,7 +10,7 @@ import { ProtectedRoute } from "./lib/protected-route";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
 import HomePage from "@/pages/home-page";
-import NavigatorPage from "@/pages/navigator-page";
+import NavigatorPage from "@/pages/navigator-page-new";
 import AcademicChatbotPage from "@/pages/academic-chatbot-new";
 import AdvancedChatbotPage from "@/pages/advanced-chatbot-page";
 import ContentToolsPage from "@/pages/content-tools-page";

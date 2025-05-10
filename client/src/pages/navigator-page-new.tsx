@@ -107,12 +107,6 @@ export default function NavigatorPage() {
     enabled: !!selectedSubject && !!selectedUnit && selectedTopicIndex >= 0 && view === "content"
   });
   
-  useEffect(() => {
-    if (topicContent) {
-      console.log("Topic content loaded:", topicContent);
-    }
-  }, [topicContent]);
-  
   // Set view based on selections
   useEffect(() => {
     if (selectedTopic !== null && selectedUnit && selectedSubject) {
@@ -345,41 +339,6 @@ export default function NavigatorPage() {
     return content.slice(startPos + startMarker.length, endPos).trim();
   };
   
-  // Function to generate an image for a section
-  const [generatingImage, setGeneratingImage] = useState(false);
-  const [sectionImages, setSectionImages] = useState<{[key: string]: string}>({});
-  
-  const generateImageForSection = async (section: string) => {
-    if (!selectedTopic || !selectedSubject || generatingImage) return;
-    
-    try {
-      setGeneratingImage(true);
-      
-      const prompt = `Create a educational diagram of ${selectedTopic} for ${selectedSubject?.name}`;
-      const response = await fetch("/api/image", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-      
-      if (!response.ok) {
-        throw new Error("Failed to generate image");
-      }
-      
-      const data = await response.json();
-      
-      setSectionImages(prev => ({
-        ...prev,
-        [section]: data.imageUrl
-      }));
-      
-    } catch (error) {
-      console.error("Error generating image:", error);
-    } finally {
-      setGeneratingImage(false);
-    }
-  };
-  
   // Render content based on current view
   const renderContent = () => {
     if (isLoadingSemesters || isLoadingSubjects || isLoadingUnits || isLoadingTopics || isLoadingContent) {
@@ -420,7 +379,7 @@ export default function NavigatorPage() {
                     <p className="text-xs text-gray-500">{semester.subjectCount} Subjects</p>
                   </div>
                 </Button>
-              )}
+              ))}
             </div>
           </div>
         );
@@ -429,21 +388,21 @@ export default function NavigatorPage() {
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">Semester {selectedSemester} Subjects</h2>
-            {subjects?.map((subject) => (
-              <Card 
-                key={subject.code} 
-                className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => handleSubjectSelect(subject)}
-              >
-                <CardContent className="p-4 flex justify-between items-center">
-                  <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {subjects?.map((subject) => (
+                <Button
+                  key={subject.code}
+                  variant="outline"
+                  className="h-auto py-3 justify-start"
+                  onClick={() => handleSubjectSelect(subject)}
+                >
+                  <div className="text-left">
                     <h3 className="font-medium">{subject.code}</h3>
-                    <p className="text-sm">{subject.name}</p>
+                    <p className="text-xs text-gray-500">{subject.name}</p>
                   </div>
-                  <span className="material-icons">arrow_forward</span>
-                </CardContent>
-              </Card>
-            ))}
+                </Button>
+              ))}
+            </div>
           </div>
         );
         
@@ -451,21 +410,21 @@ export default function NavigatorPage() {
         return (
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">{selectedSubject?.code} - {selectedSubject?.name}</h2>
-            {units?.map((unit) => (
-              <Card 
-                key={unit.number} 
-                className="cursor-pointer hover:shadow-md transition-shadow"
-                onClick={() => handleUnitSelect(unit)}
-              >
-                <CardContent className="p-4 flex justify-between items-center">
-                  <div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {units?.map((unit) => (
+                <Button
+                  key={unit.number}
+                  variant="outline"
+                  className="h-auto py-3 justify-start"
+                  onClick={() => handleUnitSelect(unit)}
+                >
+                  <div className="text-left">
                     <h3 className="font-medium">UNIT {unit.number}</h3>
-                    <p className="text-sm">{unit.title}</p>
+                    <p className="text-xs text-gray-500">{unit.title}</p>
                   </div>
-                  <span className="material-icons">arrow_forward</span>
-                </CardContent>
-              </Card>
-            ))}
+                </Button>
+              ))}
+            </div>
           </div>
         );
         
@@ -474,19 +433,31 @@ export default function NavigatorPage() {
           <div className="space-y-4">
             <h2 className="text-xl font-semibold">UNIT {selectedUnit?.number} - {selectedUnit?.title}</h2>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-              <ul className="space-y-3">
+              <ul className="space-y-2">
                 {topicDetails?.topics.map((topic, index) => (
-                  <li 
-                    key={index} 
-                    className="flex items-start space-x-2 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded cursor-pointer"
-                    onClick={() => handleTopicSelect(topic, index)}
-                  >
-                    {isTopicCompleted({code: selectedSubject?.code || "", unit: selectedUnit?.number || 0, topic: index}) ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
-                    ) : (
-                      <span className="material-icons text-gray-400 flex-shrink-0">article</span>
-                    )}
-                    <span>{topic}</span>
+                  <li key={index}>
+                    <Button
+                      variant={isTopicCompleted({
+                        code: selectedSubject?.code || "", 
+                        unit: selectedUnit?.number || 0, 
+                        topic: index
+                      }) ? "default" : "outline"}
+                      className="w-full justify-start h-auto py-2 text-left"
+                      onClick={() => handleTopicSelect(topic, index)}
+                    >
+                      <span className="mr-2">
+                        {isTopicCompleted({
+                          code: selectedSubject?.code || "", 
+                          unit: selectedUnit?.number || 0, 
+                          topic: index
+                        }) ? (
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        ) : (
+                          index + 1
+                        )}
+                      </span>
+                      {topic}
+                    </Button>
                   </li>
                 ))}
               </ul>
@@ -497,182 +468,70 @@ export default function NavigatorPage() {
       case "content":
         return (
           <div className="space-y-6">
-            <h2 className="text-xl font-semibold">{selectedTopic}</h2>
-            
-            <Tabs defaultValue="explanation" className="w-full">
-              <TabsList className="w-full grid grid-cols-4">
-                <TabsTrigger value="explanation">Explanation</TabsTrigger>
-                <TabsTrigger value="formulas">🧮 Formulas</TabsTrigger>
-                <TabsTrigger value="visualizations">🖼️ Visuals</TabsTrigger>
-                <TabsTrigger value="references">🔗 References</TabsTrigger>
-              </TabsList>
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">{selectedTopic}</h2>
               
-              <TabsContent value="explanation" className="mt-4">
-                <Card>
-                  <CardContent className="pt-6 pb-6">
-                    <div className="prose dark:prose-invert max-w-none">
-                      <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
-                      {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "Detailed Explanation")
-                            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                        }} />
-                      ) : (
-                        <p>Loading explanation...</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="formulas" className="mt-4">
-                <Card>
-                  <CardContent className="pt-6 pb-6">
-                    <div className="prose dark:prose-invert max-w-none">
-                      <h2 className="text-xl font-semibold mb-4 flex items-center">
-                        <span className="mr-2">🧮</span>
-                        Key Formulas
-                      </h2>
-                      {topicContent ? (
-                        <div className="mt-4 leading-relaxed">
-                          <div dangerouslySetInnerHTML={{
-                            __html: extractSectionContent(topicContent.content, "Key Formulas")
-                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-lg text-primary">$1</strong>')
-                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                              .replace(/\n\n/g, '<div class="mb-4"></div>')
-                              .replace(/\n/g, '<br />')
-                          }} />
-                        </div>
-                      ) : (
-                        <p>Loading formulas...</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="visualizations" className="mt-4">
-                <Card>
-                  <CardContent className="pt-6 pb-6">
-                    <div className="prose dark:prose-invert max-w-none">
-                      <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-xl font-semibold flex items-center">
-                          <span className="mr-2">🖼️</span>
-                          Visuals & Diagrams
-                        </h2>
-                        
-                        {!sectionImages["visualizations"] && (
-                          <Button 
-                            size="sm"
-                            onClick={() => generateImageForSection("visualizations")}
-                            disabled={generatingImage}
-                          >
-                            {generatingImage ? 
-                              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating...</> : 
-                              <>Generate Diagram</>
-                            }
-                          </Button>
-                        )}
-                      </div>
-                      
-                      {sectionImages["visualizations"] && (
-                        <div className="mt-4 mb-6 flex justify-center">
-                          <img 
-                            src={sectionImages["visualizations"]} 
-                            alt={`Diagram for ${selectedTopic}`}
-                            className="max-w-full border rounded-md shadow-md"
-                          />
-                        </div>
-                      )}
-                      
-                      {topicContent && (
-                        <div className="mt-4">
-                          <div dangerouslySetInnerHTML={{
-                            __html: extractSectionContent(topicContent.content, "Visuals & Diagrams")
-                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
-                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                              .replace(/\n\n/g, '<div class="mb-4"></div>')
-                              .replace(/\n/g, '<br />')
-                          }} />
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="references" className="mt-4">
-                <Card>
-                  <CardContent className="pt-6 pb-6">
-                    <div className="prose dark:prose-invert max-w-none">
-                      <h2 className="text-xl font-semibold mb-4 flex items-center">
-                        <span className="mr-2">🔗</span>
-                        IEEE Paper References
-                      </h2>
-                      {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "IEEE Paper References")
-                            .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
-                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                            .replace(/\n\n/g, '<div class="mb-4"></div>')
-                            .replace(/\n/g, '<br />')
-                        }} />
-                      ) : (
-                        <p>Loading references...</p>
-                      )}
-                      
-                      <h2 className="text-xl font-semibold mt-8 mb-4 flex items-center">
-                        <span className="mr-2">🧩</span>
-                        Prerequisite & Related Topics
-                      </h2>
-                      {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "Prerequisite & Related Topics")
-                            .replace(/\*\*([^*]+)\*\*/g, '<h3 class="font-semibold mt-4 mb-2">$1</h3>')
-                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                            .replace(/\n\n/g, '<div class="mb-4"></div>')
-                            .replace(/\n/g, '<br />')
-                        }} />
-                      ) : (
-                        <p>Loading prerequisites...</p>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            </Tabs>
-            
-            <div className="flex justify-between">
-              <Button onClick={goBack} variant="outline">
-                <span className="material-icons mr-1">arrow_back</span>
-                Back to Topics
-              </Button>
-              
-              <Button 
-                onClick={handleMarkAsCompleted}
-                variant={isTopicCompleted({
-                  code: selectedSubject?.code || "", 
-                  unit: selectedUnit?.number || 0, 
-                  topic: selectedTopicIndex
-                }) ? "outline" : "default"}
-              >
-                {isTopicCompleted({
-                  code: selectedSubject?.code || "", 
-                  unit: selectedUnit?.number || 0, 
-                  topic: selectedTopicIndex
-                }) ? (
-                  <>
-                    <CheckCircle2 className="mr-1 h-4 w-4" />
-                    Completed
-                  </>
-                ) : (
-                  <>
-                    <span className="material-icons mr-1">check_circle</span>
-                    Mark as Completed
-                  </>
-                )}
-              </Button>
+              <div className="flex space-x-2">
+                <Button onClick={goBack} variant="outline" size="sm">
+                  Back
+                </Button>
+                
+                <Button 
+                  onClick={handleMarkAsCompleted}
+                  variant={isTopicCompleted({
+                    code: selectedSubject?.code || "", 
+                    unit: selectedUnit?.number || 0, 
+                    topic: selectedTopicIndex
+                  }) ? "outline" : "default"}
+                  size="sm"
+                >
+                  {isTopicCompleted({
+                    code: selectedSubject?.code || "", 
+                    unit: selectedUnit?.number || 0, 
+                    topic: selectedTopicIndex
+                  }) ? (
+                    <>
+                      <CheckCircle2 className="mr-1 h-4 w-4" />
+                      Completed
+                    </>
+                  ) : (
+                    "Mark as Completed"
+                  )}
+                </Button>
+              </div>
             </div>
+            
+            {topicContent && (
+              <Tabs defaultValue="explanation" className="w-full">
+                <TabsList className="grid grid-cols-3 md:grid-cols-5">
+                  <TabsTrigger value="explanation">Explanation</TabsTrigger>
+                  <TabsTrigger value="formulas">Formulas</TabsTrigger>
+                  <TabsTrigger value="visuals">Visuals</TabsTrigger>
+                  <TabsTrigger value="papers" className="hidden md:block">Papers</TabsTrigger>
+                  <TabsTrigger value="related" className="hidden md:block">Related</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="explanation" className="rounded-md p-4 bg-gray-50 dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: extractSectionContent(topicContent.content, "Detailed Explanation").replace(/\n/g, '<br/>') }} />
+                </TabsContent>
+                
+                <TabsContent value="formulas" className="rounded-md p-4 bg-gray-50 dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: extractSectionContent(topicContent.content, "Key Formulas").replace(/\n/g, '<br/>') }} />
+                </TabsContent>
+                
+                <TabsContent value="visuals" className="rounded-md p-4 bg-gray-50 dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: extractSectionContent(topicContent.content, "Visuals & Diagrams").replace(/\n/g, '<br/>') }} />
+                </TabsContent>
+                
+                <TabsContent value="papers" className="rounded-md p-4 bg-gray-50 dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: extractSectionContent(topicContent.content, "IEEE Paper References").replace(/\n/g, '<br/>') }} />
+                </TabsContent>
+                
+                <TabsContent value="related" className="rounded-md p-4 bg-gray-50 dark:bg-gray-800 prose dark:prose-invert prose-sm max-w-none">
+                  <div dangerouslySetInnerHTML={{ __html: extractSectionContent(topicContent.content, "Prerequisite & Related Topics").replace(/\n/g, '<br/>') }} />
+                </TabsContent>
+              </Tabs>
+            )}
           </div>
         );
         
@@ -680,6 +539,8 @@ export default function NavigatorPage() {
         return null;
     }
   };
+  
+  const syllabusVisits = completedTopics.length;
   
   return (
     <div className="min-h-screen flex flex-col pb-16">
@@ -691,34 +552,14 @@ export default function NavigatorPage() {
       <div className="flex-1 p-4 space-y-4">
         <Card>
           <CardContent className="pt-6">
-            <h2 className="font-medium mb-3">Anna University ECE Syllabus</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">21st Regulation Curriculum</p>
-            
-            <div className="space-y-4">
-              {renderBreadcrumbs()}
-              
-              {view !== "content" && (
-                <div className="relative">
-                  <Input
-                    placeholder="Search subjects, topics, or concepts..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
-                  <span className="material-icons absolute left-3 top-2 text-gray-400">search</span>
-                </div>
-              )}
-            </div>
+            {renderBreadcrumbs()}
+            {renderContent()}
           </CardContent>
         </Card>
-        
-        <div className="space-y-4">
-          {renderContent()}
-        </div>
       </div>
       
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       <BottomNavigation />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
     </div>
   );
 }
