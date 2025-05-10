@@ -7,6 +7,7 @@ import contentToolsRouter from "./contentTools";
 import newsRouter from "./newsAggregator";
 import forumRouter from "./forum";
 import syllabusRouter from "./syllabusNavigator";
+import imageGenRouter from "./imageGen";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
@@ -18,6 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.use("/api/news", newsRouter);
   app.use("/api/forum", forumRouter);
   app.use("/api/syllabus", syllabusRouter);
+  app.use("/api/image", imageGenRouter);
   
   // Get user activities
   app.get("/api/activities", async (req, res) => {

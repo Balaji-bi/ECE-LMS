@@ -293,33 +293,91 @@ export default function NavigatorPage() {
       "Prerequisite & Related Topics"
     ];
     
-    // Find the current section's index
-    const currentSectionIndex = sections.indexOf(section);
-    if (currentSectionIndex === -1) return "";
-    
-    // Create an array of regex patterns to find section markers
-    const sectionMarkers = sections.map(s => new RegExp(`\\d+\\.\\s*${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'));
-    
-    // Find the current section's start position
-    let startPos = content.search(sectionMarkers[currentSectionIndex]);
-    if (startPos === -1) return "";
-    
-    // Find where this section's title ends
-    const titleLength = content.slice(startPos).match(/\d+\.\s*[^\n]+/)?.[0]?.length || 0;
-    startPos += titleLength;
-    
-    // Find the next section's start position (or end of string)
-    let endPos = content.length;
-    for (let i = currentSectionIndex + 1; i < sections.length; i++) {
-      const nextSectionPos = content.search(sectionMarkers[i]);
-      if (nextSectionPos !== -1) {
-        endPos = nextSectionPos;
-        break;
-      }
+    // For Detailed Explanation, we'll use a different approach
+    if (section === "Detailed Explanation") {
+      const startMarker = "Detailed Explanation";
+      const endMarker = "**2. 🧮 Key Formulas**";
+      
+      const startPos = content.indexOf(startMarker);
+      if (startPos === -1) return "";
+      
+      const endPos = content.indexOf(endMarker);
+      if (endPos === -1) return content.slice(startPos + startMarker.length).trim();
+      
+      return content.slice(startPos + startMarker.length, endPos).trim();
     }
     
-    // Extract and return the section content
-    return content.slice(startPos, endPos).trim();
+    // For other sections, use section markers
+    let startMarker = "";
+    let endMarker = "";
+    
+    switch(section) {
+      case "Key Formulas":
+        startMarker = "**2. 🧮 Key Formulas**";
+        endMarker = "**3. 🖼️ Visuals & Diagrams**";
+        break;
+      case "Visuals & Diagrams":
+        startMarker = "**3. 🖼️ Visuals & Diagrams**";
+        endMarker = "**4. 🔗 IEEE Paper References**";
+        break;
+      case "IEEE Paper References":
+        startMarker = "**4. 🔗 IEEE Paper References**";
+        endMarker = "**5. 🧩 Prerequisite & Related Topics**";
+        break;
+      case "Prerequisite & Related Topics":
+        startMarker = "**5. 🧩 Prerequisite & Related Topics**";
+        endMarker = ""; // End of content
+        break;
+      default:
+        return "";
+    }
+    
+    const startPos = content.indexOf(startMarker);
+    if (startPos === -1) return "";
+    
+    if (endMarker === "") {
+      return content.slice(startPos + startMarker.length).trim();
+    }
+    
+    const endPos = content.indexOf(endMarker);
+    if (endPos === -1) return content.slice(startPos + startMarker.length).trim();
+    
+    return content.slice(startPos + startMarker.length, endPos).trim();
+  };
+  
+  // Function to generate an image for a section
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [sectionImages, setSectionImages] = useState<{[key: string]: string}>({});
+  
+  const generateImageForSection = async (section: string) => {
+    if (!selectedTopic || !selectedSubject || generatingImage) return;
+    
+    try {
+      setGeneratingImage(true);
+      
+      const prompt = `Create a educational diagram of ${selectedTopic} for ${selectedSubject?.name}`;
+      const response = await fetch("/api/image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt })
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to generate image");
+      }
+      
+      const data = await response.json();
+      
+      setSectionImages(prev => ({
+        ...prev,
+        [section]: data.imageUrl
+      }));
+      
+    } catch (error) {
+      console.error("Error generating image:", error);
+    } finally {
+      setGeneratingImage(false);
+    }
   };
   
   // Render content based on current view
@@ -454,9 +512,10 @@ export default function NavigatorPage() {
                     <div className="prose dark:prose-invert max-w-none">
                       <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
                       {topicContent ? (
-                        <div className="whitespace-pre-line">
-                          {extractSectionContent(topicContent.content, "Detailed Explanation")}
-                        </div>
+                        <div dangerouslySetInnerHTML={{
+                          __html: extractSectionContent(topicContent.content, "Detailed Explanation")
+                            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                        }} />
                       ) : (
                         <p>Loading explanation...</p>
                       )}
@@ -474,8 +533,14 @@ export default function NavigatorPage() {
                         Key Formulas
                       </h2>
                       {topicContent ? (
-                        <div className="whitespace-pre-line font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded">
-                          {extractSectionContent(topicContent.content, "Key Formulas")}
+                        <div className="mt-4 leading-relaxed">
+                          <div dangerouslySetInnerHTML={{
+                            __html: extractSectionContent(topicContent.content, "Key Formulas")
+                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-lg text-primary">$1</strong>')
+                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
+                              .replace(/\n\n/g, '<div class="mb-4"></div>')
+                              .replace(/\n/g, '<br />')
+                          }} />
                         </div>
                       ) : (
                         <p>Loading formulas...</p>
@@ -489,16 +554,46 @@ export default function NavigatorPage() {
                 <Card>
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
-                      <h2 className="text-xl font-semibold mb-4 flex items-center">
-                        <span className="mr-2">🖼️</span>
-                        Visuals & Diagrams
-                      </h2>
-                      {topicContent ? (
-                        <div className="whitespace-pre-line">
-                          {extractSectionContent(topicContent.content, "Visuals & Diagrams")}
+                      <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold flex items-center">
+                          <span className="mr-2">🖼️</span>
+                          Visuals & Diagrams
+                        </h2>
+                        
+                        {!sectionImages["visualizations"] && (
+                          <Button 
+                            size="sm"
+                            onClick={() => generateImageForSection("visualizations")}
+                            disabled={generatingImage}
+                          >
+                            {generatingImage ? 
+                              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating...</> : 
+                              <>Generate Diagram</>
+                            }
+                          </Button>
+                        )}
+                      </div>
+                      
+                      {sectionImages["visualizations"] && (
+                        <div className="mt-4 mb-6 flex justify-center">
+                          <img 
+                            src={sectionImages["visualizations"]} 
+                            alt={`Diagram for ${selectedTopic}`}
+                            className="max-w-full border rounded-md shadow-md"
+                          />
                         </div>
-                      ) : (
-                        <p>Loading visuals...</p>
+                      )}
+                      
+                      {topicContent && (
+                        <div className="mt-4">
+                          <div dangerouslySetInnerHTML={{
+                            __html: extractSectionContent(topicContent.content, "Visuals & Diagrams")
+                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
+                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
+                              .replace(/\n\n/g, '<div class="mb-4"></div>')
+                              .replace(/\n/g, '<br />')
+                          }} />
+                        </div>
                       )}
                     </div>
                   </CardContent>
@@ -514,9 +609,13 @@ export default function NavigatorPage() {
                         IEEE Paper References
                       </h2>
                       {topicContent ? (
-                        <div className="whitespace-pre-line">
-                          {extractSectionContent(topicContent.content, "IEEE Paper References")}
-                        </div>
+                        <div dangerouslySetInnerHTML={{
+                          __html: extractSectionContent(topicContent.content, "IEEE Paper References")
+                            .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
+                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
+                            .replace(/\n\n/g, '<div class="mb-4"></div>')
+                            .replace(/\n/g, '<br />')
+                        }} />
                       ) : (
                         <p>Loading references...</p>
                       )}
@@ -526,9 +625,13 @@ export default function NavigatorPage() {
                         Prerequisite & Related Topics
                       </h2>
                       {topicContent ? (
-                        <div className="whitespace-pre-line">
-                          {extractSectionContent(topicContent.content, "Prerequisite & Related Topics")}
-                        </div>
+                        <div dangerouslySetInnerHTML={{
+                          __html: extractSectionContent(topicContent.content, "Prerequisite & Related Topics")
+                            .replace(/\*\*([^*]+)\*\*/g, '<h3 class="font-semibold mt-4 mb-2">$1</h3>')
+                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
+                            .replace(/\n\n/g, '<div class="mb-4"></div>')
+                            .replace(/\n/g, '<br />')
+                        }} />
                       ) : (
                         <p>Loading prerequisites...</p>
                       )}

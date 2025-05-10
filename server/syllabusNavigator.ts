@@ -496,33 +496,55 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
     Unit ${unit}: ${unitTitle}
     Topic: ${topicName}
     
-    Structure your response in the following format:
-    
-    1. Detailed Explanation
-    - Start with simple terms first
-    - Then move into technical depth
-    - Explain methodology, types, working principles
-    - Provide a concise summary
-    
-    2. 🧮 Key Formulas
-    - Present relevant formulas in LaTeX format
-    - For example: E = mc^2
-    - Include units and variable descriptions
-    - Explain how to apply these formulas
-    
-    3. 🖼️ Visuals & Diagrams
-    - Describe schematic diagrams that would help
-    - Explain hardware layouts or concept illustrations
-    - Include step-by-step visual processes if applicable
-    
-    4. 🔗 IEEE Paper References
-    - Include links to 2-3 IEEE papers related to this topic
-    - Provide research citations or technical articles
-    - Mention any landmark papers in this field
-    
-    5. 🧩 Prerequisite & Related Topics
-    - List foundational concepts needed before learning this topic
-    - Suggest 3-5 related topics within the ECE syllabus for deeper understanding
+    Structure your response in the following format with exactly this structure and formatting:
+
+    Detailed Explanation
+    **Simple Terms:** Begin with a simple, accessible explanation of the topic that a beginner could understand. Use clear analogies when possible.
+
+    **Technical Depth:** Follow with a more rigorous technical explanation with proper terminology and concepts.
+
+    **Methodology & Working Principles:** Explain how this concept is applied, any types/classifications, and the underlying principles.
+
+    **Concise Summary:** Provide a 1-2 sentence summary of the key takeaway.
+
+
+    **2. 🧮 Key Formulas**
+
+    * **Formula 1: V = I * R** (format exactly like this, with asterisks)
+    * Variable 1 = Description (units)
+    * Variable 2 = Description (units)
+
+    * **Formula 2: I = V / R** (if applicable)
+    * Variable descriptions
+
+    **How to Apply:**
+    1. Step 1
+    2. Step 2
+
+
+    **3. 🖼️ Visuals & Diagrams**
+
+    * **Diagram 1:** Detailed description of what the diagram should show
+    * **Diagram 2:** Another diagram description if needed
+
+    Include specific visual elements that would help in understanding, like circuit layouts, graphs, or process flows.
+
+
+    **4. 🔗 IEEE Paper References**
+
+    Provide 2-3 relevant research papers or standard textbooks for this topic.
+
+
+    **5. 🧩 Prerequisite & Related Topics**
+
+    **Prerequisites:**
+    * Prerequisite 1
+    * Prerequisite 2
+
+    **Related Topics within ECE Syllabus:**
+    * Related topic 1
+    * Related topic 2
+    * Related topic 3
     
     Be accurate and comprehensive. This will be used for students' exam preparation in electronics and communication engineering.
     `;
