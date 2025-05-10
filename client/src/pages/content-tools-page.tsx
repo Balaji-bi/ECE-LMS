@@ -60,11 +60,15 @@ export default function ContentToolsPage() {
   // Resume builder state
   const [resumeData, setResumeData] = useState({
     name: user?.name || "",
-    education: "",
-    skills: "",
-    projects: "",
-    experience: "",
-    certifications: "",
+    email: "",
+    phone: "",
+    linkedin: "",
+    educationDetails: "",   // Institution, Degree, year, CGPA
+    technicalDetails: "",   // Skills
+    projectDetails: "",     // Project Title, technology used, description
+    achievementDetails: "", // title, Description
+    experienceDetails: "",  // Company Name, Position, Duration, Responsibilities
+    languageDetails: "",    // Language, known (read, write, speak)
   });
   
   // Content rewriter state
