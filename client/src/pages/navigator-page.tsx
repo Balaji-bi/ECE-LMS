@@ -76,8 +76,8 @@ export default function NavigatorPage() {
     isLoading: isLoadingSubjects,
     error: subjectsError
   } = useQuery<Subject[]>({
-    queryKey: ["/api/syllabus/semester", selectedSemester],
-    enabled: selectedSemester !== "" && view === "subjects"
+    queryKey: [`/api/syllabus/semester/${selectedSemester}`],
+    enabled: selectedSemester !== "" && selectedSemester !== "all" && view === "subjects"
   });
   
   // Fetch units for selected subject
@@ -86,7 +86,7 @@ export default function NavigatorPage() {
     isLoading: isLoadingUnits,
     error: unitsError
   } = useQuery<Unit[]>({
-    queryKey: ["/api/syllabus/subject", selectedSubject?.code],
+    queryKey: [`/api/syllabus/subject/${selectedSubject?.code}`],
     enabled: !!selectedSubject && view === "units"
   });
   
@@ -96,7 +96,7 @@ export default function NavigatorPage() {
     isLoading: isLoadingTopics,
     error: topicsError
   } = useQuery<TopicDetails>({
-    queryKey: ["/api/syllabus/unit", selectedSubject?.code, selectedUnit?.number],
+    queryKey: [`/api/syllabus/unit/${selectedSubject?.code}/${selectedUnit?.number}`],
     enabled: !!selectedSubject && !!selectedUnit && view === "topics"
   });
   
@@ -106,22 +106,22 @@ export default function NavigatorPage() {
     isLoading: isLoadingContent,
     error: contentError
   } = useQuery<TopicContent>({
-    queryKey: ["/api/syllabus/topic", selectedSubject?.code, selectedUnit?.number, selectedTopicIndex],
+    queryKey: [`/api/syllabus/topic/${selectedSubject?.code}/${selectedUnit?.number}/${selectedTopicIndex}`],
     enabled: !!selectedSubject && !!selectedUnit && selectedTopicIndex >= 0 && view === "content"
   });
   
   // Set view based on selections
   useEffect(() => {
-    if (!selectedSemester || selectedSemester === "all") {
-      setView("semesters");
-    } else if (!selectedSubject) {
-      setView("subjects");
-    } else if (!selectedUnit) {
-      setView("units");
-    } else if (selectedTopic === null) {
-      setView("topics");
-    } else {
+    if (selectedTopic !== null && selectedUnit && selectedSubject) {
       setView("content");
+    } else if (selectedUnit && selectedSubject && selectedTopic === null) {
+      setView("topics");
+    } else if (selectedSubject && !selectedUnit) {
+      setView("units");
+    } else if (selectedSemester && selectedSemester !== "all" && !selectedSubject) {
+      setView("subjects");
+    } else {
+      setView("semesters");
     }
   }, [selectedSemester, selectedSubject, selectedUnit, selectedTopic]);
   
@@ -168,16 +168,30 @@ export default function NavigatorPage() {
         topic: selectedTopicIndex
       };
       
+      console.log("Marking topic as completed:", newCompletedTopic);
+      
       // Add to completed topics if not already present
       if (!isTopicCompleted(newCompletedTopic)) {
         setCompletedTopics([...completedTopics, newCompletedTopic]);
         
-        // In a real app, we would also call the API to mark it as completed
-        // fetch("/api/syllabus/progress", {
-        //   method: "POST",
-        //   headers: { "Content-Type": "application/json" },
-        //   body: JSON.stringify(newCompletedTopic)
-        // });
+        // Call the API to mark it as completed (using try/catch for error handling)
+        try {
+          fetch("/api/syllabus/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(newCompletedTopic)
+          })
+          .then(response => {
+            if (!response.ok) {
+              console.error("Failed to save progress:", response.statusText);
+            }
+          })
+          .catch(error => {
+            console.error("Error saving progress:", error);
+          });
+        } catch (error) {
+          console.error("Error marking topic as completed:", error);
+        }
       }
     }
   };
@@ -498,11 +512,18 @@ export default function NavigatorPage() {
   const formatContentSection = (content: string, sectionTitle: string) => {
     if (!content) return "";
     
+    console.log(`Formatting ${sectionTitle} section, content length: ${content.length}`);
+    
     // Find the section
     const sectionRegex = new RegExp(`\\d+\\.\\s*${sectionTitle}(\\s|:|\\n)([\\s\\S]*?)(?=\\d+\\.\\s*|$)`, "i");
     const match = content.match(sectionRegex);
     
-    if (!match) return `<p>No ${sectionTitle} information available.</p>`;
+    if (!match) {
+      console.log(`No match found for section: ${sectionTitle}`);
+      return `<p>No ${sectionTitle} information available.</p>`;
+    }
+    
+    console.log(`Match found for ${sectionTitle}, match length: ${match[2]?.length || 0}`);
     
     // Process the content
     let sectionContent = match[2].trim();
