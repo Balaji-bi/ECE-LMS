@@ -26,12 +26,19 @@ export default function ContentToolsPage() {
   // Assignment generator state
   const [assignmentData, setAssignmentData] = useState({
     topic: "",
-    wordCount: "15000-20000",
+    characterCount: "15000-20000",
     subject: "",
     book: "",
     difficulty: "Intermediate",
     dataSource: "books"
   });
+  
+  // Available books per subject mapping
+  const subjectBooks = {
+    "EC3251 - Circuit Analysis": ["Hayt Jack Kemmerly, Engineering Circuit Analysis", "Boylestad, Electronic Devices and Circuit Theory"],
+    "EC8452 - Electronic Circuits II": ["Rashid, Microelectronic Circuits", "Sedra & Smith, Microelectronic Circuits"],
+    "EC8451 - Electromagnetic Fields": ["Hayt & Buck, Engineering Electromagnetics", "David K. Cheng, Field and Wave Electromagnetics"]
+  };
   
   // Research paper assistant state
   const [researchData, setResearchData] = useState({
@@ -183,49 +190,62 @@ export default function ContentToolsPage() {
                   </div>
                   
                   <div>
-                    <Label>Word Count Range</Label>
+                    <Label>Character Count Range</Label>
                     <Select
-                      value={assignmentData.wordCount}
-                      onValueChange={(value) => setAssignmentData({...assignmentData, wordCount: value})}
+                      value={assignmentData.characterCount}
+                      onValueChange={(value) => setAssignmentData({...assignmentData, characterCount: value})}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select word count range" />
+                        <SelectValue placeholder="Select character count range" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="15000-20000">15,000 - 20,000 words</SelectItem>
-                        <SelectItem value="20000-25000">20,000 - 25,000 words</SelectItem>
-                        <SelectItem value="25000-30000">25,000 - 30,000 words</SelectItem>
-                        <SelectItem value="30000-35000">30,000 - 35,000 words</SelectItem>
+                        <SelectItem value="15000-20000">15,000 - 20,000 characters</SelectItem>
+                        <SelectItem value="20000-25000">20,000 - 25,000 characters</SelectItem>
+                        <SelectItem value="25000-30000">25,000 - 30,000 characters</SelectItem>
+                        <SelectItem value="30000-35000">30,000 - 35,000 characters</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div>
-                    <Label>Subject (Optional)</Label>
+                    <Label>Subject</Label>
                     <Select
                       value={assignmentData.subject}
-                      onValueChange={(value) => setAssignmentData({...assignmentData, subject: value})}
+                      onValueChange={(value) => {
+                        setAssignmentData({
+                          ...assignmentData, 
+                          subject: value,
+                          book: "" // Reset book selection when subject changes
+                        });
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select a subject" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="EC3251 - Linear Integrated Circuits">EC3251 - Linear Integrated Circuits</SelectItem>
-                        <SelectItem value="EC8395 - Communication Theory">EC8395 - Communication Theory</SelectItem>
+                        <SelectItem value="EC3251 - Circuit Analysis">EC3251 - Circuit Analysis</SelectItem>
                         <SelectItem value="EC8452 - Electronic Circuits II">EC8452 - Electronic Circuits II</SelectItem>
-                        <SelectItem value="EC8491 - Communication Theory">EC8491 - Communication Theory</SelectItem>
-                        <SelectItem value="MA8352 - Linear Algebra and Numeric Analysis">MA8352 - Linear Algebra and Numeric Analysis</SelectItem>
+                        <SelectItem value="EC8451 - Electromagnetic Fields">EC8451 - Electromagnetic Fields</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   
                   <div>
-                    <Label>Reference Book (Optional)</Label>
-                    <Input 
-                      placeholder="e.g., Engineering Circuit Analysis" 
+                    <Label>Reference Book</Label>
+                    <Select
                       value={assignmentData.book}
-                      onChange={(e) => setAssignmentData({...assignmentData, book: e.target.value})}
-                    />
+                      onValueChange={(value) => setAssignmentData({...assignmentData, book: value})}
+                      disabled={!assignmentData.subject || !subjectBooks[assignmentData.subject]}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder={!assignmentData.subject ? "Select a subject first" : "Select book reference"} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {assignmentData.subject && subjectBooks[assignmentData.subject]?.map((book, index) => (
+                          <SelectItem key={index} value={book}>{book}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <div>
