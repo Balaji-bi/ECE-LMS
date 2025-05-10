@@ -2,11 +2,11 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Request, Response, Router } from "express";
 import { storage } from "./storage";
 
-// Initialize the Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-// Set some default configuration
+// Initialize the Gemini API with API key from environment
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
+// Set some default configuration 
 const geminiConfig = { 
-  model: "gemini-pro"
+  model: "gemini-pro" // Gemini model name
 };
 
 // Create a router

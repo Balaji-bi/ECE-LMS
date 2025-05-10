@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sound-country-459207-q3",
+  "private_key_id": "2b975d8b46c4b9c6fe9777faaa65866b632e608e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC2elQsZs7gB0iq\nZWeGAlwU/WSaR81A/mkQV0OhNEKAdU17m27ZR9Qhnbj2TVAQ962zB+n/UAgq9uQq\nKjbaEnHu5MY+kgmyOwWNkpFg7q7oO6ahkYRJ8dFjnxlVM5njYaozYmFb9T8Lxonw\n/Pf8nlf88OfydU7cHvTtxQvJVfFHe4RHQXue0KFXd1+qRAiJjz8E03KeK1zdh5AW\n4G4wmUYpelr3CCWy1C+PRIaH4tndNAAFRA+7Z6K6wILFIJ8Cze3vDpf9yqAI1vDO\noO6fJ6RofIs2t0+Souisagq6TpmDY6fY/q9U45BnSJBRY2n3OHxhHDwXLIe3BlCN\n6QTW1bzRAgMBAAECggEABGjyFifz5vPLcfFvw4wqDTMkgRqsH1579oeisZzRi0jf\nyFV0zoPPC3Lu2zukwYw4IplV3TQ3cPu01D9fQlJAy6JewiNbCvd527aHlJKgH9T/\n4sFhXjzIWoJ9T72mrJlEeOfEl5Qr47fMHKADHulKvL5WX1nYv+FwT5C8B1pwMXyE\nSfrKJZG6WJ2KR0eGIsoNpO//HOy92IKBJZiqSkA3Ltez1iTtCkPtu/Au3uW2kupU\nMM83Wtk+Ehz7F+Ii+uI4Kdi2cBXaq/jxtoDFQ8J/xaqKhkU0QZM1aN02wyuS42pO\nEa/M014IMw07tUP1FOvaMgF9OSF+0p1CD17glCExYwKBgQD8DbEDIbQGnQ7EzLgh\nNhB3aq1C14C4yMa/NlKI5T+YuvrwDEW8x6VLvWCi7y/urWufXDfwhWGJ3Jc5xlrt\nQvm70Vj/P2HYFw/Jowip2OooCX3NLW2yKhslUODdBROx8ZFWrRLGtpQMBo7qfbA6\nFPf10YadJtK4MtsF8zZPQimxOwKBgQC5VcGxyJZ2abfZa3BASBHLuav72cNF8Wgb\nnb/U7dg4Uaoq6HsnWHPFzfhyhWWppouBbC46FeWfNVO7/gH6iOwVOhiT9FIVeb8f\nSSY/PzvdRTfEnOcKksax3MukqWdKVEn0gNO3L3ruh8U+TRYvZD4i2ywJkgeL/WGE\nowFhBL9pYwKBgH3UI/MpRyMqEu5iOOWzhMLoyXgd90/IQ5e/ebKHp5kKdy2RIttc\nW4OVFgIhIC+p+ZlDw1VacNgO/JvGDyx1DBEcMK60KJdk4+fIcRHBjRvRqTDdpe6U\noJqfZrJPz4Y8z06S9lWnXf8m4v/jIS/Nuf/Iysf3UqjMEpVE1m7427FzAoGBAKFu\nLPSp/0TM+LKMfo2/OKD27PLFzu0RRNkpInpZYUhM+ae+L+cpiE33BjzaLJ8EzebB\nT9KQWB3A2VqZ+Sc8NEaY/+d/nC/Qh8S8dnAIqCAntlevQx9WkXNDGq4mUC3SFUi/\nHaol1TIHWKrXgkdtTSIXPdhoNeKdpV9ejEjxVbh5AoGBAPuDGrfcWkf2dwRPEXfS\nz1YzgeUDck+oJRncYHmFzzJnx1mJXYjb9AKI2HrntchL8Z6TLJMCdxjO8RFWs+UW\nroFg0ttAX68hs0hTZY9RIlBmlYGzilvg7zL7Ao+Aq6Nel/YR32JYmYlrZqTS9vW3\n7RPdEsJhd4CCftRRgNIFCzgo\n-----END PRIVATE KEY-----\n",
+  "client_email": "ecelms-service@sound-country-459207-q3.iam.gserviceaccount.com",
+  "client_id": "105698416914676341762",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/ecelms-service%40sound-country-459207-q3.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

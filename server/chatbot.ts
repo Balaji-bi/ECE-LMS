@@ -3,12 +3,11 @@ import { Request, Response, Router } from "express";
 import { storage } from "./storage";
 import { insertChatMessageSchema } from "@shared/schema";
 
-// Initialize the Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
-// Set some default configuration
+// Initialize the Gemini API with API key from environment
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || "");
+// Set some default configuration 
 const geminiConfig = { 
-  model: "gemini-pro",
-  // Use the proper model version supported by the API key
+  model: "gemini-pro" // Gemini model name
 };
 
 // Create a router
