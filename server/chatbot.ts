@@ -164,34 +164,43 @@ function prepareAcademicPrompt(query: AcademicQuery) {
     `;
   }
   
-  // Generate the question based on knowledge level
+  // Generate the question based on knowledge level and subject context
   let generatedQuestion = "";
   let knowledgeLevelExplanation = "";
+  
   if (query.knowledgeLevel) {
+    const subjectContext = query.subject ? 
+      ` in the context of ${query.subject}` : 
+      "";
+    
     switch(query.knowledgeLevel) {
       case "R": // Remember
-        knowledgeLevelExplanation = "Generate a question like recalling some definition, statement, or description of the concept.";
-        generatedQuestion = `Recall the definition, statement, or description of "${query.topic}".`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests recall of definitions, statements, or descriptions.";
+        generatedQuestion = `Define and explain "${query.topic}"${subjectContext}. Include all relevant mathematical expressions and properties.`;
         break;
       case "U": // Understand
-        knowledgeLevelExplanation = "Generate a question like 'Write briefly what you understand about the topic' or 'Explain about this topic based on your understanding.'";
-        generatedQuestion = `Write briefly what you understand about "${query.topic}" and explain its importance.`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests understanding of concepts and their significance.";
+        generatedQuestion = `Explain the concept of "${query.topic}"${subjectContext} and discuss its importance in the field.`;
         break;
       case "AP": // Apply
-        knowledgeLevelExplanation = "Generate a question like 'Apply a value or formula to solve a problem', 'Use this theorem in a concept and prove it', or 'Where can this concept be applied and why?'";
-        generatedQuestion = `Apply "${query.topic}" to solve a problem or explain where this concept can be applied and why.`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests application of concepts to solve problems.";
+        if (query.subject === "EC3251") {
+          generatedQuestion = `Solve a problem using "${query.topic}"${subjectContext}. Include step-by-step working and necessary formulas.`;
+        } else {
+          generatedQuestion = `Apply the principles of "${query.topic}"${subjectContext} to solve a practical scenario.`;
+        }
         break;
       case "AN": // Analyze
-        knowledgeLevelExplanation = "Generate a question like 'Analyze the topic and write down the parts', 'Compare with other related topics', or 'Analyze and elaborate the topic in detail.'";
-        generatedQuestion = `Analyze "${query.topic}" in detail, breaking it down into components or comparing it with related concepts.`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests analytical ability to break down concepts.";
+        generatedQuestion = `Analyze "${query.topic}"${subjectContext} by breaking it down into its key components and explaining their relationships.`;
         break;
       case "E": // Evaluate
-        knowledgeLevelExplanation = "Generate a question like 'Write a statement for the topic and prove it', 'Evaluate if a statement is correct or not', 'Make a judgment and justify it.'";
-        generatedQuestion = `Evaluate "${query.topic}" critically, making judgments based on facts and logic.`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests evaluation abilities and critical thinking.";
+        generatedQuestion = `Evaluate the effectiveness and limitations of "${query.topic}"${subjectContext}. Provide a critical assessment with supporting evidence.`;
         break;
       case "C": // Create
-        knowledgeLevelExplanation = "Generate a question like 'Create a new idea based on the topic and explain it' or 'Develop a new technique or design from the concept.'";
-        generatedQuestion = `Create a new idea or approach based on "${query.topic}" and explain it.`;
+        knowledgeLevelExplanation = "Generate a question from typical exam papers that tests creative application of concepts.";
+        generatedQuestion = `Design a new application or approach that incorporates "${query.topic}"${subjectContext}. Explain how your design works and its advantages.`;
         break;
     }
   }
@@ -223,13 +232,10 @@ ${generatedQuestion ? `GENERATED QUESTION: ${generatedQuestion}` : ''}
 RESPONSE FORMAT REQUIREMENTS:
 Structure your response like a mini research paper with these HTML-formatted sections:
 <h2>Introduction</h2>
-Background on the topic.
-
-<h2>Literature Review</h2>
-Historical or related research context.
+Background on the topic and its significance in the field.
 
 <h2>How It Started / Origin</h2>
-Origin of the concept or method.
+Origin of the concept or method, with brief historical context.
 
 <h2>Methodology / Working Principle</h2>
 How it works or is applied, with detailed derivations. Carefully explain all formulas with their components.
