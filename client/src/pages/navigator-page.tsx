@@ -107,6 +107,12 @@ export default function NavigatorPage() {
     enabled: !!selectedSubject && !!selectedUnit && selectedTopicIndex >= 0 && view === "content"
   });
   
+  useEffect(() => {
+    if (topicContent) {
+      console.log("Topic content loaded:", topicContent);
+    }
+  }, [topicContent]);
+  
   // Set view based on selections
   useEffect(() => {
     if (selectedTopic !== null && selectedUnit && selectedSubject) {
@@ -165,7 +171,6 @@ export default function NavigatorPage() {
         topic: selectedTopicIndex
       };
       
-      // Add to completed topics if not already present
       if (!isTopicCompleted(newCompletedTopic)) {
         setCompletedTopics([...completedTopics, newCompletedTopic]);
         
@@ -276,61 +281,45 @@ export default function NavigatorPage() {
     );
   };
   
-  // Process the content for display
-  const formatContent = (content: string, section: string): string => {
+  // Helper function to parse content sections
+  const extractSectionContent = (content: string, section: string): string => {
     if (!content) return "";
     
-    // First try to find section by exact match
-    const sectionRegex = new RegExp(`\\d+\\.\\s*${section}\\s*\\n([\\s\\S]*?)(?=\\d+\\.|$)`, "i");
-    const match = content.match(sectionRegex);
+    const sections = [
+      "Detailed Explanation",
+      "Key Formulas",
+      "Visuals & Diagrams",
+      "IEEE Paper References", 
+      "Prerequisite & Related Topics"
+    ];
     
-    if (match && match[1]) {
-      return match[1].trim();
-    }
+    // Find the current section's index
+    const currentSectionIndex = sections.indexOf(section);
+    if (currentSectionIndex === -1) return "";
     
-    // If not found, try to detect section by keywords
-    if (section === "Detailed Explanation") {
-      // Return the first part up to the first section marker
-      const parts = content.split(/\d+\.\s+/);
-      if (parts.length > 1) {
-        return parts[1].trim();
+    // Create an array of regex patterns to find section markers
+    const sectionMarkers = sections.map(s => new RegExp(`\\d+\\.\\s*${s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*`, 'i'));
+    
+    // Find the current section's start position
+    let startPos = content.search(sectionMarkers[currentSectionIndex]);
+    if (startPos === -1) return "";
+    
+    // Find where this section's title ends
+    const titleLength = content.slice(startPos).match(/\d+\.\s*[^\n]+/)?.[0]?.length || 0;
+    startPos += titleLength;
+    
+    // Find the next section's start position (or end of string)
+    let endPos = content.length;
+    for (let i = currentSectionIndex + 1; i < sections.length; i++) {
+      const nextSectionPos = content.search(sectionMarkers[i]);
+      if (nextSectionPos !== -1) {
+        endPos = nextSectionPos;
+        break;
       }
     }
     
-    // For other sections, search by keywords
-    const keywords = {
-      "Key Formulas": ["formula", "equation", "=", "calculation"],
-      "Visuals & Diagrams": ["diagram", "figure", "image", "visual", "illustration"],
-      "IEEE Paper References": ["paper", "reference", "journal", "research", "ieee"],
-      "Prerequisite & Related Topics": ["prerequisite", "related", "prior", "connection"]
-    };
-    
-    const relevantKeywords = keywords[section as keyof typeof keywords];
-    if (relevantKeywords) {
-      // Split into paragraphs
-      const paragraphs = content.split(/\n\s*\n/);
-      for (const paragraph of paragraphs) {
-        if (relevantKeywords.some(kw => paragraph.toLowerCase().includes(kw.toLowerCase()))) {
-          return paragraph.trim();
-        }
-      }
-    }
-    
-    return `No specific ${section} information found.`;
-  };
-  
-  // Format the entire content for display
-  const processContentForDisplay = (content: string): string => {
-    if (!content) return "";
-    
-    // Basic HTML formatting
-    return content
-      .replace(/\n\n/g, '</p><p>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/- (.*?)(\n|$)/g, '<li>$1</li>')
-      .replace(/<li>/g, '<ul><li>')
-      .replace(/<\/li>(\s*)(?!<li>)/g, '</li></ul>');
+    // Extract and return the section content
+    return content.slice(startPos, endPos).trim();
   };
   
   // Render content based on current view
@@ -464,12 +453,12 @@ export default function NavigatorPage() {
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
                       <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
-                      {topicContent?.content ? (
-                        <div className="whitespace-pre-wrap">
-                          {formatContent(topicContent.content, "Detailed Explanation")}
+                      {topicContent ? (
+                        <div className="whitespace-pre-line">
+                          {extractSectionContent(topicContent.content, "Detailed Explanation")}
                         </div>
                       ) : (
-                        <p>Loading detailed explanation...</p>
+                        <p>Loading explanation...</p>
                       )}
                     </div>
                   </CardContent>
@@ -484,9 +473,9 @@ export default function NavigatorPage() {
                         <span className="mr-2">🧮</span>
                         Key Formulas
                       </h2>
-                      {topicContent?.content ? (
-                        <div className="whitespace-pre-wrap font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded">
-                          {formatContent(topicContent.content, "Key Formulas")}
+                      {topicContent ? (
+                        <div className="whitespace-pre-line font-mono bg-gray-100 dark:bg-gray-800 p-4 rounded">
+                          {extractSectionContent(topicContent.content, "Key Formulas")}
                         </div>
                       ) : (
                         <p>Loading formulas...</p>
@@ -504,12 +493,12 @@ export default function NavigatorPage() {
                         <span className="mr-2">🖼️</span>
                         Visuals & Diagrams
                       </h2>
-                      {topicContent?.content ? (
-                        <div className="whitespace-pre-wrap">
-                          {formatContent(topicContent.content, "Visuals & Diagrams")}
+                      {topicContent ? (
+                        <div className="whitespace-pre-line">
+                          {extractSectionContent(topicContent.content, "Visuals & Diagrams")}
                         </div>
                       ) : (
-                        <p>Loading visual diagrams...</p>
+                        <p>Loading visuals...</p>
                       )}
                     </div>
                   </CardContent>
@@ -524,9 +513,9 @@ export default function NavigatorPage() {
                         <span className="mr-2">🔗</span>
                         IEEE Paper References
                       </h2>
-                      {topicContent?.content ? (
-                        <div className="whitespace-pre-wrap">
-                          {formatContent(topicContent.content, "IEEE Paper References")}
+                      {topicContent ? (
+                        <div className="whitespace-pre-line">
+                          {extractSectionContent(topicContent.content, "IEEE Paper References")}
                         </div>
                       ) : (
                         <p>Loading references...</p>
@@ -536,12 +525,12 @@ export default function NavigatorPage() {
                         <span className="mr-2">🧩</span>
                         Prerequisite & Related Topics
                       </h2>
-                      {topicContent?.content ? (
-                        <div className="whitespace-pre-wrap">
-                          {formatContent(topicContent.content, "Prerequisite & Related Topics")}
+                      {topicContent ? (
+                        <div className="whitespace-pre-line">
+                          {extractSectionContent(topicContent.content, "Prerequisite & Related Topics")}
                         </div>
                       ) : (
-                        <p>Loading related topics...</p>
+                        <p>Loading prerequisites...</p>
                       )}
                     </div>
                   </CardContent>
