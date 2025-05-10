@@ -205,8 +205,12 @@ function prepareAcademicPrompt(query: AcademicQuery) {
     }
   }
   
-  // Build the final prompt
-  return `You are an intelligent Academic Assistant Chatbot trained to help college students with syllabus-based and exam concept-oriented learning. Your purpose is to provide structured, academic-quality responses based on digitized textbooks, foreign author references, research papers, and Recommended Learning Resources (YouTube lectures, resource papers and valid courses).
+  // Build the final prompt based on knowledge level
+  let prompt = "";
+  const hasKnowledgeLevel = !!query.knowledgeLevel;
+  
+  // Common header for all prompts
+  prompt = `You are an intelligent Academic Assistant Chatbot trained to help college students with syllabus-based and exam concept-oriented learning. Your purpose is to provide structured, academic-quality responses based on digitized textbooks, foreign author references, research papers, and Recommended Learning Resources (YouTube lectures, resource papers and valid courses).
 
 PURPOSE:
 - Prioritize textbook-based learning with clear, structured, and exam-focused answers.
@@ -224,11 +228,49 @@ SHOW RECOMMENDED RESOURCES: ${query.showRecommendedResources ? 'YES' : 'NO'}
 DATA SOURCE SELECTION:
 ${dataSource}
 ${bookSpecifics}
-${specificBookReference}
+${specificBookReference}`;
 
-${knowledgeLevelExplanation ? `KNOWLEDGE LEVEL GUIDANCE: ${knowledgeLevelExplanation}` : ''}
-${generatedQuestion ? `GENERATED QUESTION: ${generatedQuestion}` : ''}
+  // Different formatting based on knowledge level
+  if (hasKnowledgeLevel) {
+    // For responses with knowledge level - use question generation workflow
+    prompt += `
+${knowledgeLevelExplanation}
 
+IMPORTANT: This is a two-step response. First, generate an appropriate exam question, then provide the answer.
+
+STEP 1: GENERATE QUESTION
+Based on this knowledge level (${query.knowledgeLevel}), create an appropriate exam-style question about "${query.topic}"${query.subject ? ` in the context of ${query.subject}` : ''}.
+For reference, here's a sample question structure: ${generatedQuestion}
+
+STEP 2: PROVIDE COMPREHENSIVE ANSWER
+After generating the question, provide a comprehensive, academic-style answer to that question with the following structure:
+
+<h2>Exam Question</h2>
+[The exam question you generated]
+
+<h2>Answer</h2>
+<h3>Introduction</h3>
+A concise background of the topic and its significance in the field.
+
+<h3>Key Concepts</h3>
+The fundamental principles, definitions, and theoretical underpinnings.
+
+<h3>Mathematical Formulation / Working Principle</h3>
+The mathematical expressions, equations, and formulas, with detailed explanations of each component. Format mathematical expressions clearly with bold syntax (**V = I × R**).
+
+${query.generateImage ? '<h3>Visual Representation</h3>Description of diagrams or visual aids that would help explain the concept. (The actual diagram will be generated separately)' : ''}
+
+<h3>Application / Analysis</h3>
+How the concept is applied in practical scenarios or its role in analysis.
+
+<h3>Conclusion</h3>
+Summary of key points and their implications.
+
+<h3>References</h3>
+Relevant textbook citations and academic sources.`;
+  } else {
+    // For responses without knowledge level - use standard format
+    prompt += `
 RESPONSE FORMAT REQUIREMENTS:
 Structure your response like a mini research paper with these HTML-formatted sections:
 <h2>Introduction</h2>
@@ -238,7 +280,7 @@ Background on the topic and its significance in the field.
 Origin of the concept or method, with brief historical context.
 
 <h2>Methodology / Working Principle</h2>
-How it works or is applied, with detailed derivations. Carefully explain all formulas with their components.
+How it works or is applied, with detailed derivations. Carefully explain all formulas with their components. Format mathematical expressions clearly with bold syntax (**V = I × R**).
 
 ${query.generateImage ? '<h2>Image / Diagram</h2>Description of the relevant diagram for this topic. (The actual diagram will be generated separately)' : ''}
 
@@ -246,19 +288,28 @@ ${query.generateImage ? '<h2>Image / Diagram</h2>Description of the relevant dia
 Final thoughts, outcomes or key takeaways.
 
 <h2>References</h2>
-Textbook or paper citations. Always mention "Content from: [Book name], [Author], [Publication]" when using specific book references.
+Textbook or paper citations. Always mention "Content from: [Book name], [Author], [Publication]" when using specific book references.`;
+  }
+  
+  // Add recommended resources section if needed
+  if (query.showRecommendedResources) {
+    prompt += `
 
-${query.showRecommendedResources ? `<h2>Recommended Learning Resources</h2>
+<h2>Recommended Learning Resources</h2>
 <p>Include only verified, working resources:</p>
 <ul>
   <li>YouTube lectures - only include links from verified educational channels like MIT OpenCourseWare, Khan Academy, Neso Academy, or similar high-quality educational content creators</li>
   <li>Research papers - reference papers from IEEE, ACM, or similar reputable academic sources</li>
   <li>Courses - recommend specific courses from platforms like Coursera, edX, or university websites</li>
 </ul>
-<p><strong>IMPORTANT:</strong> Do not include any YouTube links unless you are certain they exist. For YouTube, only include links from well-established educational channels.` : ''}
+<p><strong>IMPORTANT:</strong> Do not include any YouTube links unless you are certain they exist. For YouTube, only include links from well-established educational channels.</p>`;
+  }
+  
+  // Add formatting guidelines
+  prompt += `
 
 IMPORTANT FORMATTING GUIDELINES:
-- Format all formulas in bold for better readability: <strong>V = I × R</strong>
+- Format all formulas in bold for better readability: <strong>V = I × R</strong> or use **V = I × R** markdown syntax
 - For each formula, explain all variables immediately after
 - Always maintain mathematical integrity exactly as presented in the textbook
 - Use bullet points with <ul><li>...</li></ul> for listing key concepts
@@ -268,10 +319,16 @@ IMPORTANT FORMATTING GUIDELINES:
 - Always conclude with the source: "<p><em>This content is taken from [Book resources / Internet and Book resources]</em></p>"
 - If using a specific book, include exact book citation at the end
 
-Ensure your entire response is properly formatted with standard HTML elements for readability.
+Ensure your entire response is properly formatted with standard HTML elements for readability.`;
+  
+  // Add image context if needed
+  if (query.imageData) {
+    prompt += `
 
-${query.imageData ? 
-"ADDITIONAL CONTEXT: The user has uploaded an image. Analyze this image along with the topic to provide a comprehensive response that directly addresses what's in the image." : ""}`;
+ADDITIONAL CONTEXT: The user has uploaded an image. Analyze this image along with the topic to provide a comprehensive response that directly addresses what's in the image.`;
+  }
+  
+  return prompt;
 }
 
 // Helper function to prepare advanced chat model prompt
@@ -314,195 +371,144 @@ chatbotRouter.get("/academic", async (req: Request, res: Response) => {
     });
     
     res.json(processedMessages);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching academic chat history:", error);
-    res.status(500).json({ message: "Error fetching chat history" });
+    res.status(500).json({ message: "Failed to fetch chat history" });
   }
 });
 
 // Route to get advanced chat history
 chatbotRouter.get("/advanced", async (req: Request, res: Response) => {
-  // Temporarily disable auth check for testing
-  // if (!req.isAuthenticated()) {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
-  
   try {
     // Use default user ID if not authenticated
     const userId = req.user?.id || 1;
     const messages = await storage.getChatMessages(userId, true);
     res.json(messages);
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error fetching advanced chat history:", error);
-    res.status(500).json({ message: "Error fetching chat history" });
+    res.status(500).json({ message: "Failed to fetch chat history" });
   }
 });
 
-// Route to send message to academic chatbot
+// Route to handle academic chatbot interactions
 chatbotRouter.post("/academic", async (req: Request, res: Response) => {
-  // Temporarily disable authentication check for testing
-  // if (!req.isAuthenticated()) {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
-  
-  try {
-    // Use a default user ID for testing if not authenticated
-    const userId = req.user?.id || 1;
-    const { 
-      topic,
-      knowledgeLevel,
-      subject,
-      book,
-      generateImage,
-      showRecommendedResources,
-      imageData
-    } = req.body;
-    
-    // Basic validation
-    if (!topic) {
-      return res.status(400).json({ message: "Topic is required" });
-    }
-    
-    // Format the query
-    const query: AcademicQuery = {
-      topic,
-      knowledgeLevel,
-      subject,
-      book,
-      generateImage: !!generateImage,
-      showRecommendedResources: !!showRecommendedResources,
-      imageData
-    };
-    
-    console.log("Academic chatbot query:", { ...query, imageData: imageData ? "[IMAGE DATA]" : undefined });
-    
-    // Create message text for logging/storage
-    const messageText = `Topic: ${topic}${knowledgeLevel ? `, Knowledge Level: ${knowledgeLevel}` : ''}${subject ? `, Subject: ${subject}` : ''}${book ? `, Book: ${book}` : ''}`;
-    
-    // Generate a response using Gemini
-    const geminiModel = genAI.getGenerativeModel(geminiConfig);
-    const prompt = prepareAcademicPrompt(query);
-    
-    let result;
-    if (imageData) {
-      // If image data is provided, use multimodal generation
-      // Note: This is a placeholder for multimodal functionality
-      // Actual implementation would depend on Gemini API multimodal support
-      result = await geminiModel.generateContent(prompt);
-    } else {
-      result = await geminiModel.generateContent(prompt);
-    }
-    
-    const response = result.response.text();
-    
-    // Generate image if requested
-    let imageUrl = null;
-    if (generateImage) {
-      try {
-        // Call image generation API
-        // This is a placeholder - real implementation would use a proper image gen API
-        const imageTopic = `Educational diagram of ${topic} for ${subject || "ECE students"}`;
-        
-        // Fetch from image generation endpoint
-        const imageRes = await fetch("http://localhost:3000/api/image", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ prompt: imageTopic })
-        });
-        
-        if (imageRes.ok) {
-          const imageData = await imageRes.json();
-          imageUrl = imageData.imageUrl;
-        }
-      } catch (imageError) {
-        console.error("Error generating image:", imageError);
-      }
-    }
-    
-    // Enhanced response with additional metadata
-    const enhancedResponse = {
-      content: response,
-      metadata: {
-        topic,
-        knowledgeLevel,
-        subject,
-        book,
-        imageUrl,
-        sources: getSourceInfo(query)
-      }
-    };
-    
-    // Save the message and response
-    const chatMessage = await storage.createChatMessage({
-      userId,
-      message: messageText,
-      response: JSON.stringify(enhancedResponse),
-      isAdvanced: false
-    });
-    
-    // Add user activity
-    await storage.createUserActivity({
-      userId,
-      activityType: "CHAT",
-      description: `Used academic chatbot: ${topic.substring(0, 30)}${topic.length > 30 ? '...' : ''}`
-    });
-    
-    res.json({
-      ...chatMessage,
-      response: enhancedResponse // Send parsed JSON response
-    });
-  } catch (error) {
-    console.error("Error processing academic chat message:", error);
-    res.status(500).json({ message: "Error processing chat message" });
-  }
-});
-
-// Route to send message to advanced chatbot
-chatbotRouter.post("/advanced", async (req: Request, res: Response) => {
-  // Temporarily disable authentication check for testing
-  // if (!req.isAuthenticated()) {
-  //   return res.status(401).json({ message: "Unauthorized" });
-  // }
-  
   try {
     // Use default user ID if not authenticated
     const userId = req.user?.id || 1;
-    const { message } = req.body;
     
-    if (!message) {
-      return res.status(400).json({ message: "Message is required" });
+    // Parse and validate the request
+    const query: AcademicQuery = {
+      topic: req.body.topic,
+      knowledgeLevel: req.body.knowledgeLevel,
+      subject: req.body.subject,
+      book: req.body.book,
+      generateImage: !!req.body.generateImage,
+      showRecommendedResources: !!req.body.showRecommendedResources,
+      imageData: req.body.imageData
+    };
+    
+    console.log("Academic chatbot query:", query);
+    
+    // Generate source info for metadata
+    const sourceInfo = getSourceInfo(query);
+    
+    // Build prompt
+    const prompt = prepareAcademicPrompt(query);
+    
+    // Create a model instance with our config
+    const model = genAI.getGenerativeModel({ ...geminiConfig });
+    
+    // Generate content - with image if provided
+    let result;
+    if (query.imageData) {
+      // For multimodal prompt
+      const imageData = Buffer.from(query.imageData.split(',')[1], 'base64');
+      
+      result = await model.generateContent([
+        prompt,
+        {
+          inlineData: {
+            mimeType: "image/jpeg",
+            data: query.imageData.split(',')[1]
+          }
+        }
+      ]);
+    } else {
+      // For text-only prompt
+      result = await model.generateContent(prompt);
     }
     
-    console.log("Generating advanced response with Gemini API for message:", message);
+    // Extract the response text
+    const responseText = result.response.text();
     
-    // Generate a response using Gemini
-    const geminiModel = genAI.getGenerativeModel(geminiConfig);
-    const prompt = prepareAdvancedPrompt(message);
-    const result = await geminiModel.generateContent(prompt);
-    const response = result.response.text();
+    // Construct a message to save with enhanced metadata
+    const userMessageText = `Topic: ${query.topic}${query.knowledgeLevel ? `, Knowledge Level: ${query.knowledgeLevel}` : ''}${query.subject ? `, Subject: ${query.subject}` : ''}${query.book ? `, Book: ${query.book}` : ''}`;
     
-    // Save the message and response
-    const chatMessage = await storage.createChatMessage({
-      userId,
-      message,
-      response,
-      isAdvanced: true
+    // Create an enhanced JSON object with topic metadata
+    const enhancedResponse = JSON.stringify({
+      content: responseText,
+      metadata: {
+        topic: query.topic,
+        knowledgeLevel: query.knowledgeLevel,
+        subject: query.subject,
+        book: query.book,
+        imageUrl: query.generateImage ? `/api/image-gen/placeholder?topic=${encodeURIComponent(query.topic)}` : undefined,
+        sources: sourceInfo
+      }
     });
     
-    // Add user activity
-    await storage.createUserActivity({
+    // Save to database
+    const savedMessage = await storage.createChatMessage({
+      message: userMessageText,
       userId,
-      activityType: "CHAT",
-      description: `Used advanced chatbot: ${message.substring(0, 30)}${message.length > 30 ? '...' : ''}`
+      isAdvanced: false,
+      response: enhancedResponse
     });
     
-    res.json(chatMessage);
-  } catch (error) {
-    console.error("Error processing advanced chat message:", error);
-    res.status(500).json({ message: "Error processing chat message" });
+    // Return the response
+    res.json(savedMessage);
+  } catch (error: any) {
+    console.error("Error in academic chatbot:", error);
+    res.status(500).json({ 
+      message: "Error processing your request", 
+      error: error.message
+    });
   }
 });
 
-export default chatbotRouter;
+// Route to handle advanced chatbot interactions
+chatbotRouter.post("/advanced", async (req: Request, res: Response) => {
+  try {
+    // Use default user ID if not authenticated
+    const userId = req.user?.id || 1;
+    
+    const userMessage = req.body.message;
+    
+    // Build prompt
+    const prompt = prepareAdvancedPrompt(userMessage);
+    
+    // Create a model instance with our config
+    const model = genAI.getGenerativeModel({ ...geminiConfig });
+    
+    // Generate content
+    const result = await model.generateContent(prompt);
+    const responseText = result.response.text();
+    
+    // Save to database
+    const savedMessage = await storage.createChatMessage({
+      message: userMessage,
+      userId,
+      isAdvanced: true,
+      response: responseText
+    });
+    
+    // Return the response
+    res.json(savedMessage);
+  } catch (error: any) {
+    console.error("Error in advanced chatbot:", error);
+    res.status(500).json({ 
+      message: "Error processing your request", 
+      error: error.message
+    });
+  }
+});

@@ -1,0 +1,55 @@
+Topic: ideal op amp, Knowledge Level: AP, Subject: EC3251, Book: Engineering Circuit Analysis
+
+school
+Introduction
+The ideal operational amplifier (op amp) is a fundamental building block in analog circuit design. It's a high-gain differential amplifier with infinite input impedance, zero output impedance, and infinite open-loop gain. While real op amps don't perfectly achieve these characteristics, the ideal op amp model simplifies analysis and design, providing a good approximation for many practical applications. In EC3251, understanding the ideal op amp model is crucial for analyzing circuits like inverting amplifiers, non-inverting amplifiers, summing amplifiers, integrators, and differentiators.
+
+How It Started / Origin
+The op amp's origins can be traced back to the early days of analog computing. Vacuum tube-based op amps were developed in the 1940s, primarily for use in analog computers to perform mathematical operations like addition, subtraction, integration, and differentiation. The invention of the transistor in the late 1940s paved the way for the development of smaller, more efficient, and reliable solid-state op amps. The first integrated circuit op amp, the μA702, was introduced by Fairchild Semiconductor in 1963. Since then, op amps have become ubiquitous in electronic circuits.
+
+Methodology / Working Principle
+The ideal op amp operates based on two key assumptions:
+
+Virtual short circuit: The voltage difference between the inverting (-) and non-inverting (+) input terminals is assumed to be zero (V+ = V-). This is because the open-loop gain is considered infinite. Even a tiny voltage difference between the inputs would result in a theoretically infinite output voltage.
+Zero input current: The input impedance of an ideal op amp is infinite, meaning no current flows into either input terminal (I+ = I- = 0).
+These assumptions simplify circuit analysis considerably. Let's consider the inverting amplifier configuration as an example:
+
+Applying Kirchhoff's current law (KCL) at the inverting input node:
+
+I1 = I2
+
+Where:
+
+I1 is the current flowing through R1
+I2 is the current flowing through Rf
+Using Ohm's law (V = I × R):
+
+V = Voltage across the resistor
+I = Current through the resistor
+R = Resistance
+We can express the currents as:
+
+(Vin - V-) / R1 = (V- - Vout) / Rf
+
+Since V- = V+ and V+ is grounded (V+ = 0), we have V- = 0. Substituting this into the equation:
+
+Vin / R1 = -Vout / Rf
+
+Rearranging for the voltage gain (Av):
+
+Av = Vout / Vin = -Rf / R1
+
+Where:
+
+Av = Voltage Gain
+Vout = Output Voltage
+Vin = Input Voltage
+Rf = Feedback Resistance
+R1 = Input Resistance
+Result / Conclusion
+The ideal op amp model, with its simplifying assumptions, provides a powerful tool for analyzing and designing op amp circuits. It allows us to derive transfer functions and understand the behavior of various op amp configurations without delving into the complex internal circuitry of the op amp itself. While real op amps have limitations, the ideal model offers a valuable starting point for circuit analysis and design in EC3251.
+
+References
+Content from: Engineering Circuit Analysis, Hayt, Kemmerly, and Durbin, Mc Graw Hill education, 9th Edition, 2018
+
+This content is taken from Internet and Book resources

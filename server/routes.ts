@@ -2,12 +2,12 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { setupAuth } from "./auth";
 import { storage } from "./storage";
-import chatbotRouter from "./chatbot";
-import contentToolsRouter from "./contentTools";
-import newsRouter from "./newsAggregator";
-import forumRouter from "./forum";
-import syllabusRouter from "./syllabusNavigator";
-import imageGenRouter from "./imageGen";
+import { chatbotRouter } from "./chatbot";
+import { contentToolsRouter } from "./contentTools";
+import { newsRouter } from "./newsAggregator";
+import { forumRouter } from "./forum";
+import { syllabusRouter } from "./syllabusNavigator";
+import { imageGenRouter } from "./imageGen";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Set up authentication
