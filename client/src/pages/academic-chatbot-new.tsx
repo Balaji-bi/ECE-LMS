@@ -59,6 +59,12 @@ const eceSubjects = [
   // Add more subjects as needed
 ];
 
+// Mark patterns for exam-style questions
+const markPatterns = [
+  { value: "13", label: "13 Marks", description: "18000-20000 character answers" },
+  { value: "15", label: "15 Marks", description: "24000-26000 character answers" },
+];
+
 export default function AcademicChatbotPage() {
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -69,6 +75,7 @@ export default function AcademicChatbotPage() {
   const generateImage = false; // Fixed value, option removed from UI
   const [showResources, setShowResources] = useState(false);
   const [imageData, setImageData] = useState<string | undefined>(undefined);
+  const [markPattern, setMarkPattern] = useState<string | undefined>(undefined);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,6 +95,7 @@ export default function AcademicChatbotPage() {
       generateImage: boolean;
       showRecommendedResources: boolean;
       imageData?: string;
+      markPattern?: string;
     }) => {
       const res = await apiRequest("POST", "/api/chatbot/academic", query);
       return res.json();
@@ -172,7 +180,8 @@ export default function AcademicChatbotPage() {
         book: book && book !== "none" ? book : undefined,
         generateImage,
         showRecommendedResources: showResources,
-        imageData
+        imageData,
+        markPattern: markPattern && markPattern !== "none" ? markPattern : undefined,
       });
       
       console.log("Sending query:", {
@@ -182,7 +191,8 @@ export default function AcademicChatbotPage() {
         book: book && book !== "none" ? book : undefined,
         generateImage,
         showRecommendedResources: showResources,
-        hasImage: !!imageData
+        hasImage: !!imageData,
+        markPattern: markPattern && markPattern !== "none" ? markPattern : undefined
       });
     }
   };
@@ -535,6 +545,31 @@ export default function AcademicChatbotPage() {
               <div className="bg-slate-50 dark:bg-slate-900 rounded-md p-3 space-y-3">
                 <h3 className="text-sm font-medium">Response Options</h3>
                 
+                <div className="space-y-2">
+                  <Label htmlFor="mark-pattern">Exam Question Format</Label>
+                  <Select 
+                    value={markPattern} 
+                    onValueChange={setMarkPattern}
+                    disabled={isSending}
+                  >
+                    <SelectTrigger id="mark-pattern">
+                      <SelectValue placeholder="Select mark pattern" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem key="none" value="none">None (Normal Response)</SelectItem>
+                      {markPatterns.map(pattern => (
+                        <SelectItem key={pattern.value} value={pattern.value}>
+                          {pattern.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    {markPattern && markPattern !== "none" ? 
+                      markPatterns.find(p => p.value === markPattern)?.description :
+                      "Format response as an exam question with specific length"}
+                  </p>
+                </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
