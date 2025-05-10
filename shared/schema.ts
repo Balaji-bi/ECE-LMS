@@ -46,15 +46,19 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages).pick({
 export const news = pgTable("news", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
-  description: text("description").notNull(),
-  category: text("category").notNull(),
+  content: text("content").notNull(),
+  category: text("category"),
+  source: text("source"),
+  url: text("url"),
   publishedAt: timestamp("published_at").defaultNow(),
 });
 
 export const insertNewsSchema = createInsertSchema(news).pick({
   title: true,
-  description: true,
+  content: true,
   category: true,
+  source: true,
+  url: true,
 });
 
 // Forum posts schema
