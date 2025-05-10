@@ -45,11 +45,16 @@ export default function ContentToolsPage() {
     title: "",
     authors: "",
     institution: "",
+    abstract: "",
     introduction: "",
+    literatureSurvey: "",
     methodology: "",
     workingPrinciple: "",
     implementation: "",
-    resultAndConclusion: ""
+    tabulation: "",
+    challenges: "",
+    results: "",
+    conclusion: ""
   });
   
   // Resume builder state
@@ -246,7 +251,7 @@ export default function ContentToolsPage() {
                             subjectBooks[assignmentData.subject].map((book: string, index: number) => (
                               <SelectItem key={index} value={book}>{book}</SelectItem>
                             )) : 
-                            <SelectItem value="">No books available</SelectItem>
+                            <SelectItem value="no-books-available">No books available</SelectItem>
                         }
                       </SelectContent>
                     </Select>
@@ -476,11 +481,31 @@ export default function ContentToolsPage() {
                   </div>
                   
                   <div>
+                    <Label>Abstract</Label>
+                    <Textarea 
+                      placeholder="Provide a brief summary of the research paper (200-300 words)"
+                      className="min-h-[80px]"
+                      value={researchData.abstract}
+                      onChange={(e) => setResearchData({...researchData, abstract: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
                     <Label>Introduction</Label>
                     <Textarea 
                       placeholder="Briefly introduce your research topic and problem statement" 
                       value={researchData.introduction}
                       onChange={(e) => setResearchData({...researchData, introduction: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Literature Survey</Label>
+                    <Textarea 
+                      placeholder="Review relevant literature and existing research in this area" 
+                      value={researchData.literatureSurvey}
+                      onChange={(e) => setResearchData({...researchData, literatureSurvey: e.target.value})}
                       className="min-h-[80px]"
                     />
                   </div>
@@ -516,11 +541,41 @@ export default function ContentToolsPage() {
                   </div>
                   
                   <div>
-                    <Label>Result and Conclusion</Label>
+                    <Label>Tabulation</Label>
                     <Textarea 
-                      placeholder="Summarize your findings and conclusions (optional)" 
-                      value={researchData.resultAndConclusion}
-                      onChange={(e) => setResearchData({...researchData, resultAndConclusion: e.target.value})}
+                      placeholder="Include tabular data or summarized experimental results (optional)"
+                      value={researchData.tabulation}
+                      onChange={(e) => setResearchData({...researchData, tabulation: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Challenges</Label>
+                    <Textarea 
+                      placeholder="Describe challenges faced during research and how they were addressed (optional)"
+                      value={researchData.challenges}
+                      onChange={(e) => setResearchData({...researchData, challenges: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Results</Label>
+                    <Textarea 
+                      placeholder="Describe the results of your research (optional)"
+                      value={researchData.results}
+                      onChange={(e) => setResearchData({...researchData, results: e.target.value})}
+                      className="min-h-[80px]"
+                    />
+                  </div>
+                  
+                  <div>
+                    <Label>Conclusion</Label>
+                    <Textarea 
+                      placeholder="Summarize your conclusions and future work (optional)"
+                      value={researchData.conclusion}
+                      onChange={(e) => setResearchData({...researchData, conclusion: e.target.value})}
                       className="min-h-[80px]"
                     />
                   </div>
