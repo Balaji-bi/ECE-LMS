@@ -56,6 +56,8 @@ interface AcademicQuery {
   generateImage?: boolean;
   showRecommendedResources?: boolean;
   imageData?: string;
+  markPattern?: "2" | "5" | "10" | "13" | "15";  // Mark patterns for question types
+  characterCount?: number;  // Character count for answers
 }
 
 // Helper function to determine the source information based on the query
@@ -222,6 +224,8 @@ TOPIC: ${query.topic}
 ${query.knowledgeLevel ? `KNOWLEDGE LEVEL: ${query.knowledgeLevel}` : ''}
 ${query.subject ? `SUBJECT: ${query.subject}` : ''}
 ${query.book ? `BOOK: ${query.book}` : ''}
+${query.markPattern ? `MARK PATTERN: ${query.markPattern}-mark question` : ''}
+${query.characterCount ? `CHARACTER COUNT: Approximately ${query.characterCount} characters for answer` : ''}
 GENERATE IMAGE: ${query.generateImage ? 'YES' : 'NO'}
 SHOW RECOMMENDED RESOURCES: ${query.showRecommendedResources ? 'YES' : 'NO'}
 
@@ -243,18 +247,19 @@ Create one exam-style question about "${query.topic}"${query.subject ? ` related
 For reference: ${generatedQuestion}
 
 STEP 2: PROVIDE CLEAR ANSWER
-Provide a clear, straightforward answer with this structure:
+Provide a clear, structured answer with this format:
 
 <div class="exam-content">
-  <h2>Exam Question</h2>
+  <h2>Exam Question (${query.markPattern ? `${query.markPattern} Marks` : 'Standard Question'})</h2>
   <div class="question-box">
     [Your exam question here]
   </div>
 
-  <h2>Answer</h2>
+  <h2>Model Answer</h2>
   
   <h3>Key Points</h3>
   <p>Start with 2-3 sentences that directly address the question.</p>
+  ${query.characterCount ? `<p><em>Note: The answer is crafted to be approximately ${query.characterCount} characters in length as requested.</em></p>` : ''}
   
   <h3>Explanation</h3>
   <p>Provide a clear, simple explanation that's easy to understand. Focus on practical understanding rather than theory.</p>
@@ -511,7 +516,9 @@ chatbotRouter.post("/academic", async (req: Request, res: Response) => {
       book: req.body.book,
       generateImage: !!req.body.generateImage,
       showRecommendedResources: !!req.body.showRecommendedResources,
-      imageData: req.body.imageData
+      imageData: req.body.imageData,
+      markPattern: req.body.markPattern,
+      characterCount: req.body.characterCount ? parseInt(req.body.characterCount) : undefined
     };
     
     console.log("Academic chatbot query:", query);
