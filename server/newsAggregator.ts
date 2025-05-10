@@ -150,7 +150,9 @@ newsRouter.get("/", async (req: Request, res: Response) => {
           content: item.snippet || "No content available",
           category,
           source: item.displayLink || "Unknown Source",
-          url: item.link
+          url: item.link,
+          // Add description field to match database schema
+          description: item.snippet || "No content available"
         });
         
         // Add to existing news array
@@ -213,7 +215,9 @@ newsRouter.post("/refresh", async (req: Request, res: Response) => {
         content: item.snippet || "No content available",
         category,
         source: item.displayLink || "Unknown Source",
-        url: item.link
+        url: item.link,
+        // Add description field to match database schema
+        description: item.snippet || "No content available"
       });
       
       newNewsItems.push(newNews);

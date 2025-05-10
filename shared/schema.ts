@@ -47,6 +47,7 @@ export const news = pgTable("news", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),
   content: text("content").notNull(),
+  description: text("description").notNull(), // Add to match database schema
   category: text("category"),
   source: text("source"),
   url: text("url"),
@@ -56,6 +57,7 @@ export const news = pgTable("news", {
 export const insertNewsSchema = createInsertSchema(news).pick({
   title: true,
   content: true,
+  description: true, // Add to match database schema
   category: true,
   source: true,
   url: true,
