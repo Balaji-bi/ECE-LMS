@@ -13,7 +13,7 @@ const geminiConfig = {
 export const contentToolsRouter = Router();
 
 // Helper function to prepare assignment generator prompt
-function prepareAssignmentPrompt(topic: string, wordCount: string, subject: string, book: string, difficulty: string, dataSource: string) {
+function prepareAssignmentPrompt(topic: string, characterCount: string, subject: string, book: string, difficulty: string, dataSource: string) {
   return `You are "ASSIGNMENT-GPT," an AI-powered academic assistant designed to generate structured assignments based on a topic, knowledge level, subject, and book selection.
 
 🎯 PURPOSE:
@@ -21,7 +21,7 @@ Generate research-style assignments for students by adapting your content source
 
 🧠 USER INPUTS:
 1. Topic Name: ${topic}
-2. Word Count: ${wordCount}
+2. Character Count: ${characterCount} characters
 ${subject ? `3. Subject Selection: ${subject}` : ''}
 ${book ? `4. Book Selection: ${book}` : ''}
 5. Difficulty Level: ${difficulty}
@@ -89,10 +89,18 @@ Generate a well-formatted, formal research paper using provided inputs and intel
   - Use appropriate subheadings like 1.1, 1.2, 2.1, 2.2, etc.
   - Skip any sections not provided by the user
 
-- Use LaTeX format for mathematical/scientific notation
+- Use clear HTML formatting for mathematical/scientific notation:
   For example:
-  - Einstein's formula: E = mc^2 
-  - Integration: ∫_a^b f(x)\\dx = F(b) - F(a)
+  - Einstein's formula: <div class="formula"><strong>E = mc<sup>2</sup></strong></div>
+  - Ohm's Law: <div class="formula"><strong>V = I × R</strong></div>
+  - Integration: <div class="formula"><strong>∫<sub>a</sub><sup>b</sup> f(x) dx = F(b) - F(a)</strong></div>
+  
+- After EACH formula, explain all variables in a structured list:
+  <ul>
+    <li><strong>E</strong>: Energy (in joules)</li>
+    <li><strong>m</strong>: Mass (in kilograms)</li>
+    <li><strong>c</strong>: Speed of light (in meters per second)</li>
+  </ul>
 
 🧠 CONTENT ENHANCEMENT:
 - Expand each section using domain-specific depth
@@ -148,17 +156,20 @@ contentToolsRouter.post("/assignment", async (req: Request, res: Response) => {
   // }
   
   try {
-    const { topic, wordCount, subject, book, difficulty, dataSource } = req.body;
+    const { topic, characterCount, subject, book, difficulty, dataSource } = req.body;
     
-    if (!topic || !wordCount || !difficulty || !dataSource) {
+    // Default character count range if not provided (15,000-35,000)
+    const charCount = characterCount || "15000-35000";
+    
+    if (!topic || !difficulty || !dataSource) {
       return res.status(400).json({ message: "Missing required parameters" });
     }
     
-    console.log("Generating assignment with Gemini API:", { topic, wordCount, subject, book, difficulty, dataSource });
+    console.log("Generating assignment with Gemini API:", { topic, characterCount: charCount, subject, book, difficulty, dataSource });
     
     // Generate assignment using Gemini
     const geminiModel = genAI.getGenerativeModel(geminiConfig);
-    const prompt = prepareAssignmentPrompt(topic, wordCount, subject, book, difficulty, dataSource);
+    const prompt = prepareAssignmentPrompt(topic, charCount, subject, book, difficulty, dataSource);
     const result = await geminiModel.generateContent(prompt);
     const assignment = result.response.text();
     
