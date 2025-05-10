@@ -56,7 +56,10 @@ IMPORTANT:
 ⚠️ RULES:
 - NEVER invent book names or citations.
 - Focus on clean language, academic tone, and real content.
-- Response should be simple, look good and easy to understand, no fancy formatting, don't be messy.`;
+- Response should be simple, look good and easy to understand, no fancy formatting, don't be messy.
+- The total content should be within the specified character count range (${characterCount}).
+- Use clear section headers with proper numbering.
+- Include a downloadable format structure with proper spacing and formatting.`;
 }
 
 // Helper function to prepare research paper assistant prompt

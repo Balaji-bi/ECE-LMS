@@ -269,8 +269,20 @@ Provide a clear, structured answer with this format:
     <strong>V = I × R</strong>
   </div>
   
-  <!-- Explain variables in a grid layout -->
+  <!-- ALWAYS explain ALL variables after EACH formula -->
   <ul class="var-list">
+    <li><strong>V</strong>: Voltage (in volts)</li>
+    <li><strong>I</strong>: Current (in amperes)</li>
+    <li><strong>R</strong>: Resistance (in ohms)</li>
+  </ul>
+  
+  <!-- For more complex formulas -->
+  <div class="formula">
+    <strong>P = V × I = I<sup>2</sup> × R = V<sup>2</sup>/R</strong>
+  </div>
+  
+  <ul class="var-list">
+    <li><strong>P</strong>: Power (in watts)</li>
     <li><strong>V</strong>: Voltage (in volts)</li>
     <li><strong>I</strong>: Current (in amperes)</li>
     <li><strong>R</strong>: Resistance (in ohms)</li>
@@ -288,6 +300,10 @@ Provide a clear, structured answer with this format:
 STYLING GUIDELINES:
 - Keep everything concise and student-friendly
 - Use simple language and clear explanations
+- Format ALL mathematical formulas with <div class="formula"><strong>...</strong></div>
+- Always explain ALL variables used in EACH formula immediately after the formula
+- Use proper symbols, superscripts and subscripts for all mathematical notations (×, ÷, <sup>2</sup>, <sub>n</sub>)
+- Follow the exact character count if specified (${query.characterCount || "No specific count requested"})
 - Highlight formulas with proper styling
 - Total response should be under 700 words
 - Format for easy scanning and quick understanding`;
