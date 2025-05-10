@@ -411,19 +411,18 @@ export default function NavigatorPage() {
             <Tabs defaultValue="explanation" className="w-full">
               <TabsList className="w-full grid grid-cols-4">
                 <TabsTrigger value="explanation">Explanation</TabsTrigger>
-                <TabsTrigger value="formulas">Formulas</TabsTrigger>
-                <TabsTrigger value="visualizations">Visuals</TabsTrigger>
-                <TabsTrigger value="references">References</TabsTrigger>
+                <TabsTrigger value="formulas">🧮 Formulas</TabsTrigger>
+                <TabsTrigger value="visualizations">🖼️ Visuals</TabsTrigger>
+                <TabsTrigger value="references">🔗 References</TabsTrigger>
               </TabsList>
               
               <TabsContent value="explanation" className="mt-4">
                 <Card>
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
+                      <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
                       {/* Render HTML content from AI response */}
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Basic Explanation") }} />
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Technical Detail") }} />
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Applications") }} />
+                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Detailed Explanation") }} />
                     </div>
                   </CardContent>
                 </Card>
@@ -433,6 +432,10 @@ export default function NavigatorPage() {
                 <Card>
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
+                      <h2 className="text-xl font-semibold mb-4 flex items-center">
+                        <span className="mr-2">🧮</span>
+                        Key Formulas
+                      </h2>
                       <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Key Formulas") }} />
                     </div>
                   </CardContent>
@@ -443,7 +446,11 @@ export default function NavigatorPage() {
                 <Card>
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Visual Representation") }} />
+                      <h2 className="text-xl font-semibold mb-4 flex items-center">
+                        <span className="mr-2">🖼️</span>
+                        Visuals & Diagrams
+                      </h2>
+                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Visuals & Diagrams") }} />
                     </div>
                   </CardContent>
                 </Card>
@@ -453,16 +460,17 @@ export default function NavigatorPage() {
                 <Card>
                   <CardContent className="pt-6 pb-6">
                     <div className="prose dark:prose-invert max-w-none">
-                      <h3>IEEE Paper References</h3>
+                      <h2 className="text-xl font-semibold mb-4 flex items-center">
+                        <span className="mr-2">🔗</span>
+                        IEEE Paper References
+                      </h2>
                       <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "IEEE Paper References") }} />
                       
-                      <h3 className="mt-6">Related Concepts</h3>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Related Topics") }} />
-                      </div>
-                      
-                      <h3 className="mt-6">Prerequisites</h3>
-                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Prerequisite Concepts") }} />
+                      <h2 className="text-xl font-semibold mt-8 mb-4 flex items-center">
+                        <span className="mr-2">🧩</span>
+                        Prerequisite & Related Topics
+                      </h2>
+                      <div dangerouslySetInnerHTML={{ __html: formatContentSection(topicContent?.content || "", "Prerequisite & Related Topics") }} />
                     </div>
                   </CardContent>
                 </Card>
@@ -514,35 +522,75 @@ export default function NavigatorPage() {
     
     console.log(`Formatting ${sectionTitle} section, content length: ${content.length}`);
     
-    // Find the section
-    const sectionRegex = new RegExp(`\\d+\\.\\s*${sectionTitle}(\\s|:|\\n)([\\s\\S]*?)(?=\\d+\\.\\s*|$)`, "i");
-    const match = content.match(sectionRegex);
+    // Find the section based on the new format
+    // First look for section headers with emoji
+    const emojiMap: Record<string, string> = {
+      "Key Formulas": "🧮",
+      "Visuals & Diagrams": "🖼️", 
+      "IEEE Paper References": "🔗",
+      "Prerequisite & Related Topics": "🧩"
+    };
+    
+    // Try to find the section using number format first (1., 2., etc.)
+    const numberSectionRegex = new RegExp(`\\d+\\.\\s*${sectionTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(\\s|:|\\n)([\\s\\S]*?)(?=\\d+\\.\\s*|$)`, "i");
+    
+    // Try to find section using emoji format (if applicable)
+    const emoji = emojiMap[sectionTitle];
+    const emojiSectionRegex = emoji ? 
+      new RegExp(`${emoji}\\s*${sectionTitle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}([\\s\\S]*?)(?=(🧮|🖼️|🔗|🧩)|$)`, "i") :
+      null;
+    
+    // Try all regex patterns
+    let match = content.match(numberSectionRegex);
+    
+    if (!match && emojiSectionRegex) {
+      match = content.match(emojiSectionRegex);
+    }
     
     if (!match) {
       console.log(`No match found for section: ${sectionTitle}`);
       return `<p>No ${sectionTitle} information available.</p>`;
     }
     
-    console.log(`Match found for ${sectionTitle}, match length: ${match[2]?.length || 0}`);
+    // Extract content - for number format it's in match[2], for emoji it's in match[1]
+    let sectionContent = (match[2] || match[1]).trim();
+    console.log(`Match found for ${sectionTitle}, match length: ${sectionContent.length}`);
     
-    // Process the content
-    let sectionContent = match[2].trim();
-    
-    // Process lists (lines starting with -)
-    sectionContent = sectionContent.replace(/^- (.*?)$/gm, '<li>$1</li>');
+    // Process lists (lines starting with - or •)
+    sectionContent = sectionContent.replace(/^[-•] (.*?)$/gm, '<li>$1</li>');
     if (sectionContent.includes('<li>')) {
-      sectionContent = '<ul>' + sectionContent + '</ul>';
+      sectionContent = '<ul class="my-4 list-disc pl-6 space-y-2">' + sectionContent + '</ul>';
+    } else {
+      // If no lists are found but we have multiple paragraphs, format them nicely
+      sectionContent = sectionContent
+        .split(/\n\s*\n/)
+        .map(para => `<p class="mb-4">${para.replace(/\n/g, ' ')}</p>`)
+        .join('');
     }
     
     // Convert URLs to links
-    sectionContent = sectionContent.replace(/https?:\/\/[^\s)]+/g, '<a href="$&" target="_blank" rel="noopener noreferrer" class="text-primary">$&</a>');
+    sectionContent = sectionContent.replace(
+      /https?:\/\/[^\s)]+/g, 
+      '<a href="$&" target="_blank" rel="noopener noreferrer" class="text-primary hover:underline">$&</a>'
+    );
     
-    // Convert LaTeX-like formulas
-    sectionContent = sectionContent.replace(/\$\$(.*?)\$\$/g, '<div class="my-4 px-6 py-3 bg-gray-100 dark:bg-gray-800 font-mono overflow-x-auto">$1</div>');
-    sectionContent = sectionContent.replace(/\$(.*?)\$/g, '<code class="bg-gray-100 dark:bg-gray-800 px-1 font-mono">$1</code>');
+    // Convert LaTeX-like formulas with improved styling
+    sectionContent = sectionContent.replace(
+      /\$\$(.*?)\$\$/g, 
+      '<div class="my-6 px-6 py-4 bg-gray-100 dark:bg-gray-800 font-mono overflow-x-auto rounded-md border-l-4 border-primary">$1</div>'
+    );
     
-    // Format paragraphs
-    sectionContent = sectionContent.split('\n\n').map(para => `<p>${para}</p>`).join('');
+    sectionContent = sectionContent.replace(
+      /\$(.*?)\$/g, 
+      '<code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono">$1</code>'
+    );
+    
+    // Highlight formulas that include common symbols
+    const formulaPattern = /([A-Za-z][A-Za-z0-9]*\s*[=><+\-*/^]\s*[A-Za-z0-9+\-*/^(){}[\]]+)/g;
+    sectionContent = sectionContent.replace(
+      formulaPattern,
+      '<span class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded font-mono">$1</span>'
+    );
     
     return sectionContent;
   };

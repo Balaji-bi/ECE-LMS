@@ -498,16 +498,33 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
     
     Structure your response in the following format:
     
-    1. Basic Explanation (explain in simple terms first)
-    2. Technical Detail (provide in-depth technical explanation)
-    3. Key Formulas (provide any relevant formulas in LaTeX format)
-    4. Visual Representation (describe any diagrams or visual aids that would help understand this concept)
-    5. Applications (explain real-world applications of this concept in electronics and communication engineering)
-    6. IEEE Paper References (suggest 2-3 IEEE research papers related to this topic)
-    7. Prerequisite Concepts (list any topics that should be understood before learning this one)
-    8. Related Topics (mention 3-5 related topics from the ECE syllabus)
+    1. Detailed Explanation
+    - Start with simple terms first
+    - Then move into technical depth
+    - Explain methodology, types, working principles
+    - Provide a concise summary
     
-    Be accurate and comprehensive. This will be used for students' exam preparation.
+    2. 🧮 Key Formulas
+    - Present relevant formulas in LaTeX format
+    - For example: E = mc^2
+    - Include units and variable descriptions
+    - Explain how to apply these formulas
+    
+    3. 🖼️ Visuals & Diagrams
+    - Describe schematic diagrams that would help
+    - Explain hardware layouts or concept illustrations
+    - Include step-by-step visual processes if applicable
+    
+    4. 🔗 IEEE Paper References
+    - Include links to 2-3 IEEE papers related to this topic
+    - Provide research citations or technical articles
+    - Mention any landmark papers in this field
+    
+    5. 🧩 Prerequisite & Related Topics
+    - List foundational concepts needed before learning this topic
+    - Suggest 3-5 related topics within the ECE syllabus for deeper understanding
+    
+    Be accurate and comprehensive. This will be used for students' exam preparation in electronics and communication engineering.
     `;
     
     const result = await geminiModel.generateContent(prompt);
