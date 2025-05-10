@@ -16,6 +16,7 @@ import AdvancedChatbotPage from "@/pages/advanced-chatbot-page";
 import ContentToolsPage from "@/pages/content-tools-page";
 import ForumPage from "@/pages/forum-page";
 import ProfilePage from "@/pages/profile-page";
+import NewsPage from "@/pages/news-page";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function Router() {
         <ProtectedRoute path="/advanced-chatbot" component={AdvancedChatbotPage} />
         <ProtectedRoute path="/content-tools" component={ContentToolsPage} />
         <ProtectedRoute path="/forum" component={ForumPage} />
+        <ProtectedRoute path="/news" component={NewsPage} />
         <ProtectedRoute path="/profile" component={ProfilePage} />
         <Route component={NotFound} />
       </Switch>

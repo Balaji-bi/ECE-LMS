@@ -40,6 +40,14 @@ export function BottomNavigation() {
         <span className="material-icons text-xl">forum</span>
         <span className="text-xs">Forum</span>
       </Link>
+
+      <Link 
+        href="/news" 
+        className={`${isActive("/news")} flex flex-col items-center justify-center w-full`}
+      >
+        <span className="material-icons text-xl">newspaper</span>
+        <span className="text-xs">News</span>
+      </Link>
     </nav>
   );
 }

@@ -9,7 +9,8 @@ interface NewsCardProps {
 
 export function NewsCard({ news }: NewsCardProps) {
   // Format time since publication
-  const formatTimeSince = (dateString: Date) => {
+  const formatTimeSince = (dateString: Date | null) => {
+    if (!dateString) return "Unknown time";
     const now = new Date();
     const publishedDate = new Date(dateString);
     const diffInMinutes = Math.floor((now.getTime() - publishedDate.getTime()) / (1000 * 60));
@@ -26,7 +27,7 @@ export function NewsCard({ news }: NewsCardProps) {
   };
   
   // Get badge color based on category
-  const getBadgeVariant = (category?: string) => {
+  const getBadgeVariant = (category?: string | null) => {
     if (!category) return "bg-gray-200/80 text-gray-700 dark:bg-gray-700 dark:text-gray-300";
     
     switch (category.toLowerCase()) {

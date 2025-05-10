@@ -115,8 +115,8 @@ newsRouter.get("/", async (req: Request, res: Response) => {
     
     // Return all news sorted by publishedAt (newest first)
     news.sort((a, b) => {
-      const dateA = new Date(a.publishedAt);
-      const dateB = new Date(b.publishedAt);
+      const dateA = a.publishedAt ? new Date(a.publishedAt) : new Date();
+      const dateB = b.publishedAt ? new Date(b.publishedAt) : new Date();
       return dateB.getTime() - dateA.getTime();
     });
     

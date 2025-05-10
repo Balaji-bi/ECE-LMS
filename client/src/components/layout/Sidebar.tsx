@@ -112,6 +112,16 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </li>
             <li>
               <Link 
+                href="/news" 
+                onClick={onClose}
+                className={`flex items-center space-x-3 p-2 rounded ${location === '/news' ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
+              >
+                <span className="material-icons">newspaper</span>
+                <span>ECE News</span>
+              </Link>
+            </li>
+            <li>
+              <Link 
                 href="/profile" 
                 onClick={onClose}
                 className={`flex items-center space-x-3 p-2 rounded ${location === '/profile' ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100 dark:hover:bg-gray-800'}`}
