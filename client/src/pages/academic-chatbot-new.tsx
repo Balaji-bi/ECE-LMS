@@ -193,9 +193,8 @@ export default function AcademicChatbotPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64data = reader.result as string;
-        // Extract just the base64 data part
-        const base64Content = base64data.split(',')[1];
-        setImageData(base64Content);
+        // Send the full data URL for proper processing
+        setImageData(base64data);
       };
       reader.readAsDataURL(file);
     }

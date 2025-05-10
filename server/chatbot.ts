@@ -529,14 +529,18 @@ chatbotRouter.post("/academic", async (req: Request, res: Response) => {
     let result;
     if (query.imageData) {
       // For multimodal prompt
-      const imageData = Buffer.from(query.imageData.split(',')[1], 'base64');
+      // Extract the base64 part from the data URL
+      const parts = query.imageData.split(',');
+      const mimeMatch = parts[0].match(/data:(.*);base64/);
+      const mimeType = mimeMatch ? mimeMatch[1] : "image/jpeg";
+      const data = parts[1];
       
       result = await model.generateContent([
         prompt,
         {
           inlineData: {
-            mimeType: "image/jpeg",
-            data: query.imageData.split(',')[1]
+            mimeType: mimeType,
+            data: data
           }
         }
       ]);
