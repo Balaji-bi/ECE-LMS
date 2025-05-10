@@ -100,7 +100,36 @@
   @apply bg-gray-300 dark:bg-gray-700 rounded;
 }
 
-/* Max width for mobile view */
+/* Responsive design */
 #root {
-  @apply max-w-md mx-auto relative min-h-screen;
+  @apply relative min-h-screen;
+}
+
+/* Mobile view (default) */
+.container-app {
+  @apply max-w-md mx-auto;
+}
+
+/* Desktop view */
+@media (min-width: 768px) {
+  .container-app {
+    @apply max-w-screen-xl mx-auto px-4;
+  }
+  
+  .desktop-grid {
+    @apply grid grid-cols-1 md:grid-cols-12 gap-4;
+  }
+  
+  .desktop-sidebar {
+    @apply hidden md:block md:col-span-3 lg:col-span-2;
+  }
+  
+  .desktop-main {
+    @apply md:col-span-9 lg:col-span-10;
+  }
+  
+  /* Hide mobile navigation on desktop */
+  .bottom-nav {
+    @apply md:hidden;
+  }
 }

@@ -5,6 +5,36 @@ import { insertForumPostSchema, insertForumReplySchema } from "@shared/schema";
 // Create a router
 export const forumRouter = Router();
 
+// Like a forum post
+forumRouter.post("/posts/:id/like", async (req: Request, res: Response) => {
+  if (!req.isAuthenticated()) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+  
+  try {
+    const postId = parseInt(req.params.id);
+    const post = await storage.getForumPost(postId);
+    
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    
+    const updatedPost = await storage.likeForumPost(postId);
+    
+    // Add user activity
+    await storage.createUserActivity({
+      userId: req.user!.id,
+      activityType: "FORUM_LIKE",
+      description: `Liked forum post: ${post.title}`
+    });
+    
+    res.json(updatedPost);
+  } catch (error) {
+    console.error("Error liking forum post:", error);
+    res.status(500).json({ message: "Error liking forum post" });
+  }
+});
+
 // Get all forum posts
 forumRouter.get("/posts", async (req: Request, res: Response) => {
   try {

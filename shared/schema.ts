@@ -64,6 +64,7 @@ export const forumPosts = pgTable("forum_posts", {
   title: text("title").notNull(),
   content: text("content").notNull(),
   category: text("category").notNull(),
+  likes: integer("likes").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

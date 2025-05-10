@@ -8,6 +8,10 @@ import {
 } from "@shared/schema";
 import createMemoryStore from "memorystore";
 import session from "express-session";
+import { db } from "./db";
+import { pool } from "./db";
+import connectPg from "connect-pg-simple";
+import { eq, desc, and } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -28,6 +32,7 @@ export interface IStorage {
   getForumPosts(): Promise<ForumPost[]>;
   getForumPost(id: number): Promise<ForumPost | undefined>;
   createForumPost(forumPost: InsertForumPost): Promise<ForumPost>;
+  likeForumPost(postId: number): Promise<ForumPost>;
   getForumReplies(postId: number): Promise<ForumReply[]>;
   createForumReply(forumReply: InsertForumReply): Promise<ForumReply>;
   
@@ -210,4 +215,168 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import connectPg from "connect-pg-simple";
+import { eq, desc, and } from "drizzle-orm";
+
+const PostgresSessionStore = connectPg(session);
+
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.SessionStore;
+  
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+  }
+  
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+  
+  // Chat operations
+  async getChatMessages(userId: number, isAdvanced: boolean): Promise<ChatMessage[]> {
+    return db.select()
+      .from(chatMessages)
+      .where(and(
+        eq(chatMessages.userId, userId),
+        eq(chatMessages.isAdvanced, isAdvanced)
+      ))
+      .orderBy(chatMessages.createdAt);
+  }
+  
+  async createChatMessage(insertChatMessage: InsertChatMessage): Promise<ChatMessage> {
+    const [chatMessage] = await db.insert(chatMessages)
+      .values(insertChatMessage)
+      .returning();
+    return chatMessage;
+  }
+  
+  // News operations
+  async getNews(): Promise<News[]> {
+    return db.select()
+      .from(news)
+      .orderBy(desc(news.publishedAt));
+  }
+  
+  async createNews(insertNews: InsertNews): Promise<News> {
+    const [newsItem] = await db.insert(news)
+      .values(insertNews)
+      .returning();
+    return newsItem;
+  }
+  
+  // Forum operations
+  async getForumPosts(): Promise<ForumPost[]> {
+    return db.select()
+      .from(forumPosts)
+      .orderBy(desc(forumPosts.createdAt));
+  }
+  
+  async getForumPost(id: number): Promise<ForumPost | undefined> {
+    const [post] = await db.select()
+      .from(forumPosts)
+      .where(eq(forumPosts.id, id));
+    return post;
+  }
+  
+  async createForumPost(insertForumPost: InsertForumPost): Promise<ForumPost> {
+    const [forumPost] = await db.insert(forumPosts)
+      .values(insertForumPost)
+      .returning();
+    return forumPost;
+  }
+  
+  async likeForumPost(postId: number): Promise<ForumPost> {
+    const [post] = await db.select()
+      .from(forumPosts)
+      .where(eq(forumPosts.id, postId));
+      
+    if (!post) {
+      throw new Error('Post not found');
+    }
+    
+    const [updatedPost] = await db.update(forumPosts)
+      .set({ likes: post.likes + 1 })
+      .where(eq(forumPosts.id, postId))
+      .returning();
+      
+    return updatedPost;
+  }
+  
+  async getForumReplies(postId: number): Promise<ForumReply[]> {
+    return db.select()
+      .from(forumReplies)
+      .where(eq(forumReplies.postId, postId))
+      .orderBy(forumReplies.createdAt);
+  }
+  
+  async createForumReply(insertForumReply: InsertForumReply): Promise<ForumReply> {
+    const [forumReply] = await db.insert(forumReplies)
+      .values(insertForumReply)
+      .returning();
+    return forumReply;
+  }
+  
+  // User activity operations
+  async getUserActivities(userId: number): Promise<UserActivity[]> {
+    return db.select()
+      .from(userActivities)
+      .where(eq(userActivities.userId, userId))
+      .orderBy(desc(userActivities.createdAt));
+  }
+  
+  async createUserActivity(insertUserActivity: InsertUserActivity): Promise<UserActivity> {
+    const [userActivity] = await db.insert(userActivities)
+      .values(insertUserActivity)
+      .returning();
+    return userActivity;
+  }
+}
+
+// Initialize with sample news if needed
+const initializeNews = async (storage: DatabaseStorage) => {
+  const existingNews = await db.select().from(news);
+  
+  if (existingNews.length === 0) {
+    const sampleNews = [
+      {
+        title: "Anna University Announces New IoT Lab for ECE Department",
+        description: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
+        category: "Department News"
+      },
+      {
+        title: "IEEE Conference Paper Submissions Due Next Week",
+        description: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
+        category: "Academic Alert"
+      },
+      {
+        title: "Latest Advances in 5G Technology - ECE Seminar",
+        description: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
+        category: "Event"
+      }
+    ];
+    
+    for (const item of sampleNews) {
+      await storage.createNews(item);
+    }
+  }
+};
+
+export const storage = new DatabaseStorage();
+
+// Initialize sample data
+initializeNews(storage).catch(console.error);

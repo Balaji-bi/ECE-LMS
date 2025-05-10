@@ -15,6 +15,7 @@ interface ForumPostProps {
     content: string;
     category: string;
     createdAt: string;
+    likes: number;
     user: {
       id: number;
       username: string;
