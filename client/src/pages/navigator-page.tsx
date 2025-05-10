@@ -584,10 +584,12 @@ export default function NavigatorPage() {
                     <div className="prose dark:prose-invert max-w-none">
                       <h2 className="text-xl font-semibold mb-4">Detailed Explanation</h2>
                       {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "Detailed Explanation")
-                            .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-                        }} />
+                        <div 
+                          className="syllabus-content" 
+                          dangerouslySetInnerHTML={{
+                            __html: formatContent(extractSectionContent(topicContent.content, "Detailed Explanation"))
+                          }}
+                        />
                       ) : (
                         <p>Loading explanation...</p>
                       )}
@@ -606,13 +608,12 @@ export default function NavigatorPage() {
                       </h2>
                       {topicContent ? (
                         <div className="mt-4 leading-relaxed">
-                          <div dangerouslySetInnerHTML={{
-                            __html: extractSectionContent(topicContent.content, "Key Formulas")
-                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-lg text-primary">$1</strong>')
-                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                              .replace(/\n\n/g, '<div class="mb-4"></div>')
-                              .replace(/\n/g, '<br />')
-                          }} />
+                          <div 
+                            className="syllabus-content formula-section"
+                            dangerouslySetInnerHTML={{
+                              __html: formatContent(extractSectionContent(topicContent.content, "Key Formulas"))
+                            }}
+                          />
                         </div>
                       ) : (
                         <p>Loading formulas...</p>
@@ -658,13 +659,12 @@ export default function NavigatorPage() {
                       
                       {topicContent && (
                         <div className="mt-4">
-                          <div dangerouslySetInnerHTML={{
-                            __html: extractSectionContent(topicContent.content, "Visuals & Diagrams")
-                              .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
-                              .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                              .replace(/\n\n/g, '<div class="mb-4"></div>')
-                              .replace(/\n/g, '<br />')
-                          }} />
+                          <div 
+                            className="syllabus-content visuals-section" 
+                            dangerouslySetInnerHTML={{
+                              __html: formatContent(extractSectionContent(topicContent.content, "Visuals & Diagrams"))
+                            }} 
+                          />
                         </div>
                       )}
                     </div>
@@ -681,13 +681,12 @@ export default function NavigatorPage() {
                         IEEE Paper References
                       </h2>
                       {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "IEEE Paper References")
-                            .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-primary">$1</strong>')
-                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                            .replace(/\n\n/g, '<div class="mb-4"></div>')
-                            .replace(/\n/g, '<br />')
-                        }} />
+                        <div 
+                          className="syllabus-content references-section"
+                          dangerouslySetInnerHTML={{
+                            __html: formatContent(extractSectionContent(topicContent.content, "IEEE Paper References"))
+                          }}
+                        />
                       ) : (
                         <p>Loading references...</p>
                       )}
@@ -697,13 +696,12 @@ export default function NavigatorPage() {
                         Prerequisite & Related Topics
                       </h2>
                       {topicContent ? (
-                        <div dangerouslySetInnerHTML={{
-                          __html: extractSectionContent(topicContent.content, "Prerequisite & Related Topics")
-                            .replace(/\*\*([^*]+)\*\*/g, '<h3 class="font-semibold mt-4 mb-2">$1</h3>')
-                            .replace(/\*\s(.*)/g, '<div class="mb-2">• $1</div>')
-                            .replace(/\n\n/g, '<div class="mb-4"></div>')
-                            .replace(/\n/g, '<br />')
-                        }} />
+                        <div 
+                          className="syllabus-content prerequisites-section"
+                          dangerouslySetInnerHTML={{
+                            __html: formatContent(extractSectionContent(topicContent.content, "Prerequisite & Related Topics"))
+                          }}
+                        />
                       ) : (
                         <p>Loading prerequisites...</p>
                       )}
