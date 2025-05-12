@@ -54,15 +54,27 @@ const knowledgeLevels = [
 
 // ECE subjects (can be expanded)
 const eceSubjects = [
-  { value: "EC3251", label: "Circuit Analysis" },
-  { value: "PH3151", label: "Engineering Physics" },
+  { value: "EC3251", label: "CIRCUIT ANALYSIS" },
+  { value: "EC3352", label: "DIGITAL SYSTEMS DESIGN" },
+  { value: "EC3354", label: "SIGNALS AND SYSTEMS" },
+  { value: "EC3351", label: "CONTROL SYSTEMS" },
+  { value: "EC3353", label: "ELECTRONIC DEVICES AND CIRCUITS" },
+  { value: "EC3451", label: "LINEAR INTEGRATED CIRCUITS" },
+  { value: "EC3492", label: "DIGITAL SIGNAL PROCESSING" },
+  { value: "EC3401", label: "NETWORKS AND SECURITY" },
+  { value: "EC3491", label: "COMMUNICATION SYSTEMS" },
+  { value: "EC3452", label: "ELECTROMAGNETIC FIELDS" },
+  { value: "EC3501", label: "WIRELESS COMMUNICATION" },
+  { value: "EC3551", label: "TRANSMISSION LINES AND RF SYSTEMS" },
+  { value: "EC3552", label: "VLSI AND CHIP DESIGN" },
+  { value: "ET3491", label: "EMBEDDED SYSTEMS AND IOT DESIGN"}
   // Add more subjects as needed
 ];
 
 // Mark patterns for exam-style questions
 const markPatterns = [
-  { value: "13", label: "13 Marks", description: "18000-20000 character answers" },
-  { value: "15", label: "15 Marks", description: "24000-26000 character answers" },
+  { value: "13", label: "13 Marks", description: "18000-20000 words answers" },
+  { value: "15", label: "15 Marks", description: "24000-26000 words answers" },
 ];
 
 export default function AcademicChatbotPage() {
@@ -545,13 +557,97 @@ export default function AcademicChatbotPage() {
                     <SelectItem key="none" value="none">None</SelectItem>
                     {subject === "EC3251" && (
                       <SelectItem key="circuit-analysis" value="Engineering Circuit Analysis">
-                        Engineering Circuit Analysis (Hayt, Kemmerly, Durbin)
+                        Hayt Jack Kemmerly, Steven Durbin, Engineering Circuit Analysis,Mc Graw Hill education, 9th Edition, 2018.
                       </SelectItem>
                     )}
-                    {subject === "PH3151" && (
-                      <SelectItem key="physics" value="Engineering Physics">
-                        Engineering Physics (Standard Textbook)
+                    {subject === "EC3352" && (
+                      <SelectItem key="Digital-System-Design" value="Digital Design">
+                        M. Morris Mano and Michael D. Ciletti, ‘Digital Design’, Pearson, 5th Edition, 2013.
                       </SelectItem>
+                    )}
+                    {subject === "EC3354" && (
+                      <SelectItem key="Signals-and-Systems" value="Signal and Systems">
+                        Simon Haykin, Barry Van Veen, “Signals and Systems”, 2nd Edition, Wiley, 2002.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3351" && (
+                      <SelectItem key="Control-Systems" value="Control Systems – Principles and Design">
+                        M. Gopal, “Control Systems – Principles and Design”, Tata McGraw Hill, 4th Edition, 2012.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3353" && (
+                      <SelectItem key="Electronics-Circuits-and-Designs" value="Electronic Devices and Circuits">
+                        David A. Bell, “Electronic Devices and Circuits”, Oxford University Press, 5th Edition, 2010.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3451" && (
+                      <SelectItem key="Linear-Integrated-Circuits" value="Design with Operational Amplifiers and Analog Integrated Circuits">
+                        Sergio Franco, “Design with Operational Amplifiers and Analog Integrated Circuits”, Tata McGraw Hill, 4th Edition, 2016.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3492" && (
+                      <SelectItem key="Digital-Signal-Processing" value="Digital Signal Processing – Principles, Algorithms and Applications">
+                        John G. Proakis, Dimitris G. Manolakis, “Digital Signal Processing – Principles, Algorithms and Applications”, Pearson, 4th Edition, 2007.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3401" && (
+                      <>
+                      <SelectItem key="Networks-and-Security-1" value="Data Communication and Networking">
+                        Behrouz A. Forouzan, "Data Communication and Networking", Tata McGraw Hill, 5th Edition, 2017.
+                      </SelectItem>
+                      <SelectItem key="Networks-and-Security-2" value="Cryptography and Network Security">
+                        William Stallings, “Cryptography and Network Security”, Pearson, 7th Edition, 2017.
+                      </SelectItem>
+                      <SelectItem key="Networks-and-Security-3" value="Computer Networking: A Top-Down Approach">
+                        James F. Kurose, Keith W. Ross, “Computer Networking: A Top-Down Approach”, Pearson, 7th Edition, 2017.
+                      </SelectItem>
+                      </>
+                    )}
+                    {subject === "EC3491" && (
+                      <SelectItem key="Communivation-Systems" value="Modern Digital and Analog Communication Systems">
+                        B.P. Lathi, “Modern Digital and Analog Communication Systems”, Oxford University Press, 4th Edition, 2011.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3452" && (
+                      <SelectItem key="Electromagnetic-Fields" value="Field and wave electromagnetics">
+                        David K. Cheng, “Field and wave electromagnetics”, Pearson, 2nd Edition, 2002.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3501" && (
+                      <SelectItem key="Wireless-Communication" value="Wireless Communication">
+                        Rappaport,T.S., “Wireless communications”, Pearson, 2nd Edition, 2010.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3551" && (
+                      <SelectItem key="Transmission-Lines-and-RF-Systems" value="Radio Frequency and Microwave Communication Circuits">
+                        D. K. Misra, “Radio Frequency and Microwave Communication Circuits”, Analysis and Design, John Wiley &amp; Sons, 2004.
+                      </SelectItem>
+                    )}
+                    {subject === "EC3552" && (
+                      <>
+                      <SelectItem key="VLSI-and-Chip-Design-1" value="Principles of CMOS VLSI Design A System Perspective">
+                       Neil H E Weste, Kamran Eshranghian, “Principles of CMOS VLSI Design A System Perspective,” Addison Wesley, 2009.
+                      </SelectItem>
+                      <SelectItem key="VLSI-and-Chip-Design-2" value="Verilog HDLA guide to Digital Design and Synthesis">
+                        Samir Palnitkar, “Verilog HDLA guide to Digital Design and Synthesis”, Pearson Education, 2nd Edition, 2003.
+                      </SelectItem>
+                      <SelectItem key="VLSI-and-Chip-Design-3" value="CMOS Digital Integrated Circuits">
+                        James M. Rabaey, Anantha Chandrakasan, “CMOS Digital Integrated Circuits”, PHI, 2016.
+                      </SelectItem>
+                      </>
+                    )}
+                    {subject === "ET3491" && (
+                      <>
+                      <SelectItem key="Embedded-Systems-and-IOT-design-1" value="Internet – of- Things – A Hands on Approach">
+                        Arshdeep Bahga, Vijay Madisetti, “Internet – of- Things – A Hands on Approach”, University Press, 2015.
+                      </SelectItem>
+                      <SelectItem key="Embedded-Systems-and-IOT-design-2" value="Computers as Components – Principles of Embedded Computing System Design">
+                        Marilyn Wolf, “Computers as Components – Principles of Embedded Computing System Design”, Morgan Kaufmann, 3rd Edition, 2012.
+                      </SelectItem>
+                      <SelectItem key="Embedded-Systems-and-IOT-design-3" value="The 8051 Microcontroller and Embedded Systems Using Assembly and C">
+                        Mohammed Ali Mazidi, Janice Gillispie Mazidi, Rolin D.McKinlay, “The 8051 Microcontroller and Embedded Systems Using Assembly and C”, Pearson, 2nd Edition, 2014.
+                      </SelectItem>
+                      </>
                     )}
                   </SelectContent>
                 </Select>

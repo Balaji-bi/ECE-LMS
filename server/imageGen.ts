@@ -21,34 +21,20 @@ imageGenRouter.post("/", async (req: Request, res: Response) => {
     // We'll use the Gemini model to generate a textual description of an image 
     // and respond with that for now
     
-    const geminiModel = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
-      generationConfig: {
-        temperature: 0.4,
-        topP: 0.8,
-        topK: 40,
-      },
-      safetySettings: [
-        {
-          category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-        {
-          category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-          threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-        },
-      ],
-    });
+const imageModel = genAI.getGenerativeModel({ 
+  model: "imagegeneration@001",
+  generationConfig: {
+    temperature: 0.4,
+    topP: 0.8,
+    topK: 40,
+  } //
+});
+
+const result = await imageModel.generateContent(prompt);
+const response = await result.response;
+const text = response.text();
     
-    const result = await geminiModel.generateContent(`
+    const contentResult = await imageModel.generateContent(`
       Generate a detailed description of what should be included in a diagram for the following ECE topic:
       "${prompt}"
       

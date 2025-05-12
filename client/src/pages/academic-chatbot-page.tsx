@@ -299,9 +299,7 @@ export default function AcademicChatbotPage() {
         onMenuClick={() => setIsSidebarOpen(true)}
         rightIcon={
           <Link href="/advanced-chatbot">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <span className="material-icons">psychology</span>
-            </Button>
+            <Button variant="ghost" size="icon" className="mr-2" />
           </Link>
         }
       />
@@ -375,17 +373,9 @@ export default function AcademicChatbotPage() {
         </div>
         
         <Card className="border-0 shadow-lg">
-          <CardHeader className="pb-0">
-            <CardTitle className="text-lg flex items-center">
-              <span className="material-icons text-primary mr-2">school</span>
-              Ask the Academic Assistant
-            </CardTitle>
-            <CardDescription>
-              Provides syllabus-based responses with textbook references
-            </CardDescription>
-          </CardHeader>
-          
-          <form onSubmit={handleSendMessage}>
+          <Tabs defaultValue="chat">
+            <TabsContent value="chat">
+              <form onSubmit={handleSendMessage}>
                 <CardContent className="pt-4 space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="topic">Topic or Question</Label>

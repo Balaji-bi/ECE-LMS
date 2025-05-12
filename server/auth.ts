@@ -102,7 +102,7 @@ export function setupAuth(app: Express) {
   });
 
   app.post("/api/login", (req, res, next) => {
-    passport.authenticate("local", (err, user) => {
+    passport.authenticate("local", (err: Error | null, user: Express.User | false) => {
       if (err) return next(err);
       if (!user) return res.status(401).json({ message: "Invalid username or password" });
       

@@ -11,9 +11,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 const geminiConfig = { 
   model: "gemini-1.5-pro", // Gemini model name - verified working model
   generationConfig: {
-    temperature: 0.4,
-    topP: 0.8,
-    topK: 40,
+  temperature: 0.7,
+  topP: 0.95,
+  topK: 50,
+  maxOutputTokens: 40000
   },
   safetySettings: [
     {
@@ -41,8 +42,128 @@ const BOOK_REFERENCES = {
     title: "Engineering Circuit Analysis",
     author: "Hayt Jack Kemmerly, Steven Durbin",
     publication: "Mc Graw Hill education, 9th Edition, 2018",
-    path: "Hayt Jack Kemmerly, Steven Durbin, Engineering Circuit Analysis,Mc Graw Hill education, 9th Edition, 2018..pdf"
-  }
+    path: "Hayt Jack Kemmerly, Steven Durbin, Engineering Circuit Analysis,Mc Graw Hill education, 9th Edition, 2018."
+  },
+  "EC3352": {
+    title: "Digital Design", // Digital Systems Design
+    author: "M. Morris Mano and Michael D. Ciletti",
+    publication: "Pearson, 5th Edition, 2013",
+    path: "M. Morris Mano and Michael D. Ciletti, ‘Digital Design’, Pearson, 5th Edition, 2013."
+  },
+  "EC3354": {
+    title: "Signals and Systems", // Signals and Systems
+    author: "Simon Haykin, Barry Van Veen",
+    publication: "Wiley, 2nd Edition, 2002",
+    path: "Simon Haykin, Barry Van Veen, “Signals and Systems”, 2nd Edition, Wiley, 2002."
+  },
+  "EC3351": {
+    title: "Control Systems – Principles and Design", // Control Systems
+    author: "M. Gopal",
+    publication: "Design”, Tata McGraw Hill, 4th Edition, 2012.",
+    path: "M. Gopal, “Control Systems – Principles and Design”, Tata McGraw Hill, 4th Edition, 2012."
+  },
+  "EC3353": {
+    title: "Electronic Devices and Circuits",  // Electronic Devices and Circuits
+    author: "David A. Bell",
+    publication: "Oxford University Press, 5th Edition, 2010",
+    path: "David A. Bell, “Electronic Devices and Circuits”, Oxford University Press, 5th Edition, 2010."
+  },
+  "EC3451": {
+    title: "Design with Operational Amplifiers and Analog Integrated Circuits",  // Linear Integrated Circuits
+    author: "Sergio Franco",
+    publication: "Tata McGraw Hill, 4th Edition, 2016",
+    path: "Sergio Franco, “Design with Operational Amplifiers and Analog Integrated Circuits”, Tata McGraw Hill, 4th Edition, 2016."
+  },
+  "EC3492": {
+    title: "Digital Signal Processing – Principles, Algorithms and Applications", // Digital Signal Processing
+    author: "John G. Proakis, Dimitris G. Manolakis",
+    publication: "Pearson, 4th Edition, 2007",
+    path: "John G. Proakis, Dimitris G. Manolakis, “Digital Signal Processing – Principles, Algorithms and Applications”, Pearson, 4th Edition, 2007."
+  },
+  "EC3401": [
+    {
+      title: "Data Communication and Networking", // Networks and security
+      author: "Behrouz A. Forouzan",
+      publication: "Tata McGraw Hill, 5th Edition, 2017",
+      path: "Behrouz A. Forouzan, “Data Communication and Networking”, Tata McGraw Hill, 5th Edition, 2017."
+    },
+    {
+      title: "Cryptography and Network Security",
+      author: "William Stallings",
+      publication: "Pearson, 7th Edition, 2017",
+      path: "William Stallings, “Cryptography and Network Security”, Pearson, 7th Edition, 2017."
+    },
+    {
+      title: "Computer Networking: A Top-Down Approach",
+      author: "James F. Kurose, Keith W. Ross",
+      publication: "Pearson, 7th Edition, 2017",
+      path: "James F. Kurose, Keith W. Ross, “Computer Networking: A Top-Down Approach”, Pearson, 7th Edition, 2017."
+    },
+  ],
+  "EC3491": {
+    title: "Modern Digital and Analog Communication Systems", // Communication Systems
+    author: "B.P. Lathi",
+    publication: "Oxford University Press, 4th Edition, 2011",
+    path: "B.P. Lathi, “Modern Digital and Analog Communication Systems”, Oxford University Press, 4th Edition, 2011."  
+    },
+  "EC3452": {
+    title: "Field and wave electromagnetics",  // Electromagnetic Fields
+    author: "David K. Cheng",
+    publication: "Pearson, 2nd Edition, 2002",
+    path: "David K. Cheng, “Field and wave electromagnetics”, Pearson, 2nd Edition, 2002."
+  },
+  "EC3501": {
+    title: "Wireless communications", // Wireless Communication
+    author: "Rappaport,T.S.",
+    publication: "Pearson, 2nd Edition, 2010",
+    path: "Rappaport,T.S., “Wireless communications”, Pearson, 2nd Edition, 2010."
+    },
+  "EC3551": {
+    title: "Radio Frequency and Microwave Communication Circuits", // Transmission Lines and RF Systems
+    author: "D. K. Misra",
+    publication: "Analysis and Design, John Wiley &amp; Sons, 2004.",
+    path: "D. K. Misra, “Radio Frequency and Microwave Communication Circuits”, Analysis and Design, John Wiley &amp; Sons, 2004."
+  },
+  "EC3552": [
+    {
+      title: "Principles of CMOS VLSI Design A System Perspective", // VLSI and Chip Design
+      author: "Neil H E Weste, Kamran Eshranghian",
+      publication: "Addison Wesley, 2009.",
+      path: "Neil H E Weste, Kamran Eshranghian, “Principles of CMOS VLSI Design A System Perspective,” Addison Wesley, 2009."
+    },
+    {
+      title: "Verilog HDLA guide to Digital Design and Synthesis",
+      author: "Samir Palnitkar",
+      publication: "Pearson Education, 2nd Edition, 2003.",
+      path: "Samir Palnitkar, “Verilog HDLA guide to Digital Design and Synthesis”, Pearson Education, 2nd Edition, 2003."
+    },
+    {
+      title: "CMOS Digital Integrated Circuits",
+      author: "James M. Rabaey, Anantha Chandrakasan",
+      publication: "PHI, 2016.",
+      path: "James M. Rabaey, Anantha Chandrakasan, “CMOS Digital Integrated Circuits”, PHI, 2016."
+    }
+  ],
+  "ET3491": [ // Embedded Systems and IOT design
+    {
+      title: "Internet – of- Things – A Hands on Approach",
+      author: "Arshdeep Bahga, Vijay Madisetti",
+      publication: "University Press, 2015.",
+      path: "Arshdeep Bahga, Vijay Madisetti, “Internet – of- Things – A Hands on Approach”, University Press, 2015."
+    },
+    {
+      title: "Computers as Components – Principles of Embedded Computing System Design",
+      author: "Marilyn Wolf",
+      publication: "Morgan Kaufmann, 3rd Edition, 2012.",
+      path: "Marilyn Wolf, “Computers as Components – Principles of Embedded Computing System Design”, Morgan Kaufmann, 3rd Edition, 2012."
+    },
+    {
+      title: "The 8051 Microcontroller and Embedded Systems Using Assembly and C",
+      author: "Mohammed Ali Mazidi, Janice Gillispie Mazidi, Rolin D.McKinlay",
+      publication: "Pearson, 2nd Edition, 2014.",
+      path: "Mohammed Ali Mazidi, Janice Gillispie Mazidi, Rolin D.McKinlay, “The 8051 Microcontroller and Embedded Systems Using Assembly and C”, Pearson, 2nd Edition, 2014."
+    }
+  ]
 };
 
 // Knowledge levels for academic assistant
@@ -76,6 +197,10 @@ function getSourceInfo(query: AcademicQuery): { usesInternet: boolean; usesBookR
     // Add all books for that subject
     if (query.subject === "EC3251" && BOOK_REFERENCES["EC3251"]) {
       const book = BOOK_REFERENCES["EC3251"];
+      bookSources.push(`${book.title} by ${book.author}`);
+    }
+    if (query.subject === "EC3352" && BOOK_REFERENCES["EC3352"]) {
+      const book = BOOK_REFERENCES["EC3352"];
       bookSources.push(`${book.title} by ${book.author}`);
     }
   }

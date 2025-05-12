@@ -8,7 +8,12 @@ import {
 } from "@shared/schema";
 import createMemoryStore from "memorystore";
 import session from "express-session";
-import { db, pool } from "./db";
+import { db } from "./db";
+import { Pool } from "pg";
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 import connectPg from "connect-pg-simple";
 import { eq, desc, and } from "drizzle-orm";
 
@@ -97,7 +102,7 @@ export class MemStorage implements IStorage {
   }
   
   async getUserByUsername(username: string): Promise<User | undefined> {
-    for (const user of this.users.values()) {
+    for (const user of Array.from(this.users.values())) {
       if (user.username === username) {
         return user;
       }
@@ -162,7 +167,7 @@ export class MemStorage implements IStorage {
   async getChatMessages(userId: number, isAdvanced: boolean): Promise<ChatMessage[]> {
     const messages = Array.from(this.chatMessages.values())
       .filter(message => message.userId === userId && message.isAdvanced === isAdvanced)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
     
     return messages;
   }
@@ -185,14 +190,21 @@ export class MemStorage implements IStorage {
   // News operations
   async getNews(): Promise<News[]> {
     return Array.from(this.newsItems.values())
-      .sort((a, b) => b.publishedAt.getTime() - a.publishedAt.getTime());
+      .sort((a, b) => (b.publishedAt?.getTime() || 0) - (a.publishedAt?.getTime() || 0));
   }
   
   async createNews(insertNews: InsertNews): Promise<News> {
     const id = ++this.currentIds.news;
     const publishedAt = new Date();
     
-    const newsItem: News = { ...insertNews, id, publishedAt };
+    const newsItem: News = { 
+      ...insertNews, 
+      id, 
+      publishedAt, 
+      category: insertNews.category ?? null, 
+      source: insertNews.source ?? null, 
+      url: insertNews.url ?? null 
+    };
     
     this.newsItems.set(id, newsItem);
     return newsItem;
@@ -201,7 +213,7 @@ export class MemStorage implements IStorage {
   // Forum operations
   async getForumPosts(): Promise<ForumPost[]> {
     return Array.from(this.forumPosts.values())
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
   
   async getForumPost(id: number): Promise<ForumPost | undefined> {
@@ -237,7 +249,7 @@ export class MemStorage implements IStorage {
   async getForumReplies(postId: number): Promise<ForumReply[]> {
     return Array.from(this.forumReplies.values())
       .filter(reply => reply.postId === postId)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
   }
   
   async createForumReply(insertForumReply: InsertForumReply): Promise<ForumReply> {
@@ -254,7 +266,7 @@ export class MemStorage implements IStorage {
   async getUserActivities(userId: number): Promise<UserActivity[]> {
     return Array.from(this.userActivities.values())
       .filter(activity => activity.userId === userId)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
   }
   
   async createUserActivity(insertUserActivity: InsertUserActivity): Promise<UserActivity> {
@@ -273,16 +285,19 @@ export class MemStorage implements IStorage {
       {
         title: "Anna University Announces New IoT Lab for ECE Department",
         description: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
+        content: "The new laboratory will feature state-of-the-art equipment for Internet of Things research and development.",
         category: "Department News"
       },
       {
         title: "IEEE Conference Paper Submissions Due Next Week",
         description: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
+        content: "Final date for paper submissions is August 15th. Students are encouraged to participate.",
         category: "Academic Alert"
       },
       {
         title: "Latest Advances in 5G Technology - ECE Seminar",
         description: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
+        content: "Join us for a special seminar on 5G technology featuring industry experts from Nokia.",
         category: "Event"
       }
     ];
@@ -468,7 +483,10 @@ const initializeNews = async (storage: DatabaseStorage) => {
       ];
       
       for (const item of sampleNews) {
-        await storage.createNews(item);
+        await storage.createNews({
+          ...item,
+          content: item.description // Use description as content if no specific content is provided
+        });
       }
     }
   } catch (error) {
