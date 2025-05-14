@@ -2269,7 +2269,7 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
       </div>
       <div class="technical-depth">
         <h4>Technical Depth</h4>
-        <p>Follow with a more rigorous technical explanation with proper terminology and concepts.</p>
+        <p>Follow with a more detailed technical explanation with proper terminology and concepts. figure out all the relevant concepts. explain there is any types, important function or concept atlreast for 1000 words, </p>
       </div>
       <div class="methodology">
         <h4>Methodology & Working Principles</h4>
@@ -2293,7 +2293,7 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
         </div>
       </div>
       <div class="formula">
-        <div class="formula-expression">I = V / R</div>
+        <div class="formula-expression"><strong>R = V / R</strong></div>
         <div class="variables">
           <ul>
             <li><span class="variable">V</span>: Voltage (Volts)</li>
@@ -2350,7 +2350,7 @@ syllabusRouter.get("/topic/:code/:unit/:topic", async (req: Request, res: Respon
     </section>
 
     IMPORTANT FORMATTING GUIDELINES:
-    1. For ALL mathematical formulas, use the MathJax syntax: $V = I × R$ for inline formulas or $$V = I × R$$ for block formulas
+    1. For ALL mathematical formulas, use the MathJax syntax: V = I × R, NO $$ or \\(\\) or \[ \] or \begin{equation} \end{equation}
     2. Use proper mathematical symbols: × for multiplication, π for pi, etc.
     3. For subscripts use <sub>text</sub>, for superscripts use <sup>text</sup>
     4. Always use professional HTML formatting with proper spacing and organization
